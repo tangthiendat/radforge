@@ -8,8 +8,8 @@ $ErrorActionPreference = "Stop"
 
 $ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
 $RepoRoot = if ($ScriptRoot) { Split-Path -Parent $ScriptRoot } else { $null }
-$ProvidersRoot = Join-Path $RepoRoot "providers"
-$SkillsSourceRoot = Join-Path $RepoRoot "skills"
+$ProvidersRoot = if ($RepoRoot) { Join-Path $RepoRoot "providers" } else { $null }
+$SkillsSourceRoot = if ($RepoRoot) { Join-Path $RepoRoot "skills" } else { $null }
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
 $MarkerStart = "<!-- RADFORGE:BEGIN -->"
