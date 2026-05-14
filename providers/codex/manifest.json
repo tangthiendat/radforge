@@ -1,0 +1,7 @@
+{
+  "provider": "codex",
+  "displayName": "Codex",
+  "instructionsFile": ".codex/AGENTS.md",
+  "skillsDir": ".agents/skills",
+  "hintTemplate": "providers/codex/templates/global-hint.md"
+}

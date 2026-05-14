@@ -1,0 +1,7 @@
+{
+  "provider": "opencode",
+  "displayName": "OpenCode",
+  "instructionsFile": ".config/opencode/AGENTS.md",
+  "skillsDir": ".config/opencode/skills",
+  "hintTemplate": "providers/opencode/templates/global-hint.md"
+}

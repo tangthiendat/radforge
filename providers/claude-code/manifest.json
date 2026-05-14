@@ -1,0 +1,7 @@
+{
+  "provider": "claude-code",
+  "displayName": "Claude Code",
+  "instructionsFile": ".claude/CLAUDE.md",
+  "skillsDir": ".claude/skills",
+  "hintTemplate": "providers/claude-code/templates/global-hint.md"
+}
