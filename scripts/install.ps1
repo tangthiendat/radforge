@@ -6,6 +6,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+if ([string]::IsNullOrWhiteSpace($HomeRoot)) {
+    $HomeRoot = [Environment]::GetFolderPath("UserProfile")
+}
+
+if ([string]::IsNullOrWhiteSpace($HomeRoot)) {
+    throw "Unable to resolve user home directory."
+}
+
 $ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
 $RepoRoot = if ($ScriptRoot) { Split-Path -Parent $ScriptRoot } else { $null }
 $ProvidersRoot = if ($RepoRoot) { Join-Path $RepoRoot "providers" } else { $null }
