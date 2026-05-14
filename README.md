@@ -6,20 +6,26 @@ It installs a reusable skill library plus provider-level instructions so the age
 
 ## Quickstart
 
-Install Radforge with the script that matches your shell.
+Install Radforge directly from GitHub with a single command.
+
+## Supported Providers
+
+- Claude Code
+- Codex
+- OpenCode
 
 ## Install
 
 ### Windows PowerShell
 
 ```powershell
-pwsh -File .\scripts\install.ps1
+irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1" | iex
 ```
 
 ### macOS Or Linux
 
 ```sh
-sh ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash
 ```
 
 ## Optional Install Flags
@@ -27,21 +33,21 @@ sh ./scripts/install.sh
 Install only specific providers:
 
 ```powershell
-pwsh -File .\scripts\install.ps1 -Provider codex,claude-code
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1"))) -Provider codex,claude-code
 ```
 
 ```sh
-sh ./scripts/install.sh --provider codex,opencode
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash -s -- --provider codex,opencode
 ```
 
 Preview changes without writing to disk:
 
 ```powershell
-pwsh -File .\scripts\install.ps1 -DryRun
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1"))) -DryRun
 ```
 
 ```sh
-sh ./scripts/install.sh --dry-run
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash -s -- --dry-run
 ```
 
 ## Uninstall
@@ -49,13 +55,13 @@ sh ./scripts/install.sh --dry-run
 ### Windows PowerShell
 
 ```powershell
-pwsh -File .\scripts\uninstall.ps1
+irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.ps1" | iex
 ```
 
 ### macOS Or Linux
 
 ```sh
-sh ./scripts/uninstall.sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.sh | bash
 ```
 
 ## How It Works
@@ -95,12 +101,6 @@ Repository-local instructions still take priority over user-level Radforge defau
 
 - `use-radforge`: the entry skill that decides whether Radforge should take over and routes into the single right workflow skill
 
-### Installer Assets
-
-- `scripts/install.ps1` and `scripts/uninstall.ps1`: Windows PowerShell entrypoints
-- `scripts/install.sh` and `scripts/uninstall.sh`: macOS and Linux shell entrypoints
-- provider manifests and templates for Claude Code, Codex, and OpenCode
-
 ## What Gets Installed
 
 For each selected provider, the installer:
@@ -116,23 +116,6 @@ The installer is additive and conservative:
 - it removes only Radforge-owned installed skill directories during uninstall
 - it does not replace repository-local instructions
 
-## Installed Locations
-
-### Claude Code
-
-- instructions file: `~/.claude/CLAUDE.md`
-- skills directory: `~/.claude/skills/`
-
-### Codex
-
-- instructions file: `~/.codex/AGENTS.md`
-- skills directory: `~/.agents/skills/`
-
-### OpenCode
-
-- instructions file: `~/.config/opencode/AGENTS.md`
-- skills directory: `~/.config/opencode/skills/`
-
 ## Updating Radforge
 
 If you change the Radforge templates or skill files in this repository, rerun the install script to refresh the installed instructions block and skill copies.
@@ -140,11 +123,11 @@ If you change the Radforge templates or skill files in this repository, rerun th
 Examples:
 
 ```powershell
-pwsh -File .\scripts\install.ps1
+irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1" | iex
 ```
 
 ```sh
-sh ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash
 ```
 
 If you only want to preview what would happen, use dry-run mode.
@@ -154,9 +137,3 @@ If you only want to preview what would happen, use dry-run mode.
 - when no provider is specified, the installer selects all supported providers in this repository and logs the detected provider names
 - uninstall uses the stored provider state files in `~/.radforge/providers/` to remove only Radforge-managed assets
 - actual skill auto-invocation still depends on the provider surfacing user instructions and installed skills to the model for that session
-
-## Supported Providers
-
-- Claude Code
-- Codex
-- OpenCode
