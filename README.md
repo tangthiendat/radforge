@@ -10,6 +10,8 @@ Install Radforge directly from GitHub with a single command.
 
 ## Supported Providers
 
+Current support is CLI-only.
+
 - Claude Code
 - Codex
 - OpenCode
@@ -30,11 +32,21 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.
 
 ## Optional Install Flags
 
+Available provider values for `-Provider` and `--provider`:
+
+- `claude-code`
+- `codex`
+- `opencode`
+
 Install only specific providers:
+
+### Windows PowerShell
 
 ```powershell
 & ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1"))) -Provider codex,claude-code
 ```
+
+### macOS Or Linux
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash -s -- --provider codex,opencode
@@ -42,9 +54,13 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.
 
 Preview changes without writing to disk:
 
+### Windows PowerShell
+
 ```powershell
 & ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1"))) -DryRun
 ```
+
+### macOS Or Linux
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash -s -- --dry-run
@@ -62,6 +78,28 @@ irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.ps1"
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.sh | bash
+```
+
+### Optional Uninstall Flags
+
+Available provider values for `-Provider` and `--provider`:
+
+- `claude-code`
+- `codex`
+- `opencode`
+
+Uninstall only specific providers:
+
+### Windows PowerShell
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.ps1"))) -Provider codex,claude-code
+```
+
+### macOS Or Linux
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.sh | bash -s -- --provider codex,opencode
 ```
 
 ## How It Works
@@ -122,9 +160,13 @@ If you change the Radforge templates or skill files in this repository, rerun th
 
 Examples:
 
+### Windows PowerShell
+
 ```powershell
 irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1" | iex
 ```
+
+### macOS Or Linux
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash
