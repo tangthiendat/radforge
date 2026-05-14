@@ -21,13 +21,13 @@ Current support is CLI-only.
 ### Windows PowerShell
 
 ```powershell
-irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1" | iex
+irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1" | iex
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash
 ```
 
 ## Optional Install Flags
@@ -43,13 +43,13 @@ Install only specific providers:
 ### Windows PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1"))) -Provider codex,claude-code
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex,claude-code
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash -s -- --provider codex,opencode
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
 ```
 
 Preview changes without writing to disk:
@@ -57,13 +57,13 @@ Preview changes without writing to disk:
 ### Windows PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1"))) -DryRun
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -DryRun
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --dry-run
 ```
 
 ## Uninstall
@@ -71,13 +71,13 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.
 ### Windows PowerShell
 
 ```powershell
-irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.ps1" | iex
+irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.ps1" | iex
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.sh | bash
 ```
 
 ### Optional Uninstall Flags
@@ -93,13 +93,13 @@ Uninstall only specific providers:
 ### Windows PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.ps1"))) -Provider codex,claude-code
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.ps1"))) -Provider codex,claude-code
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/uninstall.sh | bash -s -- --provider codex,opencode
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.sh | bash -s -- --provider codex,opencode
 ```
 
 ## How It Works
@@ -163,13 +163,13 @@ Examples:
 ### Windows PowerShell
 
 ```powershell
-irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/install.ps1" | iex
+irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1" | iex
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash
 ```
 
 If you only want to preview what would happen, use dry-run mode.

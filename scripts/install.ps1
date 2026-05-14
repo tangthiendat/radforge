@@ -6,7 +6,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$RepoRoot = Split-Path -Parent $PSScriptRoot
+$ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
+$RepoRoot = if ($ScriptRoot) { Split-Path -Parent $ScriptRoot } else { $null }
 $ProvidersRoot = Join-Path $RepoRoot "providers"
 $SkillsSourceRoot = Join-Path $RepoRoot "skills"
 $StateRoot = Join-Path $HomeRoot ".radforge"
@@ -14,6 +15,37 @@ $ProviderStateRoot = Join-Path $StateRoot "providers"
 $MarkerStart = "<!-- RADFORGE:BEGIN -->"
 $MarkerEnd = "<!-- RADFORGE:END -->"
 $EntrySkillName = "use-radforge"
+
+function Invoke-BootstrapInstall {
+    $archiveUrl = if ($env:RADFORGE_ARCHIVE_URL) {
+        $env:RADFORGE_ARCHIVE_URL
+    }
+    else {
+        "https://github.com/tangthiendat/radforge/archive/refs/heads/main.zip"
+    }
+
+    $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("radforge-" + [guid]::NewGuid())
+    $archivePath = Join-Path $tempRoot "radforge.zip"
+
+    try {
+        New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
+        Invoke-WebRequest $archiveUrl -OutFile $archivePath
+        Expand-Archive -LiteralPath $archivePath -DestinationPath $tempRoot
+
+        $scriptPath = Join-Path $tempRoot "radforge-main\scripts\install.ps1"
+        & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -DryRun:$DryRun
+    }
+    finally {
+        if (Test-Path -LiteralPath $tempRoot) {
+            Remove-Item -LiteralPath $tempRoot -Recurse -Force
+        }
+    }
+}
+
+if (-not $RepoRoot -or -not (Test-Path -LiteralPath $ProvidersRoot) -or -not (Test-Path -LiteralPath $SkillsSourceRoot)) {
+    Invoke-BootstrapInstall
+    return
+}
 
 function Write-Log {
     param([string]$Message)

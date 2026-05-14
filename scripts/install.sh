@@ -40,6 +40,30 @@ MARKER_START='<!-- RADFORGE:BEGIN -->'
 MARKER_END='<!-- RADFORGE:END -->'
 ENTRY_SKILL_NAME='use-radforge'
 
+bootstrap_install() {
+    archive_url="${RADFORGE_ARCHIVE_URL:-https://github.com/tangthiendat/radforge/archive/refs/heads/main.tar.gz}"
+    temp_root=$(mktemp -d 2>/dev/null || mktemp -d -t radforge)
+
+    cleanup() {
+        rm -rf "$temp_root"
+    }
+
+    trap cleanup EXIT INT TERM
+
+    curl -fsSL "$archive_url" | tar -xz -C "$temp_root"
+
+    if [ "$DRY_RUN" -eq 1 ]; then
+        sh "$temp_root/radforge-main/scripts/install.sh" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
+    else
+        sh "$temp_root/radforge-main/scripts/install.sh" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
+    fi
+}
+
+if [ ! -d "$PROVIDERS_ROOT" ] || [ ! -d "$SKILLS_SOURCE_ROOT" ]; then
+    bootstrap_install
+    exit 0
+fi
+
 log() {
     if [ "$DRY_RUN" -eq 1 ]; then
         printf '[dry-run] %s\n' "$1"
