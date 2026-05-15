@@ -28,7 +28,7 @@ This skill should make a fast routing decision, choose one primary next skill, a
 ## Process
 
 1. Read repo-local instructions and nearby guidance first.
-2. If repository-local workflow does not fully override Radforge, use the shared runtime rules in `~/.radforge/AGENTS.md` as the Radforge contract.
+2. If repository-local workflow fully overrides Radforge, stop and follow the repository.
 3. Decide whether the task is trivial enough to handle directly or whether Radforge should take over.
 4. Explain Radforge in one short pass only if the user appears unfamiliar with it.
 5. If Radforge should not be used, say so briefly and stop.
