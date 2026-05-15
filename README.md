@@ -10,7 +10,7 @@ Install Radforge directly from GitHub with a single command.
 
 ## Supported Providers
 
-Current support is CLI-only.
+Current installer support is for the CLI/provider user-level setup. Desktop apps and IDE extensions may also load these skills when they share the same provider skill system, but Radforge does not yet have dedicated desktop-app or IDE-extension installer targets.
 
 - Claude Code
 - Codex

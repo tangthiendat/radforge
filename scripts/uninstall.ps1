@@ -6,6 +6,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+if ([string]::IsNullOrWhiteSpace($HomeRoot)) {
+    $HomeRoot = [Environment]::GetFolderPath("UserProfile")
+}
+
+if ([string]::IsNullOrWhiteSpace($HomeRoot)) {
+    throw "Unable to resolve user home directory."
+}
+
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
 $MarkerStart = "<!-- RADFORGE:BEGIN -->"

@@ -40,7 +40,16 @@ function Invoke-BootstrapInstall {
         Invoke-WebRequest $archiveUrl -OutFile $archivePath
         Expand-Archive -LiteralPath $archivePath -DestinationPath $tempRoot
 
-        $scriptPath = Join-Path $tempRoot "radforge-main\scripts\install.ps1"
+        $extractedRoot = Get-ChildItem -LiteralPath $tempRoot -Directory | Select-Object -First 1
+        if (-not $extractedRoot) {
+            throw "Unable to locate extracted Radforge archive."
+        }
+
+        $scriptPath = Join-Path $extractedRoot.FullName "scripts\install.ps1"
+        if (-not (Test-Path -LiteralPath $scriptPath)) {
+            throw "Unable to locate installer inside extracted Radforge archive."
+        }
+
         & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -DryRun:$DryRun
     }
     finally {

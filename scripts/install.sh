@@ -52,10 +52,28 @@ bootstrap_install() {
 
     curl -fsSL "$archive_url" | tar -xz -C "$temp_root"
 
+    extracted_root=""
+    for candidate in "$temp_root"/*; do
+        [ -d "$candidate" ] || continue
+        extracted_root="$candidate"
+        break
+    done
+
+    if [ -z "$extracted_root" ]; then
+        printf 'Unable to locate extracted Radforge archive.\n' >&2
+        exit 1
+    fi
+
+    script_path="$extracted_root/scripts/install.sh"
+    if [ ! -f "$script_path" ]; then
+        printf 'Unable to locate installer inside extracted Radforge archive.\n' >&2
+        exit 1
+    fi
+
     if [ "$DRY_RUN" -eq 1 ]; then
-        sh "$temp_root/radforge-main/scripts/install.sh" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
+        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
     else
-        sh "$temp_root/radforge-main/scripts/install.sh" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
+        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
     fi
 }
 
