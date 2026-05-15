@@ -109,7 +109,7 @@ function Read-TextFile {
     param([string]$Path)
 
     if (Test-Path -LiteralPath $Path) {
-        return Get-Content -LiteralPath $Path -Raw
+        return [string](Get-Content -LiteralPath $Path -Raw)
     }
 
     ""
@@ -236,10 +236,11 @@ function Set-ManagedBlock {
         [string]$BlockContent
     )
 
-    $existingContent = Read-TextFile $FilePath
+    $existingContent = [string](Read-TextFile $FilePath)
+    $blockContentValue = [string]$BlockContent
     $createdFile = -not (Test-Path -LiteralPath $FilePath)
     $newline = [Environment]::NewLine
-    $managedBlock = ($MarkerStart, $BlockContent.TrimEnd(), $MarkerEnd) -join $newline
+    $managedBlock = ($MarkerStart, $blockContentValue.TrimEnd(), $MarkerEnd) -join $newline
     $updatedContent = $null
 
     if ($existingContent.Contains($MarkerStart) -and $existingContent.Contains($MarkerEnd)) {
