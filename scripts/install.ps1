@@ -222,7 +222,12 @@ function Get-RuntimeRulesContent {
         throw "Unable to resolve shared runtime rules file."
     }
 
-    Get-Content -LiteralPath $RuntimeRulesSourcePath -Raw
+    $content = [string](Get-Content -LiteralPath $RuntimeRulesSourcePath -Raw)
+    if ([string]::IsNullOrWhiteSpace($content)) {
+        throw "Shared runtime rules file is empty."
+    }
+
+    $content
 }
 
 function Set-ManagedBlock {
