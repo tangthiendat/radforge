@@ -64,7 +64,7 @@ function Read-TextFile {
     param([string]$Path)
 
     if (Test-Path -LiteralPath $Path) {
-        return Get-Content -LiteralPath $Path -Raw
+        return [string](Get-Content -LiteralPath $Path -Raw)
     }
 
     ""
@@ -89,7 +89,7 @@ function Write-TextFile {
 function Clear-ManagedBlock {
     param([string]$FilePath)
 
-    $existingContent = Read-TextFile $FilePath
+    $existingContent = [string](Read-TextFile $FilePath)
     if ([string]::IsNullOrEmpty($existingContent)) {
         return ""
     }
