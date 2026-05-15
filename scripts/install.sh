@@ -137,6 +137,26 @@ manifest_value() {
     sed -n "s/^[[:space:]]*\"$key\":[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$file" | head -n 1
 }
 
+read_template_content() {
+    manifest_path=$1
+    template_relative=$(manifest_value hintTemplate "$manifest_path")
+    template_url=$(manifest_value hintTemplateUrl "$manifest_path")
+
+    if [ -n "$template_relative" ] && [ -f "$REPO_ROOT/$template_relative" ]; then
+        cat "$REPO_ROOT/$template_relative"
+        return
+    fi
+
+    if [ -n "$template_url" ]; then
+        curl -fsSL "$template_url"
+        return
+    fi
+
+    provider_id=$(manifest_value provider "$manifest_path")
+    printf 'Unable to resolve global hint template for provider: %s\n' "$provider_id" >&2
+    exit 1
+}
+
 provider_display_names() {
     first=1
     for provider_id in "$@"; do
@@ -158,12 +178,11 @@ join_home_relative_path() {
 }
 
 render_template() {
-    template_path=$1
+    manifest_path=$1
     provider_name=$2
-    sed \
+    read_template_content "$manifest_path" | sed \
         -e "s/{{PROVIDER_NAME}}/$provider_name/g" \
-        -e "s/{{ENTRY_SKILL}}/$ENTRY_SKILL_NAME/g" \
-        "$template_path"
+        -e "s/{{ENTRY_SKILL}}/$ENTRY_SKILL_NAME/g"
 }
 
 copy_skill_library() {
@@ -295,14 +314,12 @@ for provider_id in $selected_providers; do
     display_name=$(manifest_value displayName "$manifest_path")
     instructions_relative=$(manifest_value instructionsFile "$manifest_path")
     skills_relative=$(manifest_value skillsDir "$manifest_path")
-    template_relative=$(manifest_value hintTemplate "$manifest_path")
     instructions_file=$(join_home_relative_path "$instructions_relative")
     skills_dir=$(join_home_relative_path "$skills_relative")
-    template_path="$REPO_ROOT/$template_relative"
     rendered_template=$(mktemp)
     block_file=$(mktemp)
 
-    render_template "$template_path" "$display_name" > "$rendered_template"
+    render_template "$manifest_path" "$display_name" > "$rendered_template"
     {
         printf '%s\n' "$MARKER_START"
         cat "$rendered_template"

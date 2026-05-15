@@ -3,5 +3,6 @@
   "displayName": "Codex",
   "instructionsFile": ".codex/AGENTS.md",
   "skillsDir": ".agents/skills",
-  "hintTemplate": "providers/codex/templates/global-hint.md"
+  "hintTemplate": "providers/codex/templates/global-hint.md",
+  "hintTemplateUrl": "https://raw.githubusercontent.com/tangthiendat/radforge/main/providers/codex/templates/global-hint.md"
 }

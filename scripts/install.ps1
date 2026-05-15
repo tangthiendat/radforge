@@ -183,8 +183,24 @@ function Get-ProviderDisplayNames {
 function Render-Template {
     param([hashtable]$Manifest)
 
-    $templatePath = Join-Path $RepoRoot $Manifest.hintTemplate
-    $content = Get-Content -LiteralPath $templatePath -Raw
+    $content = $null
+
+    if ($Manifest.ContainsKey("hintTemplate") -and -not [string]::IsNullOrWhiteSpace([string]$Manifest.hintTemplate) -and $RepoRoot) {
+        $templatePath = Join-Path $RepoRoot $Manifest.hintTemplate
+        if (Test-Path -LiteralPath $templatePath) {
+            $content = Get-Content -LiteralPath $templatePath -Raw
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($content) -and $Manifest.ContainsKey("hintTemplateUrl") -and -not [string]::IsNullOrWhiteSpace([string]$Manifest.hintTemplateUrl)) {
+        $response = Invoke-WebRequest -Uri ([string]$Manifest.hintTemplateUrl)
+        $content = [string]$response.Content
+    }
+
+    if ([string]::IsNullOrWhiteSpace($content)) {
+        throw "Unable to resolve global hint template for provider '$($Manifest.provider)'."
+    }
+
     $content = $content.Replace("{{PROVIDER_NAME}}", [string]$Manifest.displayName)
     $content = $content.Replace("{{ENTRY_SKILL}}", $EntrySkillName)
     $content.TrimEnd()
