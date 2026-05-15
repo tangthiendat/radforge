@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Use when the task is clear enough to execute. Make the smallest correct change, preserve existing patterns, and hand off to testing or verification.
+description: Use when the task is clear enough to execute. Make the smallest correct change, preserve existing patterns, and hand off to testing when needed.
 ---
 
 # implement
@@ -22,16 +22,15 @@ Execute an approved change with minimal, correct edits.
 
 ## Process
 
-1. Confirm the direction is clear enough to execute and the scope is still small enough for direct implementation.
+1. Confirm the direction is clear enough to execute.
 2. Inspect the relevant files before editing.
-3. Follow existing project patterns unless there is an explicit reason not to do so.
-4. Start with the narrowest change in the smallest relevant file, component, or boundary that can solve the problem.
+3. Follow existing project patterns unless there is a concrete reason not to.
+4. Start with the narrowest change in the smallest relevant boundary that can solve the problem.
 5. Make the smallest correct change.
 6. Preserve unrelated user changes.
-7. Run the smallest meaningful validation directly when it is obvious and cheap.
-8. Hand off to `test` when validation needs broader coverage or a stronger regression check.
-9. Hand off to `brainstorming` if ambiguity appears, or to `plan` if execution scope grows beyond a few obvious steps.
-10. Hand off to `verify-result` when execution is complete.
+7. Run the smallest meaningful validation when it is obvious and cheap.
+8. Hand off to `test` when broader validation or regression coverage is needed.
+9. Hand off to `brainstorming` if ambiguity appears, to `plan` if scope grows, or to `debug` if behavior is broken.
 
 ## Guardrails
 
@@ -46,12 +45,12 @@ Execute an approved change with minimal, correct edits.
 - affected files and intended scope
 - validation run, skipped, or delegated
 - blockers, open questions, or scope expansion noticed during execution
-- next-skill handoff
+- next-skill handoff or stop state
 
 ## Handoff Rules
 
 - `implement` -> `test`
 - `implement` -> `brainstorming`
 - `implement` -> `plan`
-- `implement` -> `verify-result`
 - `implement` -> `debug`
+- `implement` -> stop

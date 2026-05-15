@@ -24,15 +24,15 @@ Find and verify the root cause of broken behavior.
 
 1. Reproduce the issue or failure.
 2. Capture the exact error, output, or behavior.
-3. Define the smallest failing scope first, preferably the component, boundary, or step closest to the failure.
-4. If multiple causes are plausible, list the leading hypotheses and rank them by likelihood and testability.
-5. Test one concrete hypothesis at a time, starting with the narrowest highest-signal check.
+3. Define the smallest failing scope first.
+4. If multiple causes are plausible, rank the leading hypotheses by likelihood and testability.
+5. Test one concrete hypothesis at a time, starting with the narrowest high-signal check.
 6. Change the smallest thing needed to test that hypothesis.
 7. Re-run the reproduction or validation step.
 8. Broaden scope only if the component-level investigation does not explain the failure.
-9. Pause for approval when the cause is clear and implementation would materially change code, config, or workflow.
+9. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
 10. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved.
-11. Hand off to `verify-result` after the fix is validated.
+11. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
 
 ## Guardrails
 
@@ -40,7 +40,7 @@ Find and verify the root cause of broken behavior.
 - do not broaden scope before checking the smallest relevant failing area
 - do not stack multiple speculative fixes at once
 - respect diagnosis-first requests and stop after identification when the user does not want the fix yet
-- do not claim a fix before the failure has been re-checked
+- do not claim a fix before the failure has been rechecked
 
 ## Supporting Files
 
@@ -54,10 +54,10 @@ Find and verify the root cause of broken behavior.
 - root-cause finding, best-supported hypothesis, or ranked leading hypotheses
 - approval status or diagnosis-only status
 - next check or reason for handoff
-- next-skill handoff
+- next-skill handoff or stop state
 
 ## Handoff Rules
 
 - `debug` -> `implement`
 - `debug` -> `plan`
-- `debug` -> `verify-result`
+- `debug` -> stop

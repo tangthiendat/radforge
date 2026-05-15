@@ -16,6 +16,7 @@ if ([string]::IsNullOrWhiteSpace($HomeRoot)) {
 
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
+$RuntimeRulesFile = Join-Path $StateRoot "AGENTS.md"
 $MarkerStart = "<!-- RADFORGE:BEGIN -->"
 $MarkerEnd = "<!-- RADFORGE:END -->"
 
@@ -107,17 +108,23 @@ function Get-InstalledProviderStates {
 }
 
 function Remove-EmptyStateDirectories {
-    if ((Test-Path -LiteralPath $ProviderStateRoot) -and -not $DryRun) {
-        $remaining = Get-ChildItem -LiteralPath $ProviderStateRoot -Force
-        if ($remaining.Count -eq 0) {
-            Remove-Item -LiteralPath $ProviderStateRoot -Force
+    $hasProviderStates = (Test-Path -LiteralPath $ProviderStateRoot) -and ((Get-ChildItem -LiteralPath $ProviderStateRoot -Filter "*.state" -File).Count -gt 0)
+
+    if (-not $hasProviderStates) {
+        Remove-PathIfExists $RuntimeRulesFile
+
+        if (Test-Path -LiteralPath $ProviderStateRoot) {
+            $remaining = Get-ChildItem -LiteralPath $ProviderStateRoot -Force
+            if ($remaining.Count -eq 0) {
+                Remove-PathIfExists $ProviderStateRoot
+            }
         }
     }
 
-    if ((Test-Path -LiteralPath $StateRoot) -and -not $DryRun) {
+    if (Test-Path -LiteralPath $StateRoot) {
         $remainingState = Get-ChildItem -LiteralPath $StateRoot -Force
         if ($remainingState.Count -eq 0) {
-            Remove-Item -LiteralPath $StateRoot -Force
+            Remove-PathIfExists $StateRoot
         }
     }
 }

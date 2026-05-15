@@ -33,6 +33,7 @@ fi
 
 STATE_ROOT="$HOME_ROOT/.radforge"
 PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
+RUNTIME_RULES_FILE="$STATE_ROOT/AGENTS.md"
 MARKER_START='<!-- RADFORGE:BEGIN -->'
 MARKER_END='<!-- RADFORGE:END -->'
 
@@ -98,8 +99,21 @@ installed_provider_display_names() {
 }
 
 remove_empty_state_dirs() {
-    if [ -d "$PROVIDER_STATE_ROOT" ] && [ "$DRY_RUN" -eq 0 ]; then
-        rmdir "$PROVIDER_STATE_ROOT" 2>/dev/null || true
+    has_provider_states=0
+    if [ -d "$PROVIDER_STATE_ROOT" ]; then
+        for state_path in "$PROVIDER_STATE_ROOT"/*.state; do
+            [ -f "$state_path" ] || continue
+            has_provider_states=1
+            break
+        done
+    fi
+
+    if [ "$has_provider_states" -eq 0 ]; then
+        remove_path_if_exists "$RUNTIME_RULES_FILE"
+
+        if [ -d "$PROVIDER_STATE_ROOT" ] && [ "$DRY_RUN" -eq 0 ]; then
+            rmdir "$PROVIDER_STATE_ROOT" 2>/dev/null || true
+        fi
     fi
 
     if [ -d "$STATE_ROOT" ] && [ "$DRY_RUN" -eq 0 ]; then

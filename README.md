@@ -104,8 +104,9 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/
 
 ## How It Works
 
-Radforge installs two main things into your AI tool setup:
+Radforge installs three main things into your AI tool setup:
 
+- a shared Radforge runtime rules file at `~/.radforge/AGENTS.md`
 - a Radforge-managed instructions block in the provider's user-level instructions file
 - a shared skill library in the provider's user-level skills directory
 
@@ -114,9 +115,10 @@ The normal flow is:
 1. install Radforge for one or more supported providers
 2. start a task in your coding tool
 3. the provider reads the installed instructions and skills
-4. for non-trivial work, the agent should check whether Radforge applies before proceeding
-5. if it applies, the agent invokes `use-radforge`
-6. `use-radforge` routes into the right workflow skill for the task
+4. the installed provider hint points to the shared runtime rules in `~/.radforge/AGENTS.md`
+5. for non-trivial work, the agent should check whether Radforge applies before proceeding
+6. if it applies, the agent invokes `use-radforge`
+7. `use-radforge` routes into the right workflow skill for the task
 
 The current instruction layer is modeled after the Superpowers approach: the installed instructions tell the agent to check for Radforge usage before acting on ambiguous, multi-step, failing, regression, design-heavy, or tradeoff-heavy tasks.
 
@@ -132,17 +134,21 @@ Repository-local instructions still take priority over user-level Radforge defau
 - `plan`: breaks multi-step work into an execution plan
 - `implement`: carries out clear implementation tasks
 - `test`: validates changes with meaningful checks
-- `verify-result`: confirms what changed and what was verified
 - `debug`: reproduces and isolates failures before fixing them
 
 ### Bootstrap Skill
 
 - `use-radforge`: the entry skill that decides whether Radforge should take over and routes into the single right workflow skill
 
+### Global Closeout Rule
+
+- non-trivial work closes with the shared `~/.radforge/AGENTS.md` closeout contract
+
 ## What Gets Installed
 
 For each selected provider, the installer:
 
+- writes the shared Radforge runtime rules file to `~/.radforge/AGENTS.md`
 - copies every skill from `skills/` into the provider's user-level skills directory
 - writes a Radforge-managed instruction block into the provider's user-level instructions file
 - installs `use-radforge` alongside the core workflow skills
@@ -152,6 +158,7 @@ The installer is additive and conservative:
 
 - it updates only the Radforge-managed block inside the instructions file
 - it removes only Radforge-owned installed skill directories during uninstall
+- it removes the shared runtime rules file only when no installed provider state remains
 - it does not replace repository-local instructions
 
 ## Updating Radforge

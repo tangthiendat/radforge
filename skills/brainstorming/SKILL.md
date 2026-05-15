@@ -11,39 +11,42 @@ Clarify unclear work before execution starts.
 
 ## When To Use
 
-- the request is ambiguous or incomplete
+- the request is ambiguous, incomplete, or internally conflicting
 - multiple approaches look reasonable
-- success criteria or constraints are still unclear
+- success criteria, constraints, or sequencing are still unclear
 - the user wants design help before edits
 
 ## When Not To Use
 
 - the task is already clear and small enough to execute directly
-- the main problem is a bug that needs reproduction and root-cause work first
+- the main issue is a failure that needs reproduction and root-cause work first
 - the user explicitly wants implementation-only and the reduced process is safe
 
 ## Process
 
-1. Read the related `docs/` folder first, or the closest equivalent guidance folder if `docs/` is not the right source.
-2. Inspect the rest of the relevant repository context.
+1. Read the related `docs/` material and repository guidance first.
+2. Inspect the relevant repository context before proposing changes.
 3. Ask one clarifying question at a time when needed.
-4. Summarize the goal, constraints, and success criteria.
-5. Propose 2-3 approaches with tradeoffs when there is a real choice.
-6. Recommend one path.
-7. Pause for approval if the work includes meaningful design or tradeoff decisions.
-8. Hand off to `plan` only if the work is multi-step or risky; for small direct tasks, hand off to `implement` once the direction is clear.
+4. Summarize the goal, constraints, success criteria, and scope boundary.
+5. If there is a real decision to make, propose 2-3 approaches with tradeoffs.
+6. Recommend one direction and explain why it is the best fit.
+7. If the work is too large for one coherent effort, decompose it before discussing implementation.
+8. Pause for approval when the work includes meaningful design or tradeoff decisions.
+9. Hand off to `plan` only when the approved direction is substantial, risky, or dependency-heavy.
+10. Hand off to `implement` when the direction is clear and the remaining work is direct.
 
 ## Guardrails
 
 - do not start implementation while the direction is still unclear
 - keep the process lightweight when the design surface is small
+- do not smuggle planning detail into brainstorming when the user has not approved the direction yet
 - do not hand off to `plan` for small direct tasks once the direction is clear
 - respect design-only requests and stop after alignment when asked
 - do not skip relevant repository guidance when `docs/`, specs, plans, or similar folders already describe the area
 
 ## Supporting Files
 
-- read `references/patterns.md` when you need question patterns, approach-comparison structure, or approval-gate wording
+- read `references/patterns.md` when you need question patterns, approach comparison structure, or approval-gate wording
 
 ## Output Contract
 
