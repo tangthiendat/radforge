@@ -16,7 +16,6 @@ if ([string]::IsNullOrWhiteSpace($HomeRoot)) {
 
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
-$RuntimeRulesFile = Join-Path $StateRoot "AGENTS.md"
 $MarkerStart = "<!-- RADFORGE:BEGIN -->"
 $MarkerEnd = "<!-- RADFORGE:END -->"
 
@@ -111,8 +110,6 @@ function Remove-EmptyStateDirectories {
     $hasProviderStates = (Test-Path -LiteralPath $ProviderStateRoot) -and ((Get-ChildItem -LiteralPath $ProviderStateRoot -Filter "*.state" -File).Count -gt 0)
 
     if (-not $hasProviderStates) {
-        Remove-PathIfExists $RuntimeRulesFile
-
         if (Test-Path -LiteralPath $ProviderStateRoot) {
             $remaining = Get-ChildItem -LiteralPath $ProviderStateRoot -Force
             if ($remaining.Count -eq 0) {
