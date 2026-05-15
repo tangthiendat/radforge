@@ -20,6 +20,8 @@ $ProvidersRoot = if ($RepoRoot) { Join-Path $RepoRoot "providers" } else { $null
 $SkillsSourceRoot = if ($RepoRoot) { Join-Path $RepoRoot "skills" } else { $null }
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
+$RuntimeRulesSourcePath = if ($RepoRoot) { Join-Path $RepoRoot "runtime\AGENTS.md" } else { $null }
+$RuntimeRulesTargetPath = Join-Path $StateRoot "AGENTS.md"
 $MarkerStart = "<!-- RADFORGE:BEGIN -->"
 $MarkerEnd = "<!-- RADFORGE:END -->"
 $EntrySkillName = "use-radforge"
@@ -215,6 +217,14 @@ function Render-Template {
     $content.TrimEnd()
 }
 
+function Get-RuntimeRulesContent {
+    if (-not $RuntimeRulesSourcePath -or -not (Test-Path -LiteralPath $RuntimeRulesSourcePath)) {
+        throw "Unable to resolve shared runtime rules file."
+    }
+
+    Get-Content -LiteralPath $RuntimeRulesSourcePath -Raw
+}
+
 function Set-ManagedBlock {
     param(
         [string]$FilePath,
@@ -252,6 +262,11 @@ function Copy-SkillLibrary {
 
     $installedPaths = New-Object System.Collections.Generic.List[string]
     foreach ($skillDir in Get-ChildItem -LiteralPath $SkillsSourceRoot -Directory) {
+        $skillFile = Join-Path $skillDir.FullName "SKILL.md"
+        if (-not (Test-Path -LiteralPath $skillFile)) {
+            continue
+        }
+
         $destination = Join-Path $DestinationRoot $skillDir.Name
         if (Test-Path -LiteralPath $destination) {
             Remove-PathIfExists $destination
@@ -297,6 +312,9 @@ if ($Provider -contains "all") {
     $detectedProviderNames = Get-ProviderDisplayNames $selectedProviders
     Write-Log "Detected providers: $($detectedProviderNames -join ', ')"
 }
+
+$runtimeRulesContent = Get-RuntimeRulesContent
+Write-TextFile -Path $RuntimeRulesTargetPath -Content ($runtimeRulesContent.TrimEnd() + [Environment]::NewLine)
 
 foreach ($providerId in $selectedProviders) {
     $manifest = Load-ProviderManifest $providerId

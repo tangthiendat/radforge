@@ -65,4 +65,4 @@ Hand off when one of these is true:
 - the root cause is clear and implementation is approved
 - the root cause is clear and the work should stop at diagnosis for now
 - the issue needs a broader execution plan
-- validation after the fix is complete and the work can move to `verify-result`
+- validation after the fix is complete and the work can close under the shared `~/.radforge/AGENTS.md` closeout rule

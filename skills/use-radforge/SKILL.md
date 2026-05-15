@@ -9,17 +9,14 @@ description: Use when Radforge is installed and the current task may need struct
 
 Act as the default Radforge entrypoint for non-trivial work.
 
-When this skill is invoked, it should quickly decide whether Radforge should take over the task and which single primary workflow skill should be used next.
-
-This skill should be treated as a pre-task router, not as an optional explainer that sits beside the workflow.
+This skill should make a fast routing decision, choose one primary next skill, and get out of the way.
 
 ## When To Use
 
-- Radforge is installed and the user wants structured workflow help.
+- Radforge is installed and the task may need structured workflow help
 - a global instruction hint points to this skill
-- the current task needs a quick decision about which Radforge skill should take over
 - the current task is ambiguous, multi-step, failing, regressing, design-heavy, or tradeoff-heavy
-- the agent has not yet chosen a more specific Radforge skill for the task
+- the agent has not yet chosen a more specific workflow skill
 
 ## When Not To Use
 
@@ -30,27 +27,27 @@ This skill should be treated as a pre-task router, not as an optional explainer 
 
 ## Process
 
-1. Read repo-local instructions and nearby docs first.
-2. Decide whether the task is trivial enough to handle directly or whether Radforge should take over.
-3. Explain Radforge in one short pass only if the user appears unfamiliar with it.
-4. If Radforge should not be used, say so briefly and stop.
-5. Route unclear or tradeoff-heavy work to `brainstorming`.
-6. Route multi-step or dependency-heavy work to `plan`.
-7. Route clear direct execution to `implement`.
-8. Route failures or regressions to `debug`.
-9. Let `test` and `verify-result` happen later as part of execution and closeout.
+1. Read repo-local instructions and nearby guidance first.
+2. If repository-local workflow does not fully override Radforge, use the shared runtime rules in `~/.radforge/AGENTS.md` as the Radforge contract.
+3. Decide whether the task is trivial enough to handle directly or whether Radforge should take over.
+4. Explain Radforge in one short pass only if the user appears unfamiliar with it.
+5. If Radforge should not be used, say so briefly and stop.
+6. Apply the routing precedence exactly once.
+7. Hand off to one primary next skill and stop.
 
-## Decision Rules
+## Routing Precedence
 
-- ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-- broad execution with several dependent steps -> `plan`
-- clear, direct execution with low ambiguity -> `implement`
-- broken behavior, test failures, regressions, or unexpected output -> `debug`
-- tiny, obvious work may skip Radforge after acknowledging that choice
+Apply the first matching rule:
+
+1. active failure, regression, or unexplained broken behavior -> `debug`
+2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
+3. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+4. clear, direct execution with low ambiguity -> `implement`
+5. tiny obvious work may skip Radforge after acknowledging that choice
 
 ## Activation Rule
 
-- before proceeding with non-trivial work, invoke this skill first unless a more specific repository-local workflow already applies
+- before proceeding with non-trivial work, invoke this skill first unless a stronger repository-local workflow already applies
 - once invoked, choose exactly one primary next skill or explicitly decline Radforge for the task
 - do not linger in this skill after the routing decision is made
 
@@ -65,16 +62,16 @@ This skill should be treated as a pre-task router, not as an optional explainer 
 
 ## Output Contract
 
-- one-pass explanation of Radforge when needed
 - whether Radforge is appropriate for the current task
-- the single recommended next skill
+- one-pass explanation only if needed
+- the single selected next skill or explicit decision to skip Radforge
 - any repo-local rule that overrides the personal default
-- immediate handoff intent instead of prolonged analysis inside this skill
+- immediate handoff intent
 
 ## Handoff Rules
 
+- `use-radforge` -> `debug`
 - `use-radforge` -> `brainstorming`
 - `use-radforge` -> `plan`
 - `use-radforge` -> `implement`
-- `use-radforge` -> `debug`
 - `use-radforge` -> stop

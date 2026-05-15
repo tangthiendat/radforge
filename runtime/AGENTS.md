@@ -1,29 +1,8 @@
-# Personal Skills Framework
+# Radforge Runtime Rules
 
-## Scope
+This file defines the shared Radforge runtime contract installed for this user.
 
-This `AGENTS.md` is the project-specific authority for this repository.
-
-Shared global guidance lives in `global/AGENTS.md`.
-Do not modify `global/AGENTS.md` unless the user explicitly asks.
-
-## Repository Layout
-
-- `skills/<skill>/SKILL.md`: main entry file for each project skill
-- `skills/<skill>/references/`: optional supporting material for deeper guidance
-- `docs/specs/`: approved design and framework specs
-- `docs/plans/`: written implementation plans for substantial work
-- `global/AGENTS.md`: shared global instructions, not this project's change target unless explicitly requested
-
-## Framework Model
-
-This framework has two layers:
-
-- `AGENTS.md` defines shared routing rules, approval gates, evidence rules, artifact rules, and closeout requirements.
-- skills define reusable procedures for one coherent work mode.
-
-Rules decide `when`.
-Skills decide `how`.
+Repository-local instructions such as `AGENTS.md`, `CLAUDE.md`, or equivalent take priority over these shared Radforge rules.
 
 ## Active Skill Rule
 
@@ -49,7 +28,7 @@ Bootstrap skill:
 
 ## Default Routing Rules
 
-Apply this framework by default to non-trivial work.
+Apply Radforge by default to non-trivial work.
 
 Trivial one-step requests may skip the framework when doing so is clearly lower friction and still safe.
 
@@ -150,24 +129,3 @@ This closeout rule is global and is not a separate workflow skill.
 - explicit user direction may shorten the default path when doing so is safe
 - when the workflow is shortened, state what is being skipped and any resulting risk
 - when the workflow is expanded, explain why the added phase is needed
-
-## Skill Authoring Rules
-
-- keep this project `AGENTS.md` concise and authoritative
-- keep each `SKILL.md` focused on one coherent procedure
-- keep shared policy in `AGENTS.md` rather than repeating it in every skill
-- use progressive disclosure: move optional depth into `references/` files
-- add scripts only when they improve determinism or safety
-- refine skills from real repeated workflows and observed failures
-
-## Source Selection Policy
-
-When improving this framework, prefer:
-
-- official documentation from reputable providers
-- open standards and specifications
-- strong public repositories and engineering writeups
-- public practitioner feedback with real usage evidence
-
-Use repeated patterns and concrete examples as stronger signals than promotional claims.
-Community feedback may refine the framework, but it does not override safety.

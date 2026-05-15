@@ -36,6 +36,8 @@ PROVIDERS_ROOT="$REPO_ROOT/providers"
 SKILLS_SOURCE_ROOT="$REPO_ROOT/skills"
 STATE_ROOT="$HOME_ROOT/.radforge"
 PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
+RUNTIME_RULES_SOURCE="$REPO_ROOT/runtime/AGENTS.md"
+RUNTIME_RULES_TARGET="$STATE_ROOT/AGENTS.md"
 MARKER_START='<!-- RADFORGE:BEGIN -->'
 MARKER_END='<!-- RADFORGE:END -->'
 ENTRY_SKILL_NAME='use-radforge'
@@ -203,6 +205,15 @@ render_template() {
         -e "s/{{ENTRY_SKILL}}/$ENTRY_SKILL_NAME/g"
 }
 
+runtime_rules_content() {
+    if [ ! -f "$RUNTIME_RULES_SOURCE" ]; then
+        printf 'Unable to resolve shared runtime rules file.\n' >&2
+        exit 1
+    fi
+
+    cat "$RUNTIME_RULES_SOURCE"
+}
+
 copy_skill_library() {
     destination_root=$1
     ensure_dir "$destination_root"
@@ -210,6 +221,7 @@ copy_skill_library() {
     installed_paths=""
     for skill_dir in "$SKILLS_SOURCE_ROOT"/*; do
         [ -d "$skill_dir" ] || continue
+        [ -f "$skill_dir/SKILL.md" ] || continue
         skill_name=$(basename "$skill_dir")
         destination="$destination_root/$skill_name"
         remove_path_if_exists "$destination"
@@ -326,6 +338,8 @@ if [ "$PROVIDER_ARG" = "all" ]; then
     # Log the provider set chosen by the default auto-selection path.
     log "Detected providers: $(provider_display_names $selected_providers)"
 fi
+
+runtime_rules_content | write_file "$RUNTIME_RULES_TARGET"
 
 for provider_id in $selected_providers; do
     manifest_path="$PROVIDERS_ROOT/$provider_id/manifest.json"
