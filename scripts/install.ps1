@@ -20,9 +20,6 @@ $ProvidersRoot = if ($RepoRoot) { Join-Path $RepoRoot "providers" } else { $null
 $SkillsSourceRoot = if ($RepoRoot) { Join-Path $RepoRoot "skills" } else { $null }
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
-$MarkerStart = "<!-- RADFORGE:BEGIN -->"
-$MarkerEnd = "<!-- RADFORGE:END -->"
-$EntrySkillName = "use-radforge"
 
 function Invoke-BootstrapInstall {
     $archiveUrl = if ($env:RADFORGE_ARCHIVE_URL) {
@@ -145,6 +142,70 @@ function Remove-PathIfExists {
     Remove-Item -LiteralPath $Path -Recurse -Force
 }
 
+function Read-ProviderState {
+    param([string]$StatePath)
+
+    $result = @{}
+    foreach ($line in (Get-Content -LiteralPath $StatePath)) {
+        if ([string]::IsNullOrWhiteSpace($line)) {
+            continue
+        }
+
+        $parts = $line -split "=", 2
+        if ($parts.Count -eq 2) {
+            $result[$parts[0]] = $parts[1]
+        }
+    }
+
+    $result
+}
+
+function Clear-LegacyManagedBlock {
+    param([string]$FilePath)
+
+    $existingContent = [string](Read-TextFile $FilePath)
+    if ([string]::IsNullOrEmpty($existingContent)) {
+        return ""
+    }
+
+    $pattern = [regex]::new("(?s)\r?\n?" + [regex]::Escape("<!-- RADFORGE:BEGIN -->") + ".*?" + [regex]::Escape("<!-- RADFORGE:END -->") + "\r?\n?")
+    $updatedContent = $pattern.Replace($existingContent, "", 1)
+    [regex]::Replace($updatedContent, "(\r?\n){3,}", [Environment]::NewLine + [Environment]::NewLine)
+}
+
+function Remove-LegacyHintFromState {
+    param([string]$StatePath)
+
+    if (-not (Test-Path -LiteralPath $StatePath)) {
+        return
+    }
+
+    $providerState = Read-ProviderState $StatePath
+    if (-not $providerState.ContainsKey("instructions_file")) {
+        return
+    }
+
+    $instructionsFile = [string]$providerState.instructions_file
+    if ([string]::IsNullOrWhiteSpace($instructionsFile) -or -not (Test-Path -LiteralPath $instructionsFile)) {
+        return
+    }
+
+    $updatedInstructions = Clear-LegacyManagedBlock $instructionsFile
+    $createdByInstaller = $providerState.ContainsKey("instructions_file_created") -and ([string]$providerState.instructions_file_created -eq "1")
+
+    if ([string]::IsNullOrWhiteSpace($updatedInstructions)) {
+        if ($createdByInstaller) {
+            Remove-PathIfExists $instructionsFile
+        }
+        else {
+            Write-TextFile -Path $instructionsFile -Content ""
+        }
+    }
+    else {
+        Write-TextFile -Path $instructionsFile -Content ($updatedInstructions.TrimEnd() + [Environment]::NewLine)
+    }
+}
+
 function Get-AvailableProviderIds {
     Get-ChildItem -LiteralPath $ProvidersRoot -Directory | Select-Object -ExpandProperty Name | Sort-Object
 }
@@ -189,63 +250,6 @@ function Get-ProviderDisplayNames {
     )
 }
 
-function Render-Template {
-    param([hashtable]$Manifest)
-
-    $content = $null
-
-    if ($Manifest.ContainsKey("hintTemplate") -and -not [string]::IsNullOrWhiteSpace([string]$Manifest.hintTemplate) -and $RepoRoot) {
-        $templatePath = Join-Path $RepoRoot $Manifest.hintTemplate
-        if (Test-Path -LiteralPath $templatePath) {
-            $content = Get-Content -LiteralPath $templatePath -Raw
-        }
-    }
-
-    if ([string]::IsNullOrWhiteSpace($content) -and $Manifest.ContainsKey("hintTemplateUrl") -and -not [string]::IsNullOrWhiteSpace([string]$Manifest.hintTemplateUrl)) {
-        $response = Invoke-WebRequest -Uri ([string]$Manifest.hintTemplateUrl)
-        $content = [string]$response.Content
-    }
-
-    if ([string]::IsNullOrWhiteSpace($content)) {
-        throw "Unable to resolve global hint template for provider '$($Manifest.provider)'."
-    }
-
-    $content = $content.Replace("{{PROVIDER_NAME}}", [string]$Manifest.displayName)
-    $content = $content.Replace("{{ENTRY_SKILL}}", $EntrySkillName)
-    $content.TrimEnd()
-}
-
-function Set-ManagedBlock {
-    param(
-        [string]$FilePath,
-        [string]$BlockContent
-    )
-
-    $existingContent = [string](Read-TextFile $FilePath)
-    $blockContentValue = [string]$BlockContent
-    $createdFile = -not (Test-Path -LiteralPath $FilePath)
-    $newline = [Environment]::NewLine
-    $managedBlock = ($MarkerStart, $blockContentValue.TrimEnd(), $MarkerEnd) -join $newline
-    $updatedContent = $null
-
-    if ($existingContent.Contains($MarkerStart) -and $existingContent.Contains($MarkerEnd)) {
-        $pattern = [regex]::new("(?s)" + [regex]::Escape($MarkerStart) + ".*?" + [regex]::Escape($MarkerEnd))
-        $updatedContent = $pattern.Replace($existingContent, $managedBlock, 1)
-    }
-    elseif ([string]::IsNullOrWhiteSpace($existingContent)) {
-        $updatedContent = $managedBlock + $newline
-    }
-    else {
-        $updatedContent = $existingContent.TrimEnd() + $newline + $newline + $managedBlock + $newline
-    }
-
-    Write-TextFile -Path $FilePath -Content $updatedContent
-
-    @{
-        InstructionsFileCreated = $createdFile
-    }
-}
-
 function Copy-SkillLibrary {
     param([string]$DestinationRoot)
 
@@ -283,8 +287,6 @@ function Write-ProviderState {
     $content = @(
         "provider=$($Metadata.provider)"
         "display_name=$($Metadata.display_name)"
-        "instructions_file=$($Metadata.instructions_file)"
-        "instructions_file_created=$($Metadata.instructions_file_created)"
         "skills_dir=$($Metadata.skills_dir)"
         "installed_skill_dirs=$([string]::Join('|', $Metadata.installed_skill_dirs))"
         "installed_at_utc=$($Metadata.installed_at_utc)"
@@ -305,18 +307,16 @@ if ($Provider -contains "all") {
 }
 
 foreach ($providerId in $selectedProviders) {
+    $providerStatePath = Join-Path $ProviderStateRoot ($providerId + ".state")
+    Remove-LegacyHintFromState $providerStatePath
+
     $manifest = Load-ProviderManifest $providerId
-    $instructionsFile = Join-HomeRelativePath $manifest.instructionsFile
     $skillsDir = Join-HomeRelativePath $manifest.skillsDir
-    $hintContent = Render-Template $manifest
-    $blockResult = Set-ManagedBlock -FilePath $instructionsFile -BlockContent $hintContent
     $installedSkillDirs = Copy-SkillLibrary -DestinationRoot $skillsDir
 
     Write-ProviderState -Metadata @{
         provider = $manifest.provider
         display_name = $manifest.displayName
-        instructions_file = $instructionsFile
-        instructions_file_created = if ($blockResult.InstructionsFileCreated) { 1 } else { 0 }
         skills_dir = $skillsDir
         installed_skill_dirs = @($installedSkillDirs)
         installed_at_utc = Get-UtcTimestamp

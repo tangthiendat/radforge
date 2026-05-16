@@ -14,7 +14,7 @@ This skill should make a fast routing decision, choose one primary next skill, a
 ## When To Use
 
 - Radforge is installed and the task may need structured workflow help
-- a global instruction hint points to this skill
+- the user invoked this skill directly or the provider surfaced it through installed skill discovery
 - the current task is ambiguous, multi-step, failing, regressing, design-heavy, or tradeoff-heavy
 - the agent has not yet chosen a more specific workflow skill
 

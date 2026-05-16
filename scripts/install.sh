@@ -36,9 +36,6 @@ PROVIDERS_ROOT="$REPO_ROOT/providers"
 SKILLS_SOURCE_ROOT="$REPO_ROOT/skills"
 STATE_ROOT="$HOME_ROOT/.radforge"
 PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
-MARKER_START='<!-- RADFORGE:BEGIN -->'
-MARKER_END='<!-- RADFORGE:END -->'
-ENTRY_SKILL_NAME='use-radforge'
 
 bootstrap_install() {
     archive_url="${RADFORGE_ARCHIVE_URL:-https://github.com/tangthiendat/radforge/archive/refs/heads/main.tar.gz}"
@@ -155,26 +152,6 @@ manifest_value() {
     sed -n "s/^[[:space:]]*\"$key\":[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$file" | head -n 1
 }
 
-read_template_content() {
-    manifest_path=$1
-    template_relative=$(manifest_value hintTemplate "$manifest_path")
-    template_url=$(manifest_value hintTemplateUrl "$manifest_path")
-
-    if [ -n "$template_relative" ] && [ -f "$REPO_ROOT/$template_relative" ]; then
-        cat "$REPO_ROOT/$template_relative"
-        return
-    fi
-
-    if [ -n "$template_url" ]; then
-        curl -fsSL "$template_url"
-        return
-    fi
-
-    provider_id=$(manifest_value provider "$manifest_path")
-    printf 'Unable to resolve global hint template for provider: %s\n' "$provider_id" >&2
-    exit 1
-}
-
 provider_display_names() {
     first=1
     for provider_id in "$@"; do
@@ -195,12 +172,43 @@ join_home_relative_path() {
     printf '%s/%s\n' "$HOME_ROOT" "$relative" | sed 's#//*#/#g'
 }
 
-render_template() {
-    manifest_path=$1
-    provider_name=$2
-    read_template_content "$manifest_path" | sed \
-        -e "s/{{PROVIDER_NAME}}/$provider_name/g" \
-        -e "s/{{ENTRY_SKILL}}/$ENTRY_SKILL_NAME/g"
+state_value() {
+    key=$1
+    file=$2
+    sed -n "s/^$key=//p" "$file" | head -n 1
+}
+
+strip_legacy_managed_block() {
+    file_path=$1
+    tmp=$(mktemp)
+    awk '
+        BEGIN { inside = 0 }
+        $0 == "<!-- RADFORGE:BEGIN -->" { inside = 1; next }
+        $0 == "<!-- RADFORGE:END -->" { inside = 0; next }
+        !inside { print }
+    ' "$file_path" > "$tmp"
+
+    printf '%s\n' "$tmp"
+}
+
+remove_legacy_hint_from_state() {
+    state_path=$1
+    [ -f "$state_path" ] || return
+
+    instructions_file=$(state_value instructions_file "$state_path")
+    [ -n "$instructions_file" ] || return
+    [ -f "$instructions_file" ] || return
+
+    instructions_file_created=$(state_value instructions_file_created "$state_path")
+    stripped_file=$(strip_legacy_managed_block "$instructions_file")
+
+    if [ ! -s "$stripped_file" ] && [ "$instructions_file_created" = "1" ]; then
+        remove_path_if_exists "$instructions_file"
+    else
+        cat "$stripped_file" | write_file "$instructions_file"
+    fi
+
+    rm -f "$stripped_file"
 }
 
 copy_skill_library() {
@@ -231,66 +239,17 @@ copy_skill_library() {
     printf '%s\n' "$installed_paths"
 }
 
-upsert_managed_block() {
-    file_path=$1
-    block_file=$2
-    LAST_CREATED_FILE=0
-    [ -f "$file_path" ] || LAST_CREATED_FILE=1
-    tmp=$(mktemp)
-
-    if [ -f "$file_path" ] && grep -F "$MARKER_START" "$file_path" >/dev/null 2>&1; then
-        awk -v start="$MARKER_START" -v end="$MARKER_END" -v block_file="$block_file" '
-            BEGIN { inside = 0; replaced = 0 }
-            $0 == start {
-                if (!replaced) {
-                    while ((getline line < block_file) > 0) {
-                        print line
-                    }
-                    close(block_file)
-                    replaced = 1
-                }
-                inside = 1
-                next
-            }
-            $0 == end {
-                inside = 0
-                next
-            }
-            !inside { print }
-        ' "$file_path" > "$tmp"
-    else
-        if [ -f "$file_path" ] && [ -s "$file_path" ]; then
-            cat "$file_path" > "$tmp"
-            printf '\n\n' >> "$tmp"
-        fi
-        cat "$block_file" >> "$tmp"
-        printf '\n' >> "$tmp"
-    fi
-
-    if [ "$DRY_RUN" -eq 1 ]; then
-        log "Would write file '$file_path'."
-        rm -f "$tmp"
-    else
-        ensure_dir "$(dirname "$file_path")"
-        mv "$tmp" "$file_path"
-    fi
-}
-
 write_provider_state() {
     provider_id=$1
     display_name=$2
-    instructions_file=$3
-    instructions_file_created=$4
-    skills_dir=$5
-    installed_skill_dirs=$6
-    installed_at_utc=$7
+    skills_dir=$3
+    installed_skill_dirs=$4
+    installed_at_utc=$5
     state_path="$PROVIDER_STATE_ROOT/$provider_id.state"
 
     {
         printf 'provider=%s\n' "$provider_id"
         printf 'display_name=%s\n' "$display_name"
-        printf 'instructions_file=%s\n' "$instructions_file"
-        printf 'instructions_file_created=%s\n' "$instructions_file_created"
         printf 'skills_dir=%s\n' "$skills_dir"
         printf 'installed_skill_dirs=%s\n' "$installed_skill_dirs"
         printf 'installed_at_utc=%s\n' "$installed_at_utc"
@@ -330,31 +289,17 @@ fi
 
 for provider_id in $selected_providers; do
     manifest_path="$PROVIDERS_ROOT/$provider_id/manifest.json"
+    state_path="$PROVIDER_STATE_ROOT/$provider_id.state"
     display_name=$(manifest_value displayName "$manifest_path")
-    instructions_relative=$(manifest_value instructionsFile "$manifest_path")
     skills_relative=$(manifest_value skillsDir "$manifest_path")
-    instructions_file=$(join_home_relative_path "$instructions_relative")
     skills_dir=$(join_home_relative_path "$skills_relative")
-    rendered_template=$(mktemp)
-    block_file=$(mktemp)
-
-    render_template "$manifest_path" "$display_name" > "$rendered_template"
-    {
-        printf '%s\n' "$MARKER_START"
-        cat "$rendered_template"
-        printf '\n%s\n' "$MARKER_END"
-    } > "$block_file"
-
-    upsert_managed_block "$instructions_file" "$block_file"
-    instructions_file_created=$LAST_CREATED_FILE
+    remove_legacy_hint_from_state "$state_path"
     installed_skill_dirs=$(copy_skill_library "$skills_dir")
     installed_at_utc=$(utc_now)
 
     write_provider_state \
         "$provider_id" \
         "$display_name" \
-        "$instructions_file" \
-        "$instructions_file_created" \
         "$skills_dir" \
         "$installed_skill_dirs" \
         "$installed_at_utc"

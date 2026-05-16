@@ -2,7 +2,7 @@
 
 Radforge is a reusable workflow and skills package for coding agents.
 
-It installs a reusable skill library plus provider-level instructions so the agent knows when to route non-trivial work into a more structured workflow.
+It installs a reusable skill library so the agent can use Radforge workflow skills when they are available or when you ask for them explicitly.
 
 ## Quickstart
 
@@ -132,19 +132,17 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/
 
 ## How It Works
 
-Radforge installs two main things into your AI tool setup:
+Radforge installs one main thing into your AI tool setup:
 
-- a Radforge-managed instructions block in the provider's user-level instructions file
 - a shared skill library in the provider's user-level skills directory
 
 The normal flow is:
 
 1. install Radforge for one or more supported providers
 2. start a task in your coding tool
-3. the provider reads the installed instructions and skills
-4. for non-trivial work, the installed provider hint tells the agent to check whether Radforge applies before proceeding
-5. if it applies, the agent invokes `use-radforge`
-6. `use-radforge` routes into the right workflow skill for the task
+3. if the provider exposes installed skills, the agent can discover `use-radforge`
+4. if it does not route automatically, ask the agent to use `use-radforge`
+5. `use-radforge` routes into the right workflow skill for the task
 
 Small, clear, low-risk tasks can still run directly without forcing the full workflow.
 
@@ -164,30 +162,31 @@ Repository-local instructions still take priority over user-level Radforge defau
 
 - `use-radforge`: the entry skill that decides whether Radforge should take over and routes into the single right workflow skill
 
-### Global Closeout Rule
+### Workflow Closeout
 
-- non-trivial work closes under the installed provider guidance unless repository-local instructions define a stronger closeout rule
+- once Radforge workflow is in use, non-trivial work should report what changed, what was validated, what was skipped, and any remaining risk
 
 ## What Gets Installed
 
 For each selected provider, the installer:
 
 - copies every skill from `skills/` into the provider's user-level skills directory
-- writes a Radforge-managed instruction block into the provider's user-level instructions file
 - installs `use-radforge` alongside the core workflow skills
 - records uninstall metadata in `~/.radforge/providers/<provider>.state`
 
 The installer is additive and conservative:
 
-- it updates only the Radforge-managed block inside the instructions file
 - it removes only Radforge-owned installed skill directories during uninstall
+- it can clean up legacy provider hint blocks from older installs when you reinstall
 - it does not replace repository-local instructions
 
 ## Updating Radforge
 
-Rerun install to refresh the installed instructions block and skill copies.
+Rerun install to refresh the installed skill copies.
 
 If you installed with an explicit provider value, especially for a desktop app or IDE extension that shares a provider path, rerun install with the same explicit provider value.
+
+If you are updating from an older version that used provider-global hints, rerun install once to remove the legacy hint blocks.
 
 ### Windows PowerShell
 
@@ -207,4 +206,4 @@ If you want to preview an update first, use the dry-run commands from the instal
 
 - when no provider is specified, the installer selects all supported providers in this repository and logs the detected provider names
 - uninstall uses the stored provider state files in `~/.radforge/providers/` to remove only Radforge-managed assets
-- actual skill auto-invocation still depends on the provider surfacing user instructions and installed skills to the model for that session
+- actual skill auto-invocation still depends on the provider surfacing installed skills to the model for that session
