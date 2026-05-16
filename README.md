@@ -18,6 +18,14 @@ Current installer support is for the CLI/provider user-level setup. Desktop apps
 
 ## Install
 
+Choose the path that matches how you use the provider.
+
+### CLI Users
+
+Use the default install if you want Radforge available for the normal CLI/provider setup.
+
+#### Install all supported providers
+
 ### Windows PowerShell
 
 ```powershell
@@ -30,15 +38,15 @@ irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/instal
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash
 ```
 
-## Optional Install Flags
+The default install targets all supported providers.
 
-Available provider values for `-Provider` and `--provider`:
+#### Install specific providers
+
+Available provider values:
 
 - `claude-code`
 - `codex`
 - `opencode`
-
-Install only specific providers:
 
 ### Windows PowerShell
 
@@ -52,7 +60,25 @@ Install only specific providers:
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
 ```
 
-Preview changes without writing to disk:
+### Desktop App Or IDE Extension Users
+
+If your desktop app or IDE extension uses the same provider skill system, install with an explicit provider value such as `codex`, `claude-code`, or `opencode`.
+
+If the expected provider folders do not exist yet, the installer creates them.
+
+#### Windows PowerShell
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex
+```
+
+#### macOS Or Linux
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex
+```
+
+### Preview Changes Without Writing To Disk
 
 ### Windows PowerShell
 
@@ -68,6 +94,10 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/
 
 ## Uninstall
 
+If you installed for a desktop app or IDE extension through a shared provider path, uninstall with the same explicit provider value you used during install.
+
+### Uninstall all installed providers
+
 ### Windows PowerShell
 
 ```powershell
@@ -80,15 +110,13 @@ irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninst
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.sh | bash
 ```
 
-### Optional Uninstall Flags
+### Uninstall specific providers
 
-Available provider values for `-Provider` and `--provider`:
+Use the same provider values as install:
 
 - `claude-code`
 - `codex`
 - `opencode`
-
-Uninstall only specific providers:
 
 ### Windows PowerShell
 
@@ -117,8 +145,6 @@ The normal flow is:
 4. for non-trivial work, the installed provider hint tells the agent to check whether Radforge applies before proceeding
 5. if it applies, the agent invokes `use-radforge`
 6. `use-radforge` routes into the right workflow skill for the task
-
-The current instruction layer is modeled after the Superpowers approach: the installed instructions tell the agent to check for Radforge usage before acting on ambiguous, multi-step, failing, regression, design-heavy, or tradeoff-heavy tasks.
 
 Small, clear, low-risk tasks can still run directly without forcing the full workflow.
 
@@ -159,9 +185,9 @@ The installer is additive and conservative:
 
 ## Updating Radforge
 
-If you change the Radforge templates or skill files in this repository, rerun the install script to refresh the installed instructions block and skill copies.
+Rerun install to refresh the installed instructions block and skill copies.
 
-Examples:
+If you installed with an explicit provider value, especially for a desktop app or IDE extension that shares a provider path, rerun install with the same explicit provider value.
 
 ### Windows PowerShell
 
@@ -175,7 +201,7 @@ irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/instal
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash
 ```
 
-If you only want to preview what would happen, use dry-run mode.
+If you want to preview an update first, use the dry-run commands from the install section.
 
 ## Notes
 
