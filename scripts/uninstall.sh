@@ -33,8 +33,6 @@ fi
 
 STATE_ROOT="$HOME_ROOT/.radforge"
 PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
-MARKER_START='<!-- RADFORGE:BEGIN -->'
-MARKER_END='<!-- RADFORGE:END -->'
 
 log() {
     if [ "$DRY_RUN" -eq 1 ]; then
@@ -118,13 +116,13 @@ remove_empty_state_dirs() {
     fi
 }
 
-strip_managed_block() {
+strip_legacy_managed_block() {
     file_path=$1
     tmp=$(mktemp)
-    awk -v start="$MARKER_START" -v end="$MARKER_END" '
+    awk '
         BEGIN { inside = 0 }
-        $0 == start { inside = 1; next }
-        $0 == end { inside = 0; next }
+        $0 == "<!-- RADFORGE:BEGIN -->" { inside = 1; next }
+        $0 == "<!-- RADFORGE:END -->" { inside = 0; next }
         !inside { print }
     ' "$file_path" > "$tmp"
 
@@ -171,8 +169,8 @@ for provider_id in $selected_providers; do
     instructions_file_created=$(state_value instructions_file_created "$state_path")
     installed_skill_dirs=$(state_value installed_skill_dirs "$state_path")
 
-    if [ -f "$instructions_file" ]; then
-        stripped_file=$(strip_managed_block "$instructions_file")
+    if [ -n "$instructions_file" ] && [ -f "$instructions_file" ]; then
+        stripped_file=$(strip_legacy_managed_block "$instructions_file")
         if [ ! -s "$stripped_file" ] && [ "$instructions_file_created" = "1" ]; then
             remove_path_if_exists "$instructions_file"
         else

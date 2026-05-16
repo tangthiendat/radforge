@@ -169,19 +169,21 @@ foreach ($providerId in $selectedProviders) {
     }
 
     $providerState = Read-ProviderState $providerStatePath
-    $updatedInstructions = Clear-ManagedBlock $providerState.instructions_file
-    $createdByInstaller = [bool][int]$providerState.instructions_file_created
+    if ($providerState.ContainsKey("instructions_file") -and -not [string]::IsNullOrWhiteSpace([string]$providerState.instructions_file)) {
+        $updatedInstructions = Clear-ManagedBlock $providerState.instructions_file
+        $createdByInstaller = $providerState.ContainsKey("instructions_file_created") -and ([string]$providerState.instructions_file_created -eq "1")
 
-    if ([string]::IsNullOrWhiteSpace($updatedInstructions)) {
-        if ($createdByInstaller) {
-            Remove-PathIfExists $providerState.instructions_file
+        if ([string]::IsNullOrWhiteSpace($updatedInstructions)) {
+            if ($createdByInstaller) {
+                Remove-PathIfExists $providerState.instructions_file
+            }
+            elseif (Test-Path -LiteralPath $providerState.instructions_file) {
+                Write-TextFile -Path $providerState.instructions_file -Content ""
+            }
         }
         elseif (Test-Path -LiteralPath $providerState.instructions_file) {
-            Write-TextFile -Path $providerState.instructions_file -Content ""
+            Write-TextFile -Path $providerState.instructions_file -Content ($updatedInstructions.TrimEnd() + [Environment]::NewLine)
         }
-    }
-    elseif (Test-Path -LiteralPath $providerState.instructions_file) {
-        Write-TextFile -Path $providerState.instructions_file -Content ($updatedInstructions.TrimEnd() + [Environment]::NewLine)
     }
 
     foreach ($skillDir in ($providerState.installed_skill_dirs -split "\|" | Where-Object { $_ })) {
