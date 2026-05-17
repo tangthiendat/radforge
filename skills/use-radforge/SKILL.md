@@ -28,22 +28,13 @@ This skill should make a fast routing decision, choose one primary next skill, a
 ## Process
 
 1. Read repo-local instructions and nearby guidance first.
-2. If repository-local workflow fully overrides Radforge, stop and follow the repository.
-3. Decide whether the task is trivial enough to handle directly or whether Radforge should take over.
-4. Explain Radforge in one short pass only if the user appears unfamiliar with it.
-5. If Radforge should not be used, say so briefly and stop.
-6. Apply the routing precedence exactly once.
-7. Hand off to one primary next skill and stop.
-
-## Routing Precedence
-
-Apply the first matching rule:
-
-1. active failure, regression, or unexplained broken behavior -> `debug`
-2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-3. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-4. clear, direct execution with low ambiguity -> `implement`
-5. tiny obvious work may skip Radforge after acknowledging that choice
+2. Read the closest scoped rule files when they narrow the local workflow for the area you are about to touch.
+3. If repository-local workflow fully overrides Radforge, stop and follow the repository.
+4. Decide whether the task is trivial enough to handle directly or whether Radforge should take over.
+5. Explain Radforge in one short pass only if the user appears unfamiliar with it.
+6. If Radforge should not be used, say so briefly and stop.
+7. Apply the routing precedence defined by the repository authority exactly once.
+8. Hand off to one primary next skill and stop.
 
 ## Activation Rule
 
@@ -55,6 +46,7 @@ Apply the first matching rule:
 
 - do not replace repo-local instructions with personal Radforge defaults
 - do not force the full workflow into small tasks that do not need it
+- do not restate or fork the shared routing table when the repository authority already defines it
 - stay short; this skill should route rather than become the whole workflow
 - if the repository clearly wants another process, follow the repository
 - choose one primary next skill instead of blending several at once

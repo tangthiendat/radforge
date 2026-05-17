@@ -304,6 +304,5 @@ for provider_id in $selected_providers; do
         "$installed_skill_dirs" \
         "$installed_at_utc"
 
-    rm -f "$rendered_template" "$block_file"
     log "Installed Radforge for $display_name."
 done

@@ -29,10 +29,11 @@ Find and verify the root cause of broken behavior.
 5. Test one concrete hypothesis at a time, starting with the narrowest high-signal check.
 6. Change the smallest thing needed to test that hypothesis.
 7. Re-run the reproduction or validation step.
-8. Broaden scope only if the component-level investigation does not explain the failure.
-9. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
-10. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved.
-11. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
+8. Classify the failure when the evidence is strong enough: local defect, missing validation, dependency or configuration issue, environment or tooling issue, or architecture interaction.
+9. Broaden scope only if the component-level investigation does not explain the failure.
+10. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
+11. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved.
+12. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
 
 ## Guardrails
 
@@ -52,6 +53,7 @@ Find and verify the root cause of broken behavior.
 - failing scope or component boundary
 - observed evidence
 - root-cause finding, best-supported hypothesis, or ranked leading hypotheses
+- failure classification when known
 - approval status or diagnosis-only status
 - next check or reason for handoff
 - next-skill handoff or stop state

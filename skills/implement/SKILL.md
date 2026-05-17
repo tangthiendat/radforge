@@ -7,7 +7,7 @@ description: Use when the task is clear enough to execute. Make the smallest cor
 
 ## Purpose
 
-Execute an approved change with minimal, correct edits.
+Execute an approved change with minimal, correct edits while keeping scope and rollback boundaries visible.
 
 ## When To Use
 
@@ -24,18 +24,21 @@ Execute an approved change with minimal, correct edits.
 
 1. Confirm the direction is clear enough to execute.
 2. Inspect the relevant files before editing.
-3. Follow existing project patterns unless there is a concrete reason not to.
-4. Start with the narrowest change in the smallest relevant boundary that can solve the problem.
-5. Make the smallest correct change.
-6. Preserve unrelated user changes.
-7. Run the smallest meaningful validation when it is obvious and cheap.
-8. Hand off to `test` when broader validation or regression coverage is needed.
-9. Hand off to `brainstorming` if ambiguity appears, to `plan` if scope grows, or to `debug` if behavior is broken.
+3. Lock the smallest execution boundary that can solve the problem before editing.
+4. Follow existing project patterns unless there is a concrete reason not to.
+5. Start with the first small checkpoint rather than changing every related file at once.
+6. Make the smallest correct change for that checkpoint and preserve unrelated user changes.
+7. After each checkpoint, compare the current scope against the approved direction. If new files, dependencies, or behavior surfaces appear, stop widening silently and hand off as needed.
+8. Run the smallest meaningful validation when it is obvious and cheap.
+9. Record the stop or rollback note when the change affects config, install behavior, or workflow semantics and the fallback is not obvious.
+10. Hand off to `test` when broader validation or regression coverage is needed.
+11. Hand off to `brainstorming` if ambiguity appears, to `plan` if scope grows, or to `debug` if behavior is broken.
 
 ## Guardrails
 
 - do not widen scope without saying so
 - do not keep expanding the implementation area when a narrower change is still plausible
+- do not cross more than one clear boundary expansion without handing off to `plan` or explicitly restating scope
 - do not add compatibility layers unless there is a concrete need
 - do not claim success before fresh validation evidence exists
 
@@ -43,7 +46,9 @@ Execute an approved change with minimal, correct edits.
 
 - implemented change
 - affected files and intended scope
+- boundary held, widened, or handed off
 - validation run, skipped, or delegated
+- rollback or stop note when relevant
 - blockers, open questions, or scope expansion noticed during execution
 - next-skill handoff or stop state
 

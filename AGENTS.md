@@ -10,7 +10,10 @@ Do not modify `global/AGENTS.md` unless the user explicitly asks.
 ## Repository Layout
 
 - `skills/<skill>/SKILL.md`: main entry file for each project skill
+- `skills/<skill>/templates/`: optional executable scaffolds for structured skills
 - `skills/<skill>/references/`: optional supporting material for deeper guidance
+- `providers/<provider>/manifest.json`: provider adapter metadata
+- `scripts/`: install and uninstall entrypoints
 - `docs/specs/`: approved design and framework specs
 - `docs/plans/`: written implementation plans for substantial work
 - `global/AGENTS.md`: shared global instructions, not this project's change target unless explicitly requested
@@ -156,6 +159,9 @@ This closeout rule is global and is not a separate workflow skill.
 - keep this project `AGENTS.md` concise and authoritative
 - keep each `SKILL.md` focused on one coherent procedure
 - keep shared policy in `AGENTS.md` rather than repeating it in every skill
+- prefer templates or compact references when a skill needs stronger determinism than prose alone
+- keep `brainstorming` focused on direction selection; ordered tasks, file maps, and validation sequencing belong in `plan`
+- avoid repeating global routing, evidence, or closeout policy inside every skill unless the local adaptation is materially different
 - use progressive disclosure: move optional depth into `references/` files
 - add scripts only when they improve determinism or safety
 - refine skills from real repeated workflows and observed failures
