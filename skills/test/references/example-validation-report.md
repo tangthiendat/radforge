@@ -31,6 +31,7 @@ Use this as a filled example when the template alone is too abstract.
 ## Result
 
 - status: pass
+- evidence sufficiency: enough to support completion of the PowerShell validation claim
 - summary: the PowerShell install and uninstall path worked end-to-end against an isolated temp home
 
 ## Closeout

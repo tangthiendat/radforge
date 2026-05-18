@@ -22,6 +22,8 @@ Before broadening the search, try to identify the narrowest scope that can still
 
 Use one hypothesis at a time.
 
+Do not move to the next hypothesis before concluding the current one from the evidence.
+
 If several causes are plausible, rank the leading candidates before choosing the first check.
 
 Ranking factors:
@@ -56,7 +58,20 @@ When reporting progress, capture:
 - failing scope or component boundary
 - strongest current evidence
 - current best-supported hypothesis or ranked leading hypotheses
+- keep or discard conclusion for the current hypothesis
 - next check to run
+
+Recommended status shape:
+
+```text
+Reproduction
+Failing Boundary
+Evidence
+Hypothesis Status
+Classification
+Next Check
+Handoff
+```
 
 ## Exit Criteria
 

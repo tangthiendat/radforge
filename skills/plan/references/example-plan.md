@@ -59,6 +59,12 @@ Files:
 Validation:
 Run local dry-run and confirm legacy-cleanup path can execute without error.
 
+Expected signal:
+Dry-run reaches the legacy-cleanup path and completes provider-state writing without errors.
+
+If it fails:
+Inspect state parsing and legacy managed-block removal before widening scope.
+
 Checkpoint:
 pause if provider state format needs a breaking change
 
@@ -77,6 +83,12 @@ Files:
 Validation:
 Read back changed section for wording drift or stale claims.
 
+Expected signal:
+README matches the current migration behavior without describing removed installer behavior.
+
+If it fails:
+Inspect the install, uninstall, and update sections for duplicated or conflicting wording.
+
 Checkpoint:
 none
 
@@ -85,9 +97,17 @@ low
 
 ## Validation Strategy
 
-- run installer dry-run after script edits
-- read back README and changed script blocks
-- lowest useful validation first: yes, because local dry-run covers the risky migration path before broader shell validation
+- ordered checks from narrowest to broadest:
+
+  - run: `pwsh -NoProfile -File "scripts/install.ps1" -DryRun`
+  - expected: legacy-cleanup path and provider-state write path complete without error
+  - if it fails: inspect state parsing and legacy cleanup before checking docs
+
+  - run: read back changed `README.md` and script sections
+  - expected: wording and migration behavior stay aligned with the edited code
+  - if it fails: inspect duplicated or stale wording before widening validation
+
+- lowest useful validation first: yes, because the local dry-run covers the risky migration path before broader shell validation
 
 ## Risks And Approval Points
 

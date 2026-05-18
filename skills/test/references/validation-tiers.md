@@ -14,6 +14,12 @@ Default boundary:
 
 - one file or one very small workflow surface
 
+Stop from `implement` with Tier 1 only when:
+
+- one checkpoint and one coherent boundary were changed
+- one high-signal check is enough to support the claim
+- the work did not change install, update, uninstall, config, or shared workflow semantics
+
 Typical evidence:
 
 - one focused test command
@@ -31,6 +37,12 @@ Use when:
 Default boundary:
 
 - one component, one feature slice, or one install or workflow path
+
+Typical handoff from `implement`:
+
+- multi-file work inside one coherent boundary
+- regression confidence is needed beyond one local smoke check
+- one changed workflow path needs direct rehearsal
 
 Typical evidence:
 
@@ -56,6 +68,13 @@ Typical evidence:
 - end-to-end or multi-phase workflow rehearsal
 - targeted manual checks plus scripted checks
 
+Default minimum evidence for install, update, uninstall, config, or shared workflow changes:
+
+- a dry-run or rehearsal when available
+- readback of the changed file, installed artifact, or generated output when relevant
+- verification of state or output shape when relevant
+- uninstall or rollback impact when that surface changed
+
 ## Escalation Rule
 
 Start with the lowest tier that can plausibly prove the claim.
@@ -65,3 +84,8 @@ Move up one tier when:
 - the previous tier leaves the important risk untested
 - the changed boundary is wider than first assumed
 - the result is ambiguous and needs stronger evidence
+
+Before stopping, ask:
+
+- is the evidence enough to support completion?
+- if not, what narrower next check or handoff is still needed?

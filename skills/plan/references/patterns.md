@@ -32,6 +32,8 @@ Prefer tasks that are small enough to:
 
 If a task mixes setup, implementation, and wide verification, split it.
 
+Each task should make the next checkpoint obvious to a new reader.
+
 ## Validation Planning Pattern
 
 For each meaningful phase, define:
@@ -39,6 +41,8 @@ For each meaningful phase, define:
 - the command or check to run
 - what success looks like
 - what failure would likely mean
+
+For the overall validation strategy, list checks from narrowest to broadest.
 
 Example:
 
@@ -74,6 +78,7 @@ Before handing off, confirm that the plan has:
 - a scope boundary or split decision
 - an ordered task list
 - meaningful validation steps
+- expected signals and first failure interpretation for each meaningful validation step
 - any unresolved assumptions that affect execution
 - stated approval points
 - approval status when a gate applied
