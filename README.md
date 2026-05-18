@@ -162,12 +162,19 @@ The normal flow is:
 1. install Radforge for one or more supported providers
 2. start a task in your coding tool
 3. if the provider exposes installed skills, the agent can discover `use-radforge`
-4. if it does not route automatically, ask the agent to use `use-radforge`
-5. `use-radforge` routes into the right workflow skill for the task
+4. if it does not route automatically, ask the agent to use `use-radforge` first for non-trivial work
+5. `use-radforge` chooses one primary workflow skill for the task and hands off immediately
 
 Current core release intentionally uses this bootstrap-only model.
 
 Small, clear, low-risk tasks can still run directly without forcing the full workflow.
+
+For non-trivial work, the routing shorthand is:
+
+- start in `brainstorming` when direction, scope, or approval is still unresolved
+- move to `plan` when the direction is already clear and the remaining job is execution structure
+- stay in `implement` only while one bounded checkpoint plus one local smoke-style check is enough to support the claim
+- hand off to `test` when the remaining need is broader proof or regression confidence
 
 Repository-local instructions still take priority over user-level Radforge personal defaults.
 
@@ -175,15 +182,15 @@ Repository-local instructions still take priority over user-level Radforge perso
 
 ### Workflow Skills
 
-- `brainstorming`: clarifies goals and design before implementation
-- `plan`: breaks multi-step work into an execution plan
-- `implement`: carries out clear implementation tasks
-- `test`: validates changes with meaningful checks
+- `brainstorming`: clarifies direction, scope, and approval before execution
+- `plan`: organizes approved or already-clear work into resumable execution structure
+- `implement`: executes clear changes inside a bounded checkpoint
+- `test`: validates changes when broader proof or regression confidence is needed
 - `debug`: reproduces and isolates failures before fixing them
 
 ### Bootstrap Skill
 
-- `use-radforge`: the entry skill that decides whether Radforge should take over and routes into the single right workflow skill
+- `use-radforge`: the bootstrap router for non-trivial work
 
 ### Workflow Closeout
 

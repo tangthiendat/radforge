@@ -36,7 +36,7 @@ It must still work when installed outside a repository that has no stronger loca
 1. Read repo-local instructions and nearby guidance first.
 2. Read the closest scoped rule files when they narrow the local workflow for the area you are about to touch.
 3. If repository-local workflow fully overrides Radforge, stop and follow the repository.
-4. Decide whether the task is trivial enough to handle directly or whether Radforge should take over.
+4. Decide whether the task is trivial enough to handle directly or whether this personal Radforge workflow should activate.
 5. Explain Radforge in one short pass only if the user appears unfamiliar with it.
 6. If Radforge should not be used, say so briefly and stop.
 7. Apply repository-local routing precedence when it is explicitly defined; otherwise use the default Radforge routing precedence below.
@@ -54,16 +54,27 @@ It must still work when installed outside a repository that has no stronger loca
 ## Routing Heuristics
 
 - handle directly only when the task is tiny, obvious, low risk, has no approval gate, and does not need multi-step coordination
+- choose `brainstorming` when the direction is still unclear, approval depends on a design choice, or multiple reasonable approaches remain
 - choose `implement` when the task is clear and bounded, execution is still direct, and no major sequencing or dependency management is needed
+- stay with `implement` when one checkpoint inside one coherent boundary plus one Tier 1-style smoke check is enough to support the claim
+- choose `plan` only after the direction is approved or already clear, and the remaining job is execution structure, sequencing, file mapping, validation ordering, or resumable handoff preparation
 - choose `plan` when the work is multi-phase, dependency-heavy, likely to be resumed or handed off, or changes install, update, uninstall, config, or shared workflow semantics
 - choose `test` when validation or regression checking is the primary job and no main implementation change is pending
+- prefer `test` over `implement` when the remaining confidence gap is broader proof: Tier 2 or Tier 3 evidence, regression confidence, cross-file proof, or install/update/uninstall/config/shared-workflow validation
 - choose `debug` when something is broken, regressed, or unexplained enough that diagnosis must come first
 
 ## Routing Examples
 
 - direct: add one obvious sentence to an existing doc with no workflow implications
+- `brainstorming`: the request has two reasonable workflow designs and the approval boundary depends on which one is chosen
+- `brainstorming` borderline: the work will likely need a plan later, but the design direction or scope split is still unresolved
 - `implement`: tighten one existing skill file with a bounded wording change and one local readback check
+- `implement` borderline: update one installer message and confirm it with one dry-run or readback inside the same checkpoint
+- `test`: implementation already happened and the remaining job is proving install behavior or regression coverage
+- `test` borderline: the code change is done, but completion depends on broader install/update/uninstall proof or changed-area regression confidence
+- `debug`: a repro, failing test, or broken command exists and diagnosis must come before edits
 - `plan`: restructure a shared installer flow, split a cross-repo workflow, or prepare a multi-phase handoff artifact
+- `plan` borderline: the direction is already approved, but execution still needs ordered tasks, checkpoint boundaries, and validation sequencing before implementation should start
 
 ## Activation Rule
 
@@ -83,12 +94,23 @@ It must still work when installed outside a repository that has no stronger loca
 
 ## Output Contract
 
+Use this structure:
+
+```text
+Decision
+Routing Basis
+Selected Skill
+Override
+Next Handoff
+```
+
+Include in the sections above:
+
 - whether Radforge is appropriate for the current task
 - one-pass explanation only if needed
-- the single selected next skill or explicit decision to skip Radforge
 - whether repository-local routing or default Radforge routing was used
 - any repo-local rule that overrides the personal default
-- immediate handoff intent
+- the single selected next skill or explicit decision to skip Radforge
 
 ## Handoff Rules
 

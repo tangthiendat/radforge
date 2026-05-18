@@ -35,7 +35,7 @@ Turn an approved direction into an execution plan that another competent agent o
 5. Decide whether the work fits one coherent plan. If independent workstreams appear, split them or pause for approval.
 6. Lock the file map before writing task steps.
 7. Break the work into ordered tasks with clear checkpoints.
-8. For each task, include the intended outcome, affected files, the narrowest useful validation, and any checkpoint or approval boundary.
+8. For each task, include the intended outcome, affected files, the narrowest useful validation, the expected signal, what failure would likely mean first, and any checkpoint or approval boundary.
 9. Keep the plan one level above implementation detail. If it turns into edit-by-edit narration, shrink the task or hand off to `implement`.
 10. Call out risks, sequencing constraints, and approval points instead of hiding them in prose.
 11. Use the template headings exactly and replace every placeholder with real content. If a field is not needed, write `none` with a brief reason.
@@ -72,6 +72,7 @@ When a written plan is required:
 - do not plan speculative features outside the approved scope
 - do not collapse several independent projects into one plan for convenience
 - keep tasks small enough to execute and verify independently
+- keep tasks resumable enough that the next checkpoint is obvious to a new reader
 - do not hide unresolved assumptions that materially affect execution
 - prefer the smallest implementation that satisfies the goal
 - do not defer key sequencing decisions to “implementation will decide later”
@@ -107,6 +108,8 @@ Each task should include:
 - intended outcome
 - affected files
 - validation step
+- expected signal
+- first failure interpretation
 - checkpoint or approval note when relevant
 
 ## Handoff Rules
