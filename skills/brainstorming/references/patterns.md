@@ -48,7 +48,7 @@ Use an explicit gate when design or tradeoffs matter.
 Example:
 
 ```text
-This is the direction I recommend because it keeps the workflow lighter while preserving approval and safety boundaries. If that looks right, I’ll move to the next phase.
+This is the direction I recommend because it keeps the workflow lighter while preserving approval and safety boundaries. If that looks right, I’ll move to the next skill.
 ```
 
 ## Scope Split Signals

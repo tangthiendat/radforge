@@ -23,7 +23,7 @@ Do not modify `global/AGENTS.md` unless the user explicitly asks.
 This framework has two layers:
 
 - `AGENTS.md` defines shared routing rules, approval gates, evidence rules, artifact rules, and closeout requirements.
-- skills define reusable procedures for one coherent work mode.
+- skills define repeatable procedures for one coherent work mode.
 
 Rules decide `when`.
 Skills decide `how`.
@@ -48,7 +48,7 @@ Core workflow skills:
 
 Bootstrap skill:
 
-- `use-radforge`: decide whether Radforge should take over and route into the single right workflow skill
+- `use-radforge`: decide whether this personal Radforge workflow should activate and route into the single right workflow skill
 
 ## Activation Model
 
