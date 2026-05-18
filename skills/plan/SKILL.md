@@ -1,6 +1,10 @@
 ---
 name: plan
 description: Use when work is multi-step, risky, or dependency-heavy. Turn an approved direction into an ordered execution plan and finalize substantial plans into docs/plans/.
+maturity: core
+owner: radforge
+lastReviewed: "2026-05-18"
+compatibility: bootstrap-only installed use and repo-local workflow contracts
 ---
 
 # plan
@@ -34,9 +38,10 @@ Turn an approved direction into an execution plan that another competent agent o
 8. For each task, include the intended outcome, affected files, the narrowest useful validation, and any checkpoint or approval boundary.
 9. Keep the plan one level above implementation detail. If it turns into edit-by-edit narration, shrink the task or hand off to `implement`.
 10. Call out risks, sequencing constraints, and approval points instead of hiding them in prose.
-11. Decide whether the plan must be finalized into `docs/plans/`.
-12. If a written plan is required, write and finalize it before handoff.
-13. Pause for approval before execution when the plan introduces meaningful scope, risk, sequencing, or decomposition decisions.
+11. Use the template headings exactly and replace every placeholder with real content. If a field is not needed, write `none` with a brief reason.
+12. Decide whether the plan must be finalized into `docs/plans/`.
+13. If a written plan is required, write and finalize it before handoff.
+14. Pause for approval before execution when the plan introduces meaningful scope, risk, sequencing, or decomposition decisions.
 
 ## Plan Finalization Rule
 
@@ -76,6 +81,7 @@ When a written plan is required:
 
 - read `references/patterns.md` when you need help shaping task granularity, file maps, or validation structure
 - use `templates/execution-plan-template.md` as the default output shape when a plan needs durable structure
+- read `references/example-plan.md` when the template alone is too abstract and you need a concrete filled example
 
 ## Output Contract
 
@@ -91,6 +97,10 @@ Risks And Approval Points
 Finalization Decision
 Next Handoff
 ```
+
+Use the headings exactly.
+
+Do not leave placeholder text in the final plan.
 
 Each task should include:
 

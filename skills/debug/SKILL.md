@@ -1,6 +1,10 @@
 ---
 name: debug
 description: Use when something is broken, failing, regressing, or behaving unexpectedly. Reproduce the issue, isolate the cause, test a small fix, and verify the result.
+maturity: core
+owner: radforge
+lastReviewed: "2026-05-18"
+compatibility: bootstrap-only installed use and repo-local workflow contracts
 ---
 
 # debug
@@ -30,10 +34,11 @@ Find and verify the root cause of broken behavior.
 6. Change the smallest thing needed to test that hypothesis.
 7. Re-run the reproduction or validation step.
 8. Classify the failure when the evidence is strong enough: local defect, missing validation, dependency or configuration issue, environment or tooling issue, or architecture interaction.
-9. Broaden scope only if the component-level investigation does not explain the failure.
-10. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
-11. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved.
-12. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
+9. Classify the fix path when the cause is clear enough: local fix now, validation gap first, dependency or config repair, environment follow-up, or broader architecture plan.
+10. Broaden scope only if the component-level investigation does not explain the failure.
+11. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
+12. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved.
+13. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
 
 ## Guardrails
 
@@ -54,6 +59,7 @@ Find and verify the root cause of broken behavior.
 - observed evidence
 - root-cause finding, best-supported hypothesis, or ranked leading hypotheses
 - failure classification when known
+- fix classification or next repair class when known
 - approval status or diagnosis-only status
 - next check or reason for handoff
 - next-skill handoff or stop state

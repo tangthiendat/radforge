@@ -1,8 +1,12 @@
 # <Plan Title>
 
+Replace every placeholder before finalizing.
+If a field is not needed, write `none` with a brief reason.
+
 ## Goal
 
-<What this work is meant to accomplish.>
+- outcome: <what this work is meant to accomplish>
+- success signal: <how completion will be recognized>
 
 ## Scope
 
@@ -13,6 +17,10 @@ In:
 Out:
 
 - <excluded work>
+
+Assumptions:
+
+- <important assumption or `none`>
 
 ## File Map
 
@@ -27,6 +35,10 @@ Modify:
 Validate:
 
 - <command or manual check>
+
+Defer:
+
+- <path or decision deferred, or `none`>
 
 ## Tasks
 
@@ -45,6 +57,9 @@ Validation:
 Checkpoint:
 <approval boundary, handoff note, or "none">
 
+Risk:
+<main task risk or "low">
+
 ### Task 2: <Name>
 
 Outcome:
@@ -60,9 +75,14 @@ Validation:
 Checkpoint:
 <approval boundary, handoff note, or "none">
 
+Risk:
+<main task risk or "low">
+
 ## Validation Strategy
 
 - <ordered checks>
+
+- lowest useful validation first: <yes/no and why>
 
 ## Risks And Approval Points
 
@@ -72,6 +92,7 @@ Checkpoint:
 
 - Plan artifact required: yes or no
 - Final path: <docs/plans/... or "chat only">
+- Placeholder check complete: yes or no
 
 ## Next Handoff
 

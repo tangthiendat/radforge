@@ -144,6 +144,8 @@ The normal flow is:
 4. if it does not route automatically, ask the agent to use `use-radforge`
 5. `use-radforge` routes into the right workflow skill for the task
 
+Current core release intentionally uses this bootstrap-only model.
+
 Small, clear, low-risk tasks can still run directly without forcing the full workflow.
 
 Repository-local instructions still take priority over user-level Radforge defaults.

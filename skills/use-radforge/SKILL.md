@@ -1,6 +1,10 @@
 ---
 name: use-radforge
 description: Use when Radforge is installed and the current task may need structured workflow routing. Respect repo-local rules, decide whether Radforge applies, and hand off to the single right core skill.
+maturity: core
+owner: radforge
+lastReviewed: "2026-05-18"
+compatibility: bootstrap-only installed use and repo-local workflow contracts
 ---
 
 # use-radforge
@@ -10,6 +14,8 @@ description: Use when Radforge is installed and the current task may need struct
 Act as the default Radforge entrypoint for non-trivial work.
 
 This skill should make a fast routing decision, choose one primary next skill, and get out of the way.
+
+It must still work when installed outside a repository that has no stronger local workflow contract.
 
 ## When To Use
 
@@ -33,8 +39,17 @@ This skill should make a fast routing decision, choose one primary next skill, a
 4. Decide whether the task is trivial enough to handle directly or whether Radforge should take over.
 5. Explain Radforge in one short pass only if the user appears unfamiliar with it.
 6. If Radforge should not be used, say so briefly and stop.
-7. Apply the routing precedence defined by the repository authority exactly once.
+7. Apply repository-local routing precedence when it is explicitly defined; otherwise use the default Radforge routing precedence below.
 8. Hand off to one primary next skill and stop.
+
+## Default Routing Precedence
+
+1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
+2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
+3. behavior validation or regression checking with no primary implementation change -> `test`
+4. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+5. clear, low-ambiguity direct execution -> `implement`
+6. tiny, obvious, low-risk work may skip Radforge and stop
 
 ## Activation Rule
 
@@ -46,7 +61,7 @@ This skill should make a fast routing decision, choose one primary next skill, a
 
 - do not replace repo-local instructions with personal Radforge defaults
 - do not force the full workflow into small tasks that do not need it
-- do not restate or fork the shared routing table when the repository authority already defines it
+- prefer repository-local routing only when it is explicit; otherwise use the default Radforge routing precedence above
 - stay short; this skill should route rather than become the whole workflow
 - if the repository clearly wants another process, follow the repository
 - choose one primary next skill instead of blending several at once
@@ -57,6 +72,7 @@ This skill should make a fast routing decision, choose one primary next skill, a
 - whether Radforge is appropriate for the current task
 - one-pass explanation only if needed
 - the single selected next skill or explicit decision to skip Radforge
+- whether repository-local routing or default Radforge routing was used
 - any repo-local rule that overrides the personal default
 - immediate handoff intent
 
@@ -64,6 +80,7 @@ This skill should make a fast routing decision, choose one primary next skill, a
 
 - `use-radforge` -> `debug`
 - `use-radforge` -> `brainstorming`
+- `use-radforge` -> `test`
 - `use-radforge` -> `plan`
 - `use-radforge` -> `implement`
 - `use-radforge` -> stop

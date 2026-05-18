@@ -1,6 +1,10 @@
 ---
 name: brainstorming
 description: Use when a task is unclear, under-specified, or has multiple reasonable approaches. Clarify scope, compare options, and get approval before execution.
+maturity: core
+owner: radforge
+lastReviewed: "2026-05-18"
+compatibility: bootstrap-only installed use and repo-local workflow contracts
 ---
 
 # brainstorming
@@ -41,6 +45,7 @@ Clarify unclear work before execution starts.
 - keep the process lightweight when the design surface is small
 - do not smuggle planning detail into brainstorming when the user has not approved the direction yet
 - do not produce file maps, ordered task lists, or validation command inventories here; that is `plan` once the direction is approved
+- do not fully decompose execution phases here; stop once the direction and workstream boundary are clear enough for `plan`
 - do not hand off to `plan` for small direct tasks once the direction is clear
 - respect design-only requests and stop after alignment when asked
 - do not skip relevant repository guidance when `docs/`, specs, plans, or similar folders already describe the area
