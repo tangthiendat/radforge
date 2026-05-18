@@ -40,17 +40,26 @@ Escalate only when narrower evidence is not enough.
 - there is nothing meaningful to validate
 - the task is still blocked on root-cause analysis and needs `debug` first
 
+## When `implement` Must Hand Off Here
+
+- the claim needs Tier 2 `targeted` or Tier 3 `broad` evidence
+- the change crosses files or behavior boundaries that need regression confidence
+- install, update, uninstall, config, or shared workflow semantics changed
+- completion would otherwise depend on broader proof than one local smoke check
+
 ## Process
 
 1. Define the exact behavior, risk, or claim the validation is meant to cover.
 2. Choose a validation tier and state why it matches the current risk and changed boundary.
 3. Start from `templates/validation-report-template.md` for any non-trivial validation summary.
 4. Run the smallest meaningful checks inside the chosen tier first.
-5. Broaden validation only when the earlier evidence is weak, a higher-risk boundary is involved, or a previous check failed to prove the claim.
-6. Capture the command, check, or manual step used as evidence, along with the expected signal and observed result.
-7. If validation fails, do not guess; hand off to `debug`.
-8. If validation is limited by the environment, say exactly what could not be checked.
-9. If stopping after non-trivial validation work, report what changed, what was validated, what was skipped, and any remaining risk.
+5. For install, update, uninstall, config, or workflow changes, the default minimum evidence is a dry-run or rehearsal when available, readback of the changed file or installed artifact when relevant, verification of state or output shape when relevant, and uninstall or rollback impact when that surface changed.
+6. Broaden validation only when the earlier evidence is weak, a higher-risk boundary is involved, or a previous check failed to prove the claim.
+7. Capture the command, check, or manual step used as evidence, along with the expected signal and observed result.
+8. State whether the gathered evidence is sufficient to support completion, or whether more validation or a handoff is still needed.
+9. If validation fails, do not guess; hand off to `debug`.
+10. If validation is limited by the environment, say exactly what could not be checked.
+11. If stopping after non-trivial validation work, report what changed, what was validated, what was skipped, and any remaining risk.
 
 ## Guardrails
 
@@ -86,6 +95,8 @@ Each check should include:
 - command or action
 - expected signal
 - observed result
+
+The `Result` section should state whether the evidence is enough to support completion.
 
 If validation stops here for non-trivial work, include a closeout summary covering what changed, what was validated, what was skipped, and remaining risk.
 

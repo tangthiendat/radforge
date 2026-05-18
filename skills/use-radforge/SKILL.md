@@ -51,6 +51,20 @@ It must still work when installed outside a repository that has no stronger loca
 5. clear, low-ambiguity direct execution -> `implement`
 6. tiny, obvious, low-risk work may skip Radforge and stop
 
+## Routing Heuristics
+
+- handle directly only when the task is tiny, obvious, low risk, has no approval gate, and does not need multi-step coordination
+- choose `implement` when the task is clear and bounded, execution is still direct, and no major sequencing or dependency management is needed
+- choose `plan` when the work is multi-phase, dependency-heavy, likely to be resumed or handed off, or changes install, update, uninstall, config, or shared workflow semantics
+- choose `test` when validation or regression checking is the primary job and no main implementation change is pending
+- choose `debug` when something is broken, regressed, or unexplained enough that diagnosis must come first
+
+## Routing Examples
+
+- direct: add one obvious sentence to an existing doc with no workflow implications
+- `implement`: tighten one existing skill file with a bounded wording change and one local readback check
+- `plan`: restructure a shared installer flow, split a cross-repo workflow, or prepare a multi-phase handoff artifact
+
 ## Activation Rule
 
 - before proceeding with non-trivial work, invoke this skill first unless a stronger repository-local workflow already applies

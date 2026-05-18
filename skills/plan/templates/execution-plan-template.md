@@ -54,6 +54,12 @@ Files:
 Validation:
 <narrowest useful check>
 
+Expected signal:
+<what success looks like>
+
+If it fails:
+<first thing to inspect>
+
 Checkpoint:
 <approval boundary, handoff note, or "none">
 
@@ -72,6 +78,12 @@ Files:
 Validation:
 <narrowest useful check>
 
+Expected signal:
+<what success looks like>
+
+If it fails:
+<first thing to inspect>
+
 Checkpoint:
 <approval boundary, handoff note, or "none">
 
@@ -80,7 +92,11 @@ Risk:
 
 ## Validation Strategy
 
-- <ordered checks>
+- ordered checks from narrowest to broadest:
+
+  - run: <command or check>
+  - expected: <observable success>
+  - if it fails: <first thing to inspect>
 
 - lowest useful validation first: <yes/no and why>
 
