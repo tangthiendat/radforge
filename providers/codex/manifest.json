@@ -1,5 +1,6 @@
 {
   "provider": "codex",
   "displayName": "Codex",
-  "skillsDir": ".agents/skills"
+  "skillsDir": ".agents/skills",
+  "instructionsFile": ".codex/AGENTS.md"
 }

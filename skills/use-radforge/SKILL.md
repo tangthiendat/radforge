@@ -1,6 +1,6 @@
 ---
 name: use-radforge
-description: Use when Radforge is installed and the current task may need structured workflow routing. Respect repo-local rules, decide whether Radforge applies, and hand off to the single right core skill.
+description: Use when this personal Radforge workflow is installed and the current task may need structured routing. Respect repo-local rules, decide whether the framework applies, and hand off to the single right core skill.
 maturity: core
 owner: radforge
 lastReviewed: "2026-05-18"
@@ -11,7 +11,7 @@ compatibility: bootstrap-only installed use and repo-local workflow contracts
 
 ## Purpose
 
-Act as the default Radforge entrypoint for non-trivial work.
+Act as the default entrypoint for this personal Radforge framework on non-trivial work.
 
 This skill should make a fast routing decision, choose one primary next skill, and get out of the way.
 

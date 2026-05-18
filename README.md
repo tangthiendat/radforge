@@ -1,8 +1,12 @@
 # Radforge
 
-Radforge is a reusable workflow and skills package for coding agents.
+Radforge is a personal skills framework for coding agents.
 
-It installs a reusable skill library so the agent can use Radforge workflow skills when they are available or when you ask for them explicitly.
+It packages a highly customized workflow and skill library so the agent can follow your preferred way of working when those skills are available or when you ask for them explicitly.
+
+The installer can also place the shared `global/AGENTS.md` defaults into provider-level instruction files. When that target file already exists, the installer asks per provider before overwriting it.
+
+Use `-OverwriteInstructions` in PowerShell or `--overwrite-instructions` in shell when you want a non-interactive install to replace the existing provider instruction file for every selected provider.
 
 ## Quickstart
 
@@ -148,7 +152,7 @@ Current core release intentionally uses this bootstrap-only model.
 
 Small, clear, low-risk tasks can still run directly without forcing the full workflow.
 
-Repository-local instructions still take priority over user-level Radforge defaults.
+Repository-local instructions still take priority over user-level Radforge personal defaults.
 
 ## What's Inside
 
@@ -173,12 +177,14 @@ Repository-local instructions still take priority over user-level Radforge defau
 For each selected provider, the installer:
 
 - copies every skill from `skills/` into the provider's user-level skills directory
+- installs provider-level shared instructions from `global/AGENTS.md`
 - installs `use-radforge` alongside the core workflow skills
 - records uninstall metadata in `~/.radforge/providers/<provider>.state`
 
 The installer is additive and conservative:
 
 - it removes only Radforge-owned installed skill directories during uninstall
+- it removes provider-level instruction files only when Radforge created them from a missing target
 - it can clean up legacy provider hint blocks from older installs when you reinstall
 - it does not replace repository-local instructions
 

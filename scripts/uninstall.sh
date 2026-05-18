@@ -167,16 +167,24 @@ for provider_id in $selected_providers; do
     display_name=$(state_value display_name "$state_path")
     instructions_file=$(state_value instructions_file "$state_path")
     instructions_file_created=$(state_value instructions_file_created "$state_path")
+    instructions_mode=$(state_value instructions_mode "$state_path")
+    [ -n "$instructions_mode" ] || instructions_mode="legacy_block"
     installed_skill_dirs=$(state_value installed_skill_dirs "$state_path")
 
     if [ -n "$instructions_file" ] && [ -f "$instructions_file" ]; then
-        stripped_file=$(strip_legacy_managed_block "$instructions_file")
-        if [ ! -s "$stripped_file" ] && [ "$instructions_file_created" = "1" ]; then
-            remove_path_if_exists "$instructions_file"
+        if [ "$instructions_mode" = "file" ]; then
+            if [ "$instructions_file_created" = "1" ]; then
+                remove_path_if_exists "$instructions_file"
+            fi
         else
-            cat "$stripped_file" | write_file "$instructions_file"
+            stripped_file=$(strip_legacy_managed_block "$instructions_file")
+            if [ ! -s "$stripped_file" ] && [ "$instructions_file_created" = "1" ]; then
+                remove_path_if_exists "$instructions_file"
+            else
+                cat "$stripped_file" | write_file "$instructions_file"
+            fi
+            rm -f "$stripped_file"
         fi
-        rm -f "$stripped_file"
     fi
 
     old_ifs=$IFS

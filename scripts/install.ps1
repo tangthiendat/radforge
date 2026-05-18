@@ -1,7 +1,8 @@
 param(
     [string[]]$Provider = @("all"),
     [string]$HomeRoot = $(if ($env:USERPROFILE) { $env:USERPROFILE } elseif ($HOME) { $HOME } else { throw "Unable to resolve user home directory." }),
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$OverwriteInstructions
 )
 
 $ErrorActionPreference = "Stop"
@@ -18,6 +19,7 @@ $ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
 $RepoRoot = if ($ScriptRoot) { Split-Path -Parent $ScriptRoot } else { $null }
 $ProvidersRoot = if ($RepoRoot) { Join-Path $RepoRoot "providers" } else { $null }
 $SkillsSourceRoot = if ($RepoRoot) { Join-Path $RepoRoot "skills" } else { $null }
+$GlobalInstructionsSource = if ($RepoRoot) { Join-Path $RepoRoot "global\AGENTS.md" } else { $null }
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
 
@@ -47,7 +49,7 @@ function Invoke-BootstrapInstall {
             throw "Unable to locate installer inside extracted Radforge archive."
         }
 
-        & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -DryRun:$DryRun
+        & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -DryRun:$DryRun -OverwriteInstructions:$OverwriteInstructions
     }
     finally {
         if (Test-Path -LiteralPath $tempRoot) {
@@ -56,7 +58,7 @@ function Invoke-BootstrapInstall {
     }
 }
 
-if (-not $RepoRoot -or -not (Test-Path -LiteralPath $ProvidersRoot) -or -not (Test-Path -LiteralPath $SkillsSourceRoot)) {
+if (-not $RepoRoot -or -not (Test-Path -LiteralPath $ProvidersRoot) -or -not (Test-Path -LiteralPath $SkillsSourceRoot) -or -not (Test-Path -LiteralPath $GlobalInstructionsSource)) {
     Invoke-BootstrapInstall
     return
 }
@@ -185,6 +187,17 @@ function Remove-LegacyHintFromState {
         return
     }
 
+    $instructionsMode = if ($providerState.ContainsKey("instructions_mode")) {
+        [string]$providerState.instructions_mode
+    }
+    else {
+        "legacy_block"
+    }
+
+    if ($instructionsMode -ne "legacy_block") {
+        return
+    }
+
     $instructionsFile = [string]$providerState.instructions_file
     if ([string]::IsNullOrWhiteSpace($instructionsFile) -or -not (Test-Path -LiteralPath $instructionsFile)) {
         return
@@ -203,6 +216,75 @@ function Remove-LegacyHintFromState {
     }
     else {
         Write-TextFile -Path $instructionsFile -Content ($updatedInstructions.TrimEnd() + [Environment]::NewLine)
+    }
+}
+
+function Test-InteractiveSession {
+    try {
+        return -not [Console]::IsInputRedirected
+    }
+    catch {
+        return $true
+    }
+}
+
+function Confirm-InstructionsOverwrite {
+    param(
+        [string]$DisplayName,
+        [string]$DestinationPath
+    )
+
+    if (-not (Test-InteractiveSession)) {
+        Write-Warning "Skipping overwrite of '$DestinationPath' for $DisplayName because install is non-interactive."
+        return $false
+    }
+
+    $response = Read-Host "Overwrite existing instructions file '$DestinationPath' for $DisplayName? [y/N]"
+    $normalized = if ($null -eq $response) { "" } else { $response.Trim().ToLowerInvariant() }
+    @("y", "yes") -contains $normalized
+}
+
+function Install-GlobalInstructions {
+    param(
+        [string]$DisplayName,
+        [string]$SourcePath,
+        [string]$DestinationPath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($DestinationPath)) {
+        return $null
+    }
+
+    $createdByInstaller = -not (Test-Path -LiteralPath $DestinationPath)
+    if (-not $createdByInstaller) {
+        if (-not $OverwriteInstructions) {
+            if ($DryRun) {
+                Write-Log "Would ask whether to overwrite existing instructions file '$DestinationPath' for $DisplayName."
+                return $null
+            }
+
+            if (-not (Confirm-InstructionsOverwrite -DisplayName $DisplayName -DestinationPath $DestinationPath)) {
+                Write-Log "Keeping existing instructions file '$DestinationPath'."
+                return $null
+            }
+        }
+    }
+
+    $parent = Split-Path -Parent $DestinationPath
+    Ensure-Directory $parent
+
+    if ($DryRun) {
+        $action = if ($createdByInstaller) { "install" } else { "overwrite" }
+        Write-Log "Would $action global instructions at '$DestinationPath'."
+    }
+    else {
+        Copy-Item -LiteralPath $SourcePath -Destination $DestinationPath -Force
+    }
+
+    @{
+        instructions_file = $DestinationPath
+        instructions_file_created = if ($createdByInstaller) { "1" } else { "0" }
+        instructions_mode = "file"
     }
 }
 
@@ -284,15 +366,24 @@ function Write-ProviderState {
     param([hashtable]$Metadata)
 
     $statePath = Join-Path $ProviderStateRoot ($Metadata.provider + ".state")
-    $content = @(
+    $content = New-Object System.Collections.Generic.List[string]
+    foreach ($line in @(
         "provider=$($Metadata.provider)"
         "display_name=$($Metadata.display_name)"
         "skills_dir=$($Metadata.skills_dir)"
         "installed_skill_dirs=$([string]::Join('|', $Metadata.installed_skill_dirs))"
         "installed_at_utc=$($Metadata.installed_at_utc)"
-    ) -join [Environment]::NewLine
+    )) {
+        $content.Add($line)
+    }
 
-    Write-TextFile -Path $statePath -Content ($content + [Environment]::NewLine)
+    foreach ($optionalKey in @("instructions_file", "instructions_file_created", "instructions_mode")) {
+        if ($Metadata.ContainsKey($optionalKey) -and -not [string]::IsNullOrWhiteSpace([string]$Metadata[$optionalKey])) {
+            $content.Add("$optionalKey=$($Metadata[$optionalKey])")
+        }
+    }
+
+    Write-TextFile -Path $statePath -Content (($content -join [Environment]::NewLine) + [Environment]::NewLine)
 }
 
 $selectedProviders = Get-SelectedProviderIds
@@ -313,14 +404,29 @@ foreach ($providerId in $selectedProviders) {
     $manifest = Load-ProviderManifest $providerId
     $skillsDir = Join-HomeRelativePath $manifest.skillsDir
     $installedSkillDirs = Copy-SkillLibrary -DestinationRoot $skillsDir
+    $instructionsMetadata = if ($manifest.ContainsKey("instructionsFile")) {
+        $instructionsPath = Join-HomeRelativePath $manifest.instructionsFile
+        Install-GlobalInstructions -DisplayName $manifest.displayName -SourcePath $GlobalInstructionsSource -DestinationPath $instructionsPath
+    }
+    else {
+        $null
+    }
 
-    Write-ProviderState -Metadata @{
+    $stateMetadata = @{
         provider = $manifest.provider
         display_name = $manifest.displayName
         skills_dir = $skillsDir
         installed_skill_dirs = @($installedSkillDirs)
         installed_at_utc = Get-UtcTimestamp
     }
+
+    if ($instructionsMetadata) {
+        foreach ($key in $instructionsMetadata.Keys) {
+            $stateMetadata[$key] = $instructionsMetadata[$key]
+        }
+    }
+
+    Write-ProviderState -Metadata $stateMetadata
 
     Write-Log "Installed Radforge for $($manifest.displayName)."
 }
