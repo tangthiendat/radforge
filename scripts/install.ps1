@@ -2,7 +2,8 @@ param(
     [string[]]$Provider = @("all"),
     [string]$HomeRoot = $(if ($env:USERPROFILE) { $env:USERPROFILE } elseif ($HOME) { $HOME } else { throw "Unable to resolve user home directory." }),
     [switch]$DryRun,
-    [switch]$OverwriteInstructions
+    [switch]$OverwriteInstructions,
+    [switch]$IgnoreInstructions
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,7 +50,7 @@ function Invoke-BootstrapInstall {
             throw "Unable to locate installer inside extracted Radforge archive."
         }
 
-        & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -DryRun:$DryRun -OverwriteInstructions:$OverwriteInstructions
+        & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -DryRun:$DryRun -OverwriteInstructions:$OverwriteInstructions -IgnoreInstructions:$IgnoreInstructions
     }
     finally {
         if (Test-Path -LiteralPath $tempRoot) {
@@ -288,6 +289,25 @@ function Install-GlobalInstructions {
     }
 }
 
+function Get-InstructionsMetadata {
+    param(
+        [hashtable]$Manifest,
+        [string]$DisplayName
+    )
+
+    if ($IgnoreInstructions) {
+        Write-Log "Skipping provider-level global instructions for $DisplayName."
+        return $null
+    }
+
+    if (-not $Manifest.ContainsKey("instructionsFile")) {
+        return $null
+    }
+
+    $instructionsPath = Join-HomeRelativePath $Manifest.instructionsFile
+    Install-GlobalInstructions -DisplayName $DisplayName -SourcePath $GlobalInstructionsSource -DestinationPath $instructionsPath
+}
+
 function Get-AvailableProviderIds {
     Get-ChildItem -LiteralPath $ProvidersRoot -Directory | Select-Object -ExpandProperty Name | Sort-Object
 }
@@ -404,13 +424,7 @@ foreach ($providerId in $selectedProviders) {
     $manifest = Load-ProviderManifest $providerId
     $skillsDir = Join-HomeRelativePath $manifest.skillsDir
     $installedSkillDirs = Copy-SkillLibrary -DestinationRoot $skillsDir
-    $instructionsMetadata = if ($manifest.ContainsKey("instructionsFile")) {
-        $instructionsPath = Join-HomeRelativePath $manifest.instructionsFile
-        Install-GlobalInstructions -DisplayName $manifest.displayName -SourcePath $GlobalInstructionsSource -DestinationPath $instructionsPath
-    }
-    else {
-        $null
-    }
+    $instructionsMetadata = Get-InstructionsMetadata -Manifest $manifest -DisplayName $manifest.displayName
 
     $stateMetadata = @{
         provider = $manifest.provider
