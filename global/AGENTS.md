@@ -1,4 +1,4 @@
-# Global Personal Framework Defaults
+# Global Personal Framework Instructions
 
 ## Role
 
