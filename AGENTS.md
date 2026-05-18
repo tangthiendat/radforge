@@ -10,7 +10,10 @@ Do not modify `global/AGENTS.md` unless the user explicitly asks.
 ## Repository Layout
 
 - `skills/<skill>/SKILL.md`: main entry file for each project skill
+- `skills/<skill>/templates/`: optional executable scaffolds for structured skills
 - `skills/<skill>/references/`: optional supporting material for deeper guidance
+- `providers/<provider>/manifest.json`: provider adapter metadata
+- `scripts/`: install and uninstall entrypoints
 - `docs/specs/`: approved design and framework specs
 - `docs/plans/`: written implementation plans for substantial work
 - `global/AGENTS.md`: shared global instructions, not this project's change target unless explicitly requested
@@ -47,6 +50,14 @@ Bootstrap skill:
 
 - `use-radforge`: decide whether Radforge should take over and route into the single right workflow skill
 
+## Activation Model
+
+Current core release uses a bootstrap-only activation model for installed use.
+
+- inside this repository, `AGENTS.md` is the active always-on contract
+- in installed provider environments, Radforge currently relies on provider skill discovery or explicit user invocation of `use-radforge`
+- stronger always-on activation may be added later, but it is not part of the current core release
+
 ## Default Routing Rules
 
 Apply this framework by default to non-trivial work.
@@ -55,11 +66,11 @@ Trivial one-step requests may skip the framework when doing so is clearly lower 
 
 Routing precedence:
 
-1. active failure, regression, or unexpected behavior -> `debug`
+1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
 2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-3. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-4. clear, low-ambiguity direct execution -> `implement`
-5. behavior validation or regression checking -> `test`
+3. behavior validation or regression checking with no primary implementation change -> `test`
+4. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+5. clear, low-ambiguity direct execution -> `implement`
 
 Escalation rules:
 
@@ -156,9 +167,18 @@ This closeout rule is global and is not a separate workflow skill.
 - keep this project `AGENTS.md` concise and authoritative
 - keep each `SKILL.md` focused on one coherent procedure
 - keep shared policy in `AGENTS.md` rather than repeating it in every skill
+- use frontmatter consistently for shipped skills with at least `name`, `description`, `maturity`, `owner`, `lastReviewed`, and any meaningful compatibility note
+- prefer templates or compact references when a skill needs stronger determinism than prose alone
+- keep `brainstorming` focused on direction selection; ordered tasks, file maps, and validation sequencing belong in `plan`
+- avoid repeating global routing, evidence, or closeout policy inside every skill unless the local adaptation is materially different
 - use progressive disclosure: move optional depth into `references/` files
 - add scripts only when they improve determinism or safety
 - refine skills from real repeated workflows and observed failures
+
+Current release note:
+
+- keep the live core suite under the flat `skills/` layout for install compatibility
+- reserve deeper grouping such as `skills/core`, `skills/quality`, or `skills/platform` for a later structural migration that updates installers, docs, and provider packaging together
 
 ## Source Selection Policy
 

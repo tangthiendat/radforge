@@ -1,6 +1,10 @@
 ---
 name: brainstorming
 description: Use when a task is unclear, under-specified, or has multiple reasonable approaches. Clarify scope, compare options, and get approval before execution.
+maturity: core
+owner: radforge
+lastReviewed: "2026-05-18"
+compatibility: bootstrap-only installed use and repo-local workflow contracts
 ---
 
 # brainstorming
@@ -30,7 +34,7 @@ Clarify unclear work before execution starts.
 4. Summarize the goal, constraints, success criteria, and scope boundary.
 5. If there is a real decision to make, propose 2-3 approaches with tradeoffs.
 6. Recommend one direction and explain why it is the best fit.
-7. If the work is too large for one coherent effort, decompose it before discussing implementation.
+7. If the work is too large for one coherent effort, decompose it only enough to choose a direction or split the problem into approved workstreams.
 8. Pause for approval when the work includes meaningful design or tradeoff decisions.
 9. Hand off to `plan` only when the approved direction is substantial, risky, or dependency-heavy.
 10. Hand off to `implement` when the direction is clear and the remaining work is direct.
@@ -40,6 +44,8 @@ Clarify unclear work before execution starts.
 - do not start implementation while the direction is still unclear
 - keep the process lightweight when the design surface is small
 - do not smuggle planning detail into brainstorming when the user has not approved the direction yet
+- do not produce file maps, ordered task lists, or validation command inventories here; that is `plan` once the direction is approved
+- do not fully decompose execution phases here; stop once the direction and workstream boundary are clear enough for `plan`
 - do not hand off to `plan` for small direct tasks once the direction is clear
 - respect design-only requests and stop after alignment when asked
 - do not skip relevant repository guidance when `docs/`, specs, plans, or similar folders already describe the area
