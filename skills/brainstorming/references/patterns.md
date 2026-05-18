@@ -72,3 +72,17 @@ Before handing off, confirm that you have:
 - any unresolved assumptions or open questions
 - approval status when a gate applied
 - the next-skill handoff
+
+Recommended status shape:
+
+```text
+Goal
+Scope Boundary
+Constraints
+Options
+Recommendation
+Approval Status
+Next Handoff
+```
+
+Keep options lightweight when there is only one realistic direction.

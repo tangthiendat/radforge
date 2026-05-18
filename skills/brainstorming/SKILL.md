@@ -56,13 +56,24 @@ Clarify unclear work before execution starts.
 
 ## Output Contract
 
-- clarified problem statement
+Use this structure:
+
+```text
+Goal
+Scope Boundary
+Constraints
+Options
+Recommendation
+Approval Status
+Next Handoff
+```
+
+Include in the sections above:
+
+- clarified problem statement and success criteria
 - scope boundary or decomposition decision
-- constraints and success criteria
-- recommended direction and key tradeoff
+- recommended direction and its key tradeoff
 - unresolved assumptions or open questions
-- approval status
-- next-skill handoff
 
 ## Handoff Rules
 

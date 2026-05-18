@@ -32,6 +32,7 @@ If a field is not needed, write `none` with a brief reason.
 ## Result
 
 - status: <pass | fail | partial>
+- evidence sufficiency: <enough to support completion | not enough yet>
 - summary: <one short conclusion>
 
 ## Closeout
