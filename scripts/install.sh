@@ -5,6 +5,7 @@ PROVIDER_ARG="all"
 HOME_ROOT="${HOME:-}"
 DRY_RUN=0
 OVERWRITE_INSTRUCTIONS=0
+IGNORE_INSTRUCTIONS=0
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -22,6 +23,10 @@ while [ "$#" -gt 0 ]; do
             ;;
         --overwrite-instructions)
             OVERWRITE_INSTRUCTIONS=1
+            shift
+            ;;
+        --ignore-instructions)
+            IGNORE_INSTRUCTIONS=1
             shift
             ;;
         *)
@@ -75,15 +80,31 @@ bootstrap_install() {
 
     if [ "$DRY_RUN" -eq 1 ]; then
         if [ "$OVERWRITE_INSTRUCTIONS" -eq 1 ]; then
-            sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run --overwrite-instructions
+            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run --overwrite-instructions --ignore-instructions
+            else
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run --overwrite-instructions
+            fi
         else
-            sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
+            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run --ignore-instructions
+            else
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
+            fi
         fi
     else
         if [ "$OVERWRITE_INSTRUCTIONS" -eq 1 ]; then
-            sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --overwrite-instructions
+            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --overwrite-instructions --ignore-instructions
+            else
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --overwrite-instructions
+            fi
         else
-            sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
+            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --ignore-instructions
+            else
+                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
+            fi
         fi
     fi
 }
@@ -331,6 +352,21 @@ install_global_instructions() {
     printf 'instructions_mode=file\n'
 }
 
+get_instructions_metadata() {
+    display_name=$1
+    instructions_relative=$2
+
+    if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
+        log_stderr "Skipping provider-level global instructions for $display_name."
+        return
+    fi
+
+    [ -n "$instructions_relative" ] || return
+
+    instructions_path=$(join_home_relative_path "$instructions_relative")
+    install_global_instructions "$display_name" "$GLOBAL_INSTRUCTIONS_SOURCE" "$instructions_path"
+}
+
 write_provider_state() {
     provider_id=$1
     display_name=$2
@@ -392,11 +428,7 @@ for provider_id in $selected_providers; do
     skills_dir=$(join_home_relative_path "$skills_relative")
     remove_legacy_hint_from_state "$state_path"
     installed_skill_dirs=$(copy_skill_library "$skills_dir")
-    instructions_metadata=""
-    if [ -n "$instructions_relative" ]; then
-        instructions_path=$(join_home_relative_path "$instructions_relative")
-        instructions_metadata=$(install_global_instructions "$display_name" "$GLOBAL_INSTRUCTIONS_SOURCE" "$instructions_path")
-    fi
+    instructions_metadata=$(get_instructions_metadata "$display_name" "$instructions_relative")
     installed_at_utc=$(utc_now)
 
     write_provider_state \

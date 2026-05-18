@@ -4,10 +4,6 @@ Radforge is a personal skills framework for coding agents.
 
 It packages a highly customized workflow and skill library so the agent can follow your preferred way of working when those skills are available or when you ask for them explicitly.
 
-The installer can also place the shared `global/AGENTS.md` defaults into provider-level instruction files. When that target file already exists, the installer asks per provider before overwriting it.
-
-Use `-OverwriteInstructions` in PowerShell or `--overwrite-instructions` in shell when you want a non-interactive install to replace the existing provider instruction file for every selected provider.
-
 ## Quickstart
 
 Install Radforge directly from GitHub with a single command.
@@ -44,13 +40,34 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/
 
 The default install targets all supported providers.
 
-#### Install specific providers
+### Install Script Options
 
-Available provider values:
+Use these options with the install script to control provider selection and provider-level global instruction handling.
+
+When you pass options in PowerShell, use the `scriptblock` form shown below so flags such as `-Provider`, `-DryRun`, `-OverwriteInstructions`, and `-IgnoreInstructions` are applied to the installer script.
+
+| Behavior | PowerShell | Shell |
+| --- | --- | --- |
+| Install specific providers | `-Provider codex,claude-code` | `--provider codex,claude-code` |
+| Preview changes without writing | `-DryRun` | `--dry-run` |
+| Overwrite existing provider instruction files | `-OverwriteInstructions` | `--overwrite-instructions` |
+| Skip provider instruction files entirely | `-IgnoreInstructions` | `--ignore-instructions` |
+
+Provider values:
 
 - `claude-code`
 - `codex`
 - `opencode`
+
+Instruction-file behavior:
+
+- by default, missing provider instruction files are installed from `global/AGENTS.md`
+- if a provider instruction file already exists, the installer asks whether to overwrite it
+- answer `No` at the prompt, or omit the overwrite flag in non-interactive installs, to keep the existing provider instruction file
+- use `-OverwriteInstructions` or `--overwrite-instructions` to replace existing provider instruction files for all selected providers in a non-interactive run
+- use `-IgnoreInstructions` or `--ignore-instructions` to leave provider instruction files completely unmanaged for that install run, even when the target file does not exist yet
+
+#### Install specific providers
 
 ### Windows PowerShell
 
@@ -184,6 +201,8 @@ For each selected provider, the installer:
 The installer is additive and conservative:
 
 - it removes only Radforge-owned installed skill directories during uninstall
+- it asks before replacing an existing provider-level instruction file, so you can overwrite it or ignore it
+- it can skip provider-level instruction-file installation entirely with `-IgnoreInstructions` or `--ignore-instructions`
 - it removes provider-level instruction files only when Radforge created them from a missing target
 - it can clean up legacy provider hint blocks from older installs when you reinstall
 - it does not replace repository-local instructions
@@ -193,6 +212,8 @@ The installer is additive and conservative:
 Rerun install to refresh the installed skill copies.
 
 If you installed with an explicit provider value, especially for a desktop app or IDE extension that shares a provider path, rerun install with the same explicit provider value.
+
+Use the same install script options from `Install Script Options` when you want to target specific providers, preview the update, overwrite existing provider instruction files, or skip provider instruction files entirely.
 
 If you are updating from an older version that used provider-global hints, rerun install once to remove the legacy hint blocks.
 
