@@ -222,11 +222,11 @@ function Get-AvailableProviderIds {
 }
 
 function Get-SelectedProviderIds {
-    $available = Get-AvailableProviderIds
     if ($Provider -contains "all") {
-        return $available
+        return @()
     }
 
+    $available = Get-AvailableProviderIds
     $selected = New-Object System.Collections.Generic.List[string]
     foreach ($entry in $Provider) {
         foreach ($candidate in ($entry -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
@@ -249,16 +249,6 @@ function Load-ProviderManifest {
 
     $manifestPath = Join-Path (Join-Path $ProvidersRoot $ProviderId) "manifest.json"
     (Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json -AsHashtable)
-}
-
-function Get-ProviderDisplayNames {
-    param([string[]]$ProviderIds)
-
-    @(
-        foreach ($providerId in $ProviderIds) {
-            (Load-ProviderManifest $providerId).displayName
-        }
-    )
 }
 
 function Copy-SkillLibrary {
@@ -311,13 +301,14 @@ function Write-ProviderState {
 
 $selectedProviders = Get-SelectedProviderIds
 if ($selectedProviders.Count -eq 0) {
-    Write-Host "No supported providers selected."
-    exit 0
-}
+    if ($Provider -contains "all") {
+        Write-Host "A provider is required. Use -Provider to install explicitly."
+    }
+    else {
+        Write-Host "No supported providers selected."
+    }
 
-if ($Provider -contains "all") {
-    $detectedProviderNames = Get-ProviderDisplayNames $selectedProviders
-    Write-Log "Detected providers: $($detectedProviderNames -join ', ')"
+    exit 0
 }
 
 foreach ($providerId in $selectedProviders) {

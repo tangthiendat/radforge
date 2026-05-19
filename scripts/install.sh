@@ -152,20 +152,6 @@ manifest_value() {
     sed -n "s/^[[:space:]]*\"$key\":[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$file" | head -n 1
 }
 
-provider_display_names() {
-    first=1
-    for provider_id in "$@"; do
-        manifest_path="$PROVIDERS_ROOT/$provider_id/manifest.json"
-        display_name=$(manifest_value displayName "$manifest_path")
-        if [ "$first" -eq 0 ]; then
-            printf ', '
-        fi
-        printf '%s' "$display_name"
-        first=0
-    done
-    printf '\n'
-}
-
 join_home_relative_path() {
     relative=$1
     relative=$(printf '%s' "$relative" | sed 's#\\#/#g')
@@ -270,7 +256,6 @@ for candidate in "$@"; do
     candidate=$(printf '%s' "$candidate" | sed 's/^ *//; s/ *$//')
     [ -n "$candidate" ] || continue
     if [ "$candidate" = "all" ]; then
-        selected_providers=$(list_available_providers | paste -sd ' ' -)
         break
     fi
 
@@ -282,13 +267,13 @@ for candidate in "$@"; do
 done
 
 if [ -z "$(printf '%s' "$selected_providers" | tr -d ' ')" ]; then
-    printf 'No supported providers selected.\n'
-    exit 0
-fi
+    if [ "$PROVIDER_ARG" = "all" ]; then
+        printf 'A provider is required. Use --provider to install explicitly.\n'
+    else
+        printf 'No supported providers selected.\n'
+    fi
 
-if [ "$PROVIDER_ARG" = "all" ]; then
-    # Log the provider set chosen by the default auto-selection path.
-    log "Detected providers: $(provider_display_names $selected_providers)"
+    exit 0
 fi
 
 for provider_id in $selected_providers; do

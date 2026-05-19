@@ -15,43 +15,16 @@ Current installer support is for the CLI/provider user-level setup. Desktop apps
 - Claude Code
 - Codex
 - Cursor
+- GitHub Copilot
 - OpenCode
 
 ## Install
 
-Install all supported providers by default, or pass a provider list when you only want specific targets.
+Choose one or more providers explicitly for every install.
 
-### Install all supported providers
+The installer does not pick a default provider for you.
 
-### Windows PowerShell
-
-```powershell
-irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1" | iex
-```
-
-### macOS Or Linux
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash
-```
-
-### Install Script Options
-
-Use these options to target specific providers or preview the install.
-
-| Behavior                        | PowerShell                    | Shell                          |
-| ------------------------------- | ----------------------------- | ------------------------------ |
-| Install specific providers      | `-Provider codex,claude-code` | `--provider codex,claude-code` |
-| Preview changes without writing | `-DryRun`                     | `--dry-run`                    |
-
-Provider values:
-
-- `claude-code`
-- `codex`
-- `cursor`
-- `opencode`
-
-### Install specific providers
+### Install providers
 
 ### Windows PowerShell
 
@@ -65,20 +38,39 @@ Provider values:
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
 ```
 
+### Install Script Options
+
+Use these options to choose providers or preview the install.
+
+| Behavior                        | PowerShell                    | Shell                          |
+| ------------------------------- | ----------------------------- | ------------------------------ |
+| Install specific providers      | `-Provider codex,claude-code` | `--provider codex,claude-code` |
+| Preview changes without writing | `-Provider codex -DryRun`     | `--provider codex --dry-run`   |
+
+Provider values:
+
+- `claude-code`
+- `codex`
+- `cursor`
+- `github-copilot`
+- `opencode`
+
 ### Desktop apps or IDE extensions
 
 Desktop apps and IDE extensions that share the same provider skill system should install with an explicit provider value.
 
+GitHub Copilot uses `~/.copilot/skills`.
+
 #### Windows PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider github-copilot
 ```
 
 #### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider github-copilot
 ```
 
 If the expected provider folders do not exist yet, the installer creates them.
@@ -88,13 +80,13 @@ If the expected provider folders do not exist yet, the installer creates them.
 ### Windows PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -DryRun
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex -DryRun
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex --dry-run
 ```
 
 ## Uninstall
@@ -122,6 +114,7 @@ Use the same provider values as install:
 - `claude-code`
 - `codex`
 - `cursor`
+- `github-copilot`
 - `opencode`
 
 ### Windows PowerShell
@@ -203,9 +196,7 @@ The installer is additive and conservative:
 
 ## Updating Radforge
 
-Rerun install to refresh the installed skill copies.
-
-If you installed with an explicit provider value, especially for a desktop app or IDE extension that shares a provider path, rerun install with the same explicit provider value.
+Rerun install with the same explicit provider values to refresh the installed skill copies.
 
 Use the same install script options from `Install Script Options` when you want to target specific providers or preview the update.
 
@@ -214,19 +205,19 @@ If you are updating from an older version that used installer-managed provider h
 ### Windows PowerShell
 
 ```powershell
-irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1" | iex
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex,claude-code
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
 ```
 
 If you want to preview an update first, use the dry-run commands from the install section.
 
 ## Notes
 
-- when no provider is specified, the installer selects all supported providers in this repository and logs the detected provider names
+- install requires an explicit provider selection; the installer does not choose providers automatically
 - uninstall uses the stored provider state files in `~/.radforge/providers/` to remove only Radforge-managed assets
 - actual skill auto-invocation still depends on the provider surfacing installed skills to the model for that session
