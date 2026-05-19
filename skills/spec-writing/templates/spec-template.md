@@ -47,6 +47,11 @@ If a field is not needed, write `none` with a brief reason.
 - status: <ready for approval | approved | needs clarification>
 - gate: <what decision or review is still needed, or `none`>
 
+## Artifact Location
+
+- location: <`docs/specs/<filename>.md` or `chat-only`>
+- why this location is appropriate: <durable artifact needed or why the scope is too small/simple>
+
 ## Next Handoff
 
 - <`plan`, `implement`, `brainstorming`, or `stop`>

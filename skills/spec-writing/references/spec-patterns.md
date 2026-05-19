@@ -13,6 +13,9 @@ Prefer `spec-writing` after `brainstorming` when:
 
 Do not use it when the main remaining need is task sequencing; that is `plan`.
 
+Default to a durable spec in `docs/specs/`.
+Use chat-only output only when the scope is small, simple, and not worth a spec file.
+
 ## Problem Framing Pattern
 
 Start with repository-specific facts, not generic architecture prose.

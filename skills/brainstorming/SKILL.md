@@ -37,8 +37,9 @@ Clarify unclear work before execution starts.
 6. Recommend one direction and explain why it is the best fit.
 7. If the work is too large for one coherent effort, decompose it only enough to choose a direction or split the problem into approved workstreams.
 8. Pause for approval when the work includes meaningful design or tradeoff decisions.
-9. Hand off to `plan` only when the approved direction is substantial, risky, or dependency-heavy.
-10. Hand off to `implement` when the direction is clear and the remaining work is direct.
+9. Hand off to `spec-writing` when the direction is mostly settled but the missing artifact is a durable design in `docs/specs/`.
+10. Hand off to `plan` only when the approved direction is substantial, risky, or dependency-heavy and the main remaining need is execution structure.
+11. Hand off to `implement` when the direction is clear and the remaining work is direct.
 
 ## Guardrails
 
@@ -46,7 +47,8 @@ Clarify unclear work before execution starts.
 - keep the process lightweight when the design surface is small
 - do not smuggle planning detail into brainstorming when the user has not approved the direction yet
 - do not produce file maps, ordered task lists, or validation command inventories here; that is `plan` once the direction is approved
-- do not fully decompose execution phases here; stop once the direction and workstream boundary are clear enough for `plan`
+- do not fully decompose execution phases here; stop once the direction and workstream boundary are clear enough for `spec-writing` or `plan`
+- do not hand off to `plan` before `spec-writing` when the missing artifact is still a durable design rather than execution structure
 - do not hand off to `plan` for small direct tasks once the direction is clear
 - respect design-only requests and stop after alignment when asked
 - do not skip relevant repository guidance when `docs/`, specs, plans, or similar folders already describe the area
@@ -74,10 +76,12 @@ Include in the sections above:
 - clarified problem statement and success criteria
 - scope boundary or decomposition decision
 - recommended direction and its key tradeoff
+- whether the next best handoff is `spec-writing`, `plan`, or `implement`
 - unresolved assumptions or open questions
 
 ## Handoff Rules
 
 - `brainstorming` -> `plan`
+- `brainstorming` -> `spec-writing`
 - `brainstorming` -> `implement`
 - `brainstorming` -> stop

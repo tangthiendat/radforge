@@ -36,8 +36,20 @@ Produce a durable spec for design-heavy, approval-sensitive, or cross-cutting wo
 4. Write the problem, goals, non-goals, constraints, and proposed design in concrete repository terms.
 5. Capture alternatives only when there is a real tradeoff worth preserving for approval or later review.
 6. Call out risks, open questions, migration concerns, and approval-sensitive decisions explicitly instead of burying them in prose.
-7. Name the expected next handoff clearly: usually `plan`, sometimes `implement`, or back to `brainstorming` if the design is not ready.
-8. If the spec is the intended artifact, write it to `docs/specs/` and replace every placeholder with repository-specific content.
+7. Pause for approval when the spec introduces approval-sensitive design, migration, compatibility, rollout, or workflow decisions.
+8. Name the expected next handoff clearly: usually `plan`, sometimes `implement`, or back to `brainstorming` if the design is not ready.
+9. Replace every placeholder with repository-specific content and finalize the artifact according to the rule below.
+
+## Spec Finalization Rule
+
+Write the spec to `docs/specs/` when any of the following are true:
+
+- the work is design-heavy or cross-cutting
+- the spec is approval-sensitive
+- the design is intended for reuse, review, or handoff
+- multiple files, components, or workflows are affected and the reasoning should be preserved
+
+Use a chat-only spec only when the scope is small, simple, and not worth a durable spec file.
 
 ## Guardrails
 
@@ -45,6 +57,7 @@ Produce a durable spec for design-heavy, approval-sensitive, or cross-cutting wo
 - do not turn the spec into an execution plan with ordered implementation tasks
 - do not skip non-goals or constraints when they materially shape the design
 - do not keep alternatives just for ceremony when one direction is already settled
+- do not hand off from `spec-writing` without approval when the spec is approval-sensitive
 - do not stop after non-trivial spec work without naming approval status and the next handoff
 
 ## Supporting Files
@@ -74,6 +87,7 @@ Include in the sections above:
 
 - the affected repository surface or design boundary
 - the reason a durable spec is needed instead of going directly to `plan` or `implement`
+- whether the artifact is finalized in `docs/specs/` or intentionally kept chat-only
 - whether the spec is ready for approval, planning, or further clarification
 
 ## Handoff Rules
