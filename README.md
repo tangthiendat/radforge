@@ -10,10 +10,11 @@ Install Radforge directly from GitHub with a single command.
 
 ## Supported Providers
 
-Current installer support is for the CLI/provider user-level setup. Desktop apps and IDE extensions may also load these skills when they share the same provider skill system, but Radforge does not yet have dedicated desktop-app or IDE-extension installer targets.
+Current installer support is for the CLI/provider user-level setup. Desktop apps and IDE extensions may also load these skills when they share the same provider skill system.
 
 - Claude Code
 - Codex
+- Cursor
 - OpenCode
 
 ## Install
@@ -55,6 +56,7 @@ Provider values:
 
 - `claude-code`
 - `codex`
+- `cursor`
 - `opencode`
 
 #### Install specific providers
@@ -73,7 +75,9 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/
 
 ### Desktop App Or IDE Extension Users
 
-If your desktop app or IDE extension uses the same provider skill system, install with an explicit provider value such as `codex`, `claude-code`, or `opencode`.
+If your desktop app or IDE extension uses the same provider skill system, install with an explicit provider value such as `cursor`, `codex`, `claude-code`, or `opencode`.
+
+Cursor support uses Cursor's native user-level skill directory at `~/.cursor/skills`. Cursor also supports repo-local `AGENTS.md` and `.cursor/rules`, so Radforge's installed skills can coexist with project-local instructions cleanly.
 
 If the expected provider folders do not exist yet, the installer creates them.
 
@@ -127,6 +131,7 @@ Use the same provider values as install:
 
 - `claude-code`
 - `codex`
+- `cursor`
 - `opencode`
 
 ### Windows PowerShell
