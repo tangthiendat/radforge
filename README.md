@@ -1,8 +1,8 @@
 # Radforge
 
-Radforge is a personal skills framework for coding agents.
+Radforge is a workflow skills framework for coding agents with clear routing, durable artifacts, and multi-provider installation support.
 
-It packages a highly customized workflow and skill library so the agent can follow your preferred way of working when those skills are available or when you ask for them explicitly.
+It packages a pragmatic workflow and skill library so supported agents can follow a consistent way of working.
 
 ## Quickstart
 
@@ -19,13 +19,9 @@ Current installer support is for the CLI/provider user-level setup. Desktop apps
 
 ## Install
 
-Choose the path that matches how you use the provider.
+Install all supported providers by default, or pass a provider list when you only want specific targets.
 
-### CLI Users
-
-Use the default install if you want Radforge available for the normal CLI/provider setup.
-
-#### Install all supported providers
+### Install all supported providers
 
 ### Windows PowerShell
 
@@ -39,18 +35,14 @@ irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/instal
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash
 ```
 
-The default install targets all supported providers.
-
 ### Install Script Options
 
-Use these options with the install script to control provider selection.
+Use these options to target specific providers or preview the install.
 
-When you pass options in PowerShell, use the `scriptblock` form shown below so flags such as `-Provider` and `-DryRun` are applied to the installer script.
-
-| Behavior | PowerShell | Shell |
-| --- | --- | --- |
-| Install specific providers | `-Provider codex,claude-code` | `--provider codex,claude-code` |
-| Preview changes without writing | `-DryRun` | `--dry-run` |
+| Behavior                        | PowerShell                    | Shell                          |
+| ------------------------------- | ----------------------------- | ------------------------------ |
+| Install specific providers      | `-Provider codex,claude-code` | `--provider codex,claude-code` |
+| Preview changes without writing | `-DryRun`                     | `--dry-run`                    |
 
 Provider values:
 
@@ -59,7 +51,7 @@ Provider values:
 - `cursor`
 - `opencode`
 
-#### Install specific providers
+### Install specific providers
 
 ### Windows PowerShell
 
@@ -73,13 +65,9 @@ Provider values:
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
 ```
 
-### Desktop App Or IDE Extension Users
+### Desktop apps or IDE extensions
 
-If your desktop app or IDE extension uses the same provider skill system, install with an explicit provider value such as `cursor`, `codex`, `claude-code`, or `opencode`.
-
-Cursor support uses Cursor's native user-level skill directory at `~/.cursor/skills`. Cursor also supports repo-local `AGENTS.md` and `.cursor/rules`, so Radforge's installed skills can coexist with project-local instructions cleanly.
-
-If the expected provider folders do not exist yet, the installer creates them.
+Desktop apps and IDE extensions that share the same provider skill system should install with an explicit provider value.
 
 #### Windows PowerShell
 
@@ -93,7 +81,9 @@ If the expected provider folders do not exist yet, the installer creates them.
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex
 ```
 
-### Preview Changes Without Writing To Disk
+If the expected provider folders do not exist yet, the installer creates them.
+
+### Preview without writing
 
 ### Windows PowerShell
 
