@@ -173,6 +173,7 @@ For non-trivial work, the routing shorthand is:
 
 - use `review` when the main job is assessing existing changes for bugs, regressions, missing validation, or rollout risk
 - start in `brainstorming` when direction, scope, or approval is still unresolved
+- use `spec-writing` when the direction is mostly chosen and the missing artifact is a durable design in `docs/specs/`
 - move to `plan` when the direction is already clear and the remaining job is execution structure
 - stay in `implement` only while one bounded checkpoint plus one local smoke-style check is enough to support the claim
 - hand off to `test` when the remaining need is broader proof or regression confidence
@@ -185,6 +186,7 @@ Repository-local instructions still take priority over user-level Radforge perso
 
 - `review`: inspects existing changes for bugs, regressions, missing validation, and rollout risk
 - `brainstorming`: clarifies direction, scope, and approval before execution
+- `spec-writing`: turns approved or nearly approved direction into a durable design artifact
 - `plan`: organizes approved or already-clear work into resumable execution structure
 - `implement`: executes clear changes inside a bounded checkpoint
 - `test`: validates changes when broader proof or regression confidence is needed
