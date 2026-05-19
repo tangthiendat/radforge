@@ -2,6 +2,7 @@
 name: debug
 description: Use when something is broken, failing, regressing, or behaving unexpectedly. Reproduce the issue, isolate the cause, test a small fix, and verify the result.
 maturity: core
+kind: workflow
 owner: radforge
 lastReviewed: "2026-05-18"
 compatibility: bootstrap-only installed use and repo-local workflow contracts

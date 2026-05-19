@@ -2,6 +2,7 @@
 name: brainstorming
 description: Use when a task is unclear, under-specified, or has multiple reasonable approaches. Clarify scope, compare options, and get approval before execution.
 maturity: core
+kind: workflow
 owner: radforge
 lastReviewed: "2026-05-18"
 compatibility: bootstrap-only installed use and repo-local workflow contracts

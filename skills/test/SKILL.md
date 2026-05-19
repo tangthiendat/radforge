@@ -2,6 +2,7 @@
 name: test
 description: Use when there is meaningful behavior or regression risk to validate. Choose the smallest useful checks, run them, and capture fresh evidence.
 maturity: core
+kind: workflow
 owner: radforge
 lastReviewed: "2026-05-18"
 compatibility: bootstrap-only installed use and repo-local workflow contracts

@@ -2,6 +2,7 @@
 name: use-radforge
 description: Use when this personal Radforge workflow is installed and the current task may need structured routing. Respect repo-local rules, decide whether the framework applies, and hand off to the single right core skill.
 maturity: core
+kind: bootstrap
 owner: radforge
 lastReviewed: "2026-05-18"
 compatibility: bootstrap-only installed use and repo-local workflow contracts
@@ -45,15 +46,17 @@ It must still work when installed outside a repository that has no stronger loca
 ## Default Routing Precedence
 
 1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
-2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-3. behavior validation or regression checking with no primary implementation change -> `test`
-4. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-5. clear, low-ambiguity direct execution -> `implement`
-6. tiny, obvious, low-risk work may skip Radforge and stop
+2. explicit review request or change-risk assessment of existing work -> `review`
+3. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
+4. behavior validation or regression checking with no primary implementation change -> `test`
+5. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+6. clear, low-ambiguity direct execution -> `implement`
+7. tiny, obvious, low-risk work may skip Radforge and stop
 
 ## Routing Heuristics
 
 - handle directly only when the task is tiny, obvious, low risk, has no approval gate, and does not need multi-step coordination
+- choose `review` when the main job is assessing an existing diff, artifact, or workflow for bugs, regressions, missing validation, or rollout risk
 - choose `brainstorming` when the direction is still unclear, approval depends on a design choice, or multiple reasonable approaches remain
 - choose `implement` when the task is clear and bounded, execution is still direct, and no major sequencing or dependency management is needed
 - stay with `implement` when one checkpoint inside one coherent boundary plus one Tier 1-style smoke check is enough to support the claim
@@ -66,6 +69,8 @@ It must still work when installed outside a repository that has no stronger loca
 ## Routing Examples
 
 - direct: add one obvious sentence to an existing doc with no workflow implications
+- `review`: inspect an existing change set for bugs, regressions, rollout risk, and missing validation before merge or release
+- `review` borderline: the code already changed, and the user wants findings and confidence assessment rather than more implementation
 - `brainstorming`: the request has two reasonable workflow designs and the approval boundary depends on which one is chosen
 - `brainstorming` borderline: the work will likely need a plan later, but the design direction or scope split is still unresolved
 - `implement`: tighten one existing skill file with a bounded wording change and one local readback check
@@ -115,6 +120,7 @@ Include in the sections above:
 ## Handoff Rules
 
 - `use-radforge` -> `debug`
+- `use-radforge` -> `review`
 - `use-radforge` -> `brainstorming`
 - `use-radforge` -> `test`
 - `use-radforge` -> `plan`

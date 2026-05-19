@@ -45,6 +45,7 @@ Core workflow skills:
 - `implement`: make the actual code, docs, config, or workflow changes
 - `test`: run meaningful validation and capture fresh evidence
 - `debug`: reproduce, isolate, and verify the root cause of broken behavior
+- `review`: inspect existing changes for bugs, regressions, missing validation, and rollout risk
 
 Bootstrap skill:
 
@@ -67,10 +68,11 @@ Trivial one-step requests may skip the framework when doing so is clearly lower 
 Routing precedence:
 
 1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
-2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-3. behavior validation or regression checking with no primary implementation change -> `test`
-4. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-5. clear, low-ambiguity direct execution -> `implement`
+2. explicit review request or change-risk assessment of existing work -> `review`
+3. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
+4. behavior validation or regression checking with no primary implementation change -> `test`
+5. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+6. clear, low-ambiguity direct execution -> `implement`
 
 Escalation rules:
 
@@ -167,7 +169,7 @@ This closeout rule is global and is not a separate workflow skill.
 - keep this project `AGENTS.md` concise and authoritative
 - keep each `SKILL.md` focused on one coherent procedure
 - keep shared policy in `AGENTS.md` rather than repeating it in every skill
-- use frontmatter consistently for shipped skills with at least `name`, `description`, `maturity`, `owner`, `lastReviewed`, and any meaningful compatibility note
+- use frontmatter consistently for shipped skills with at least `name`, `description`, `maturity`, `kind`, `owner`, `lastReviewed`, and any meaningful compatibility note
 - prefer templates or compact references when a skill needs stronger determinism than prose alone
 - keep `brainstorming` focused on direction selection; ordered tasks, file maps, and validation sequencing belong in `plan`
 - avoid repeating global routing, evidence, or closeout policy inside every skill unless the local adaptation is materially different

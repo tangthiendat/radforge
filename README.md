@@ -171,6 +171,7 @@ Small, clear, low-risk tasks can still run directly without forcing the full wor
 
 For non-trivial work, the routing shorthand is:
 
+- use `review` when the main job is assessing existing changes for bugs, regressions, missing validation, or rollout risk
 - start in `brainstorming` when direction, scope, or approval is still unresolved
 - move to `plan` when the direction is already clear and the remaining job is execution structure
 - stay in `implement` only while one bounded checkpoint plus one local smoke-style check is enough to support the claim
@@ -182,6 +183,7 @@ Repository-local instructions still take priority over user-level Radforge perso
 
 ### Workflow Skills
 
+- `review`: inspects existing changes for bugs, regressions, missing validation, and rollout risk
 - `brainstorming`: clarifies direction, scope, and approval before execution
 - `plan`: organizes approved or already-clear work into resumable execution structure
 - `implement`: executes clear changes inside a bounded checkpoint
