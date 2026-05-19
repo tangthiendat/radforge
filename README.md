@@ -20,31 +20,81 @@ Current installer support is for the CLI/provider user-level setup. Desktop apps
 
 ## Install
 
-Choose one or more providers explicitly for every install.
+Choose the provider you want and run its command.
 
 The installer does not pick a default provider for you.
 
-### Install providers
-
 ### Windows PowerShell
 
+#### Claude Code
+
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex,claude-code
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider claude-code
+```
+
+#### Codex
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex
+```
+
+#### Cursor
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider cursor
+```
+
+#### GitHub Copilot
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider github-copilot
+```
+
+#### OpenCode
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider opencode
 ```
 
 ### macOS Or Linux
 
+#### Claude Code
+
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider claude-code
+```
+
+#### Codex
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex
+```
+
+#### Cursor
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider cursor
+```
+
+#### GitHub Copilot
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider github-copilot
+```
+
+#### OpenCode
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider opencode
 ```
 
 ### Install Script Options
 
-Use these options to choose providers or preview the install.
+Use these options when you want more than the single-provider commands above.
 
 | Behavior                        | PowerShell                    | Shell                          |
 | ------------------------------- | ----------------------------- | ------------------------------ |
-| Install specific providers      | `-Provider codex,claude-code` | `--provider codex,claude-code` |
+| Install multiple providers      | `-Provider codex,claude-code` | `--provider codex,claude-code` |
 | Preview changes without writing | `-Provider codex -DryRun`     | `--provider codex --dry-run`   |
 
 Provider values:
@@ -60,18 +110,6 @@ Provider values:
 Desktop apps and IDE extensions that share the same provider skill system should install with an explicit provider value.
 
 GitHub Copilot uses `~/.copilot/skills`.
-
-#### Windows PowerShell
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider github-copilot
-```
-
-#### macOS Or Linux
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider github-copilot
-```
 
 If the expected provider folders do not exist yet, the installer creates them.
 
