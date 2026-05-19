@@ -48,17 +48,19 @@ It must still work when installed outside a repository that has no stronger loca
 1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
 2. explicit review request or change-risk assessment of existing work -> `review`
 3. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-4. approved or nearly approved direction needs a durable design artifact -> `spec-writing`
-5. behavior validation or regression checking with no primary implementation change -> `test`
-6. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-7. clear, low-ambiguity direct execution -> `implement`
-8. tiny, obvious, low-risk work may skip Radforge and stop
+4. old-path to new-path transition work where compatibility, cutover, rollback, or rollout is the main challenge -> `migration`
+5. approved or nearly approved direction needs a durable design artifact -> `spec-writing`
+6. behavior validation or regression checking with no primary implementation change -> `test`
+7. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+8. clear, low-ambiguity direct execution -> `implement`
+9. tiny, obvious, low-risk work may skip Radforge and stop
 
 ## Routing Heuristics
 
 - handle directly only when the task is tiny, obvious, low risk, has no approval gate, and does not need multi-step coordination
 - choose `review` when the main job is assessing an existing diff, artifact, or workflow for bugs, regressions, missing validation, or rollout risk
 - choose `brainstorming` when the direction is still unclear, approval depends on a design choice, or multiple reasonable approaches remain
+- choose `migration` when moving from an old path to a new one is the primary job and compatibility, cutover, rollback, or rollout concerns are more important than the code edit itself
 - choose `spec-writing` when the direction is mostly settled and the missing artifact is a durable design in `docs/specs/` before execution planning starts
 - choose `implement` when the task is clear and bounded, execution is still direct, and no major sequencing or dependency management is needed
 - stay with `implement` when one checkpoint inside one coherent boundary plus one Tier 1-style smoke check is enough to support the claim
@@ -77,6 +79,8 @@ It must still work when installed outside a repository that has no stronger loca
 - `brainstorming` borderline: the work will likely need a plan later, but the design direction or scope split is still unresolved
 - `spec-writing`: the direction is approved, but a substantial design still needs to be written to `docs/specs/` before planning or implementation
 - `spec-writing` borderline: the work is no longer ambiguous enough for `brainstorming`, but planning would be premature because the design choices still need a durable artifact
+- `migration`: replace an old config or command path with a new one where the transition window, rollback, and removal timing need explicit handling
+- `migration` borderline: the target design is already known, but jumping straight to `plan` would skip the compatibility boundary and cutover decision
 - `implement`: tighten one existing skill file with a bounded wording change and one local readback check
 - `implement` borderline: update one installer message and confirm it with one dry-run or readback inside the same checkpoint
 - `test`: implementation already happened and the remaining job is proving install behavior or regression coverage
@@ -127,6 +131,7 @@ Include in the sections above:
 - `use-radforge` -> `review`
 - `use-radforge` -> `brainstorming`
 - `use-radforge` -> `spec-writing`
+- `use-radforge` -> `migration`
 - `use-radforge` -> `test`
 - `use-radforge` -> `plan`
 - `use-radforge` -> `implement`
