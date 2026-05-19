@@ -2,9 +2,10 @@
 name: plan
 description: Use when work is multi-step, risky, or dependency-heavy. Turn an approved direction into an ordered execution plan and finalize substantial plans into docs/plans/.
 maturity: core
+kind: workflow
 owner: radforge
 lastReviewed: "2026-05-18"
-compatibility: bootstrap-only installed use and repo-local workflow contracts
+compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
 # plan

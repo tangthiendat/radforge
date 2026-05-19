@@ -2,9 +2,10 @@
 name: implement
 description: Use when the task is clear enough to execute. Make the smallest correct change, preserve existing patterns, and hand off to testing when needed.
 maturity: core
+kind: workflow
 owner: radforge
 lastReviewed: "2026-05-18"
-compatibility: bootstrap-only installed use and repo-local workflow contracts
+compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
 # implement

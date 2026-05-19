@@ -2,9 +2,10 @@
 name: use-radforge
 description: Use when this personal Radforge workflow is installed and the current task may need structured routing. Respect repo-local rules, decide whether the framework applies, and hand off to the single right core skill.
 maturity: core
+kind: bootstrap
 owner: radforge
 lastReviewed: "2026-05-18"
-compatibility: bootstrap-only installed use and repo-local workflow contracts
+compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
 # use-radforge
@@ -45,16 +46,20 @@ It must still work when installed outside a repository that has no stronger loca
 ## Default Routing Precedence
 
 1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
-2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-3. behavior validation or regression checking with no primary implementation change -> `test`
-4. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-5. clear, low-ambiguity direct execution -> `implement`
-6. tiny, obvious, low-risk work may skip Radforge and stop
+2. explicit review request or change-risk assessment of existing work -> `review`
+3. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
+4. approved or nearly approved direction needs a durable design artifact -> `spec-writing`
+5. behavior validation or regression checking with no primary implementation change -> `test`
+6. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+7. clear, low-ambiguity direct execution -> `implement`
+8. tiny, obvious, low-risk work may skip Radforge and stop
 
 ## Routing Heuristics
 
 - handle directly only when the task is tiny, obvious, low risk, has no approval gate, and does not need multi-step coordination
+- choose `review` when the main job is assessing an existing diff, artifact, or workflow for bugs, regressions, missing validation, or rollout risk
 - choose `brainstorming` when the direction is still unclear, approval depends on a design choice, or multiple reasonable approaches remain
+- choose `spec-writing` when the direction is mostly settled and the missing artifact is a durable design in `docs/specs/` before execution planning starts
 - choose `implement` when the task is clear and bounded, execution is still direct, and no major sequencing or dependency management is needed
 - stay with `implement` when one checkpoint inside one coherent boundary plus one Tier 1-style smoke check is enough to support the claim
 - choose `plan` only after the direction is approved or already clear, and the remaining job is execution structure, sequencing, file mapping, validation ordering, or resumable handoff preparation
@@ -66,8 +71,12 @@ It must still work when installed outside a repository that has no stronger loca
 ## Routing Examples
 
 - direct: add one obvious sentence to an existing doc with no workflow implications
+- `review`: inspect an existing change set for bugs, regressions, rollout risk, and missing validation before merge or release
+- `review` borderline: the code already changed, and the user wants findings and confidence assessment rather than more implementation
 - `brainstorming`: the request has two reasonable workflow designs and the approval boundary depends on which one is chosen
 - `brainstorming` borderline: the work will likely need a plan later, but the design direction or scope split is still unresolved
+- `spec-writing`: the direction is approved, but a substantial design still needs to be written to `docs/specs/` before planning or implementation
+- `spec-writing` borderline: the work is no longer ambiguous enough for `brainstorming`, but planning would be premature because the design choices still need a durable artifact
 - `implement`: tighten one existing skill file with a bounded wording change and one local readback check
 - `implement` borderline: update one installer message and confirm it with one dry-run or readback inside the same checkpoint
 - `test`: implementation already happened and the remaining job is proving install behavior or regression coverage
@@ -115,7 +124,9 @@ Include in the sections above:
 ## Handoff Rules
 
 - `use-radforge` -> `debug`
+- `use-radforge` -> `review`
 - `use-radforge` -> `brainstorming`
+- `use-radforge` -> `spec-writing`
 - `use-radforge` -> `test`
 - `use-radforge` -> `plan`
 - `use-radforge` -> `implement`

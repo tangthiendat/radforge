@@ -1,6 +1,5 @@
 {
   "provider": "claude-code",
   "displayName": "Claude Code",
-  "skillsDir": ".claude/skills",
-  "instructionsFile": ".claude/CLAUDE.md"
+  "skillsDir": ".claude/skills"
 }

@@ -4,9 +4,6 @@
 
 This `AGENTS.md` is the project-specific authority for this repository.
 
-Shared global guidance lives in `global/AGENTS.md`.
-Do not modify `global/AGENTS.md` unless the user explicitly asks.
-
 ## Repository Layout
 
 - `skills/<skill>/SKILL.md`: main entry file for each project skill
@@ -16,7 +13,6 @@ Do not modify `global/AGENTS.md` unless the user explicitly asks.
 - `scripts/`: install and uninstall entrypoints
 - `docs/specs/`: approved design and framework specs
 - `docs/plans/`: written implementation plans for substantial work
-- `global/AGENTS.md`: shared global instructions, not this project's change target unless explicitly requested
 
 ## Framework Model
 
@@ -40,11 +36,13 @@ Use one active primary skill at a time.
 
 Core workflow skills:
 
+- `spec-writing`: turn approved or nearly approved direction into a durable design artifact before planning or implementation
 - `brainstorming`: clarify unclear work, compare options, and get alignment before execution
 - `plan`: turn an approved direction into an execution plan and finalize substantial plans into `docs/plans/`
 - `implement`: make the actual code, docs, config, or workflow changes
 - `test`: run meaningful validation and capture fresh evidence
 - `debug`: reproduce, isolate, and verify the root cause of broken behavior
+- `review`: inspect existing changes for bugs, regressions, missing validation, and rollout risk
 
 Bootstrap skill:
 
@@ -52,10 +50,10 @@ Bootstrap skill:
 
 ## Activation Model
 
-Current core release uses a bootstrap-only activation model for installed use.
+Current core release uses bootstrap routing for installed use.
 
 - inside this repository, `AGENTS.md` is the active always-on contract
-- in installed provider environments, Radforge currently relies on provider skill discovery or explicit user invocation of `use-radforge`
+- in installed provider environments, Radforge relies on provider skill discovery or explicit user invocation of `use-radforge` for workflow routing
 - stronger always-on activation may be added later, but it is not part of the current core release
 
 ## Default Routing Rules
@@ -67,10 +65,12 @@ Trivial one-step requests may skip the framework when doing so is clearly lower 
 Routing precedence:
 
 1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
-2. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-3. behavior validation or regression checking with no primary implementation change -> `test`
-4. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-5. clear, low-ambiguity direct execution -> `implement`
+2. explicit review request or change-risk assessment of existing work -> `review`
+3. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
+4. approved or nearly approved direction needs a durable design artifact -> `spec-writing`
+5. behavior validation or regression checking with no primary implementation change -> `test`
+6. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+7. clear, low-ambiguity direct execution -> `implement`
 
 Escalation rules:
 
@@ -99,6 +99,8 @@ Use written artifacts when they add durable value:
 
 - write a spec when the work is design-heavy, under-specified, or needs approval as a durable artifact
 - write a plan to `docs/plans/` when the work is substantial
+
+Prefer `spec-writing` when the direction is mostly settled and the main missing artifact is a durable design in `docs/specs/`.
 
 A written plan in `docs/plans/` is required when any of the following are true:
 
@@ -167,7 +169,7 @@ This closeout rule is global and is not a separate workflow skill.
 - keep this project `AGENTS.md` concise and authoritative
 - keep each `SKILL.md` focused on one coherent procedure
 - keep shared policy in `AGENTS.md` rather than repeating it in every skill
-- use frontmatter consistently for shipped skills with at least `name`, `description`, `maturity`, `owner`, `lastReviewed`, and any meaningful compatibility note
+- use frontmatter consistently for shipped skills with at least `name`, `description`, `maturity`, `kind`, `owner`, `lastReviewed`, and any meaningful compatibility note
 - prefer templates or compact references when a skill needs stronger determinism than prose alone
 - keep `brainstorming` focused on direction selection; ordered tasks, file maps, and validation sequencing belong in `plan`
 - avoid repeating global routing, evidence, or closeout policy inside every skill unless the local adaptation is materially different

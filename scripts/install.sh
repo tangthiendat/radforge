@@ -4,8 +4,6 @@ set -eu
 PROVIDER_ARG="all"
 HOME_ROOT="${HOME:-}"
 DRY_RUN=0
-OVERWRITE_INSTRUCTIONS=0
-IGNORE_INSTRUCTIONS=0
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -19,14 +17,6 @@ while [ "$#" -gt 0 ]; do
             ;;
         --dry-run)
             DRY_RUN=1
-            shift
-            ;;
-        --overwrite-instructions)
-            OVERWRITE_INSTRUCTIONS=1
-            shift
-            ;;
-        --ignore-instructions)
-            IGNORE_INSTRUCTIONS=1
             shift
             ;;
         *)
@@ -44,7 +34,6 @@ fi
 REPO_ROOT=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
 PROVIDERS_ROOT="$REPO_ROOT/providers"
 SKILLS_SOURCE_ROOT="$REPO_ROOT/skills"
-GLOBAL_INSTRUCTIONS_SOURCE="$REPO_ROOT/global/AGENTS.md"
 STATE_ROOT="$HOME_ROOT/.radforge"
 PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
 
@@ -79,37 +68,13 @@ bootstrap_install() {
     fi
 
     if [ "$DRY_RUN" -eq 1 ]; then
-        if [ "$OVERWRITE_INSTRUCTIONS" -eq 1 ]; then
-            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run --overwrite-instructions --ignore-instructions
-            else
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run --overwrite-instructions
-            fi
-        else
-            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run --ignore-instructions
-            else
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
-            fi
-        fi
+        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
     else
-        if [ "$OVERWRITE_INSTRUCTIONS" -eq 1 ]; then
-            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --overwrite-instructions --ignore-instructions
-            else
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --overwrite-instructions
-            fi
-        else
-            if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --ignore-instructions
-            else
-                sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
-            fi
-        fi
+        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
     fi
 }
 
-if [ ! -d "$PROVIDERS_ROOT" ] || [ ! -d "$SKILLS_SOURCE_ROOT" ] || [ ! -f "$GLOBAL_INSTRUCTIONS_SOURCE" ]; then
+if [ ! -d "$PROVIDERS_ROOT" ] || [ ! -d "$SKILLS_SOURCE_ROOT" ]; then
     bootstrap_install
     exit 0
 fi
@@ -119,14 +84,6 @@ log() {
         printf '[dry-run] %s\n' "$1"
     else
         printf '[radforge] %s\n' "$1"
-    fi
-}
-
-log_stderr() {
-    if [ "$DRY_RUN" -eq 1 ]; then
-        printf '[dry-run] %s\n' "$1" >&2
-    else
-        printf '[radforge] %s\n' "$1" >&2
     fi
 }
 
@@ -286,94 +243,12 @@ copy_skill_library() {
     printf '%s\n' "$installed_paths"
 }
 
-is_interactive() {
-    [ -t 0 ] && return 0
-    [ -r /dev/tty ]
-}
-
-confirm_instructions_overwrite() {
-    display_name=$1
-    destination_path=$2
-
-    if ! is_interactive; then
-        printf 'Skipping overwrite of %s for %s because install is non-interactive.\n' "$destination_path" "$display_name" >&2
-        return 1
-    fi
-
-    if [ -r /dev/tty ]; then
-        printf "Overwrite existing instructions file '%s' for %s? [y/N] " "$destination_path" "$display_name" > /dev/tty
-        IFS= read -r response < /dev/tty || response=""
-    else
-        printf "Overwrite existing instructions file '%s' for %s? [y/N] " "$destination_path" "$display_name"
-        IFS= read -r response || response=""
-    fi
-
-    normalized=$(printf '%s' "$response" | tr '[:upper:]' '[:lower:]')
-    [ "$normalized" = "y" ] || [ "$normalized" = "yes" ]
-}
-
-install_global_instructions() {
-    display_name=$1
-    source_path=$2
-    destination_path=$3
-
-    [ -n "$destination_path" ] || return
-
-    created_by_installer=1
-    if [ -e "$destination_path" ]; then
-        created_by_installer=0
-        if [ "$OVERWRITE_INSTRUCTIONS" -ne 1 ]; then
-            if [ "$DRY_RUN" -eq 1 ]; then
-                log_stderr "Would ask whether to overwrite existing instructions file '$destination_path' for $display_name."
-                return
-            fi
-
-            if ! confirm_instructions_overwrite "$display_name" "$destination_path"; then
-                log_stderr "Keeping existing instructions file '$destination_path'."
-                return
-            fi
-        fi
-    fi
-
-    ensure_dir "$(dirname "$destination_path")"
-
-    if [ "$DRY_RUN" -eq 1 ]; then
-        if [ "$created_by_installer" -eq 1 ]; then
-            log_stderr "Would install global instructions to '$destination_path'."
-        else
-            log_stderr "Would overwrite global instructions at '$destination_path'."
-        fi
-    else
-        cp "$source_path" "$destination_path"
-    fi
-
-    printf 'instructions_file=%s\n' "$destination_path"
-    printf 'instructions_file_created=%s\n' "$created_by_installer"
-    printf 'instructions_mode=file\n'
-}
-
-get_instructions_metadata() {
-    display_name=$1
-    instructions_relative=$2
-
-    if [ "$IGNORE_INSTRUCTIONS" -eq 1 ]; then
-        log_stderr "Skipping provider-level global instructions for $display_name."
-        return
-    fi
-
-    [ -n "$instructions_relative" ] || return
-
-    instructions_path=$(join_home_relative_path "$instructions_relative")
-    install_global_instructions "$display_name" "$GLOBAL_INSTRUCTIONS_SOURCE" "$instructions_path"
-}
-
 write_provider_state() {
     provider_id=$1
     display_name=$2
     skills_dir=$3
     installed_skill_dirs=$4
     installed_at_utc=$5
-    instructions_metadata=${6:-}
     state_path="$PROVIDER_STATE_ROOT/$provider_id.state"
 
     {
@@ -382,9 +257,6 @@ write_provider_state() {
         printf 'skills_dir=%s\n' "$skills_dir"
         printf 'installed_skill_dirs=%s\n' "$installed_skill_dirs"
         printf 'installed_at_utc=%s\n' "$installed_at_utc"
-        if [ -n "$instructions_metadata" ]; then
-            printf '%s\n' "$instructions_metadata"
-        fi
     } | write_file "$state_path"
 }
 
@@ -424,11 +296,9 @@ for provider_id in $selected_providers; do
     state_path="$PROVIDER_STATE_ROOT/$provider_id.state"
     display_name=$(manifest_value displayName "$manifest_path")
     skills_relative=$(manifest_value skillsDir "$manifest_path")
-    instructions_relative=$(manifest_value instructionsFile "$manifest_path")
     skills_dir=$(join_home_relative_path "$skills_relative")
     remove_legacy_hint_from_state "$state_path"
     installed_skill_dirs=$(copy_skill_library "$skills_dir")
-    instructions_metadata=$(get_instructions_metadata "$display_name" "$instructions_relative")
     installed_at_utc=$(utc_now)
 
     write_provider_state \
@@ -436,8 +306,7 @@ for provider_id in $selected_providers; do
         "$display_name" \
         "$skills_dir" \
         "$installed_skill_dirs" \
-        "$installed_at_utc" \
-        "$instructions_metadata"
+        "$installed_at_utc"
 
     log "Installed Radforge for $display_name."
 done

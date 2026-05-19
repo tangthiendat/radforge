@@ -171,12 +171,7 @@ for provider_id in $selected_providers; do
     [ -n "$instructions_mode" ] || instructions_mode="legacy_block"
     installed_skill_dirs=$(state_value installed_skill_dirs "$state_path")
 
-    if [ -n "$instructions_file" ] && [ -f "$instructions_file" ]; then
-        if [ "$instructions_mode" = "file" ]; then
-            if [ "$instructions_file_created" = "1" ]; then
-                remove_path_if_exists "$instructions_file"
-            fi
-        else
+    if [ -n "$instructions_file" ] && [ -f "$instructions_file" ] && [ "$instructions_mode" = "legacy_block" ]; then
             stripped_file=$(strip_legacy_managed_block "$instructions_file")
             if [ ! -s "$stripped_file" ] && [ "$instructions_file_created" = "1" ]; then
                 remove_path_if_exists "$instructions_file"
@@ -184,7 +179,6 @@ for provider_id in $selected_providers; do
                 cat "$stripped_file" | write_file "$instructions_file"
             fi
             rm -f "$stripped_file"
-        fi
     fi
 
     old_ifs=$IFS

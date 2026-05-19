@@ -1,6 +1,5 @@
 {
   "provider": "opencode",
   "displayName": "OpenCode",
-  "skillsDir": ".config/opencode/skills",
-  "instructionsFile": ".config/opencode/AGENTS.md"
+  "skillsDir": ".config/opencode/skills"
 }
