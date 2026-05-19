@@ -36,6 +36,7 @@ Use one active primary skill at a time.
 
 Core workflow skills:
 
+- `migration`: manage old-path to new-path transitions with compatibility, cutover, rollback, and rollout thinking
 - `spec-writing`: turn approved or nearly approved direction into a durable design artifact before planning or implementation
 - `brainstorming`: clarify unclear work, compare options, and get alignment before execution
 - `plan`: turn an approved direction into an execution plan and finalize substantial plans into `docs/plans/`
@@ -67,10 +68,11 @@ Routing precedence:
 1. active failure, reproduced regression, or unexpected broken behavior -> `debug`
 2. explicit review request or change-risk assessment of existing work -> `review`
 3. unresolved ambiguity, open design questions, or multiple reasonable approaches -> `brainstorming`
-4. approved or nearly approved direction needs a durable design artifact -> `spec-writing`
-5. behavior validation or regression checking with no primary implementation change -> `test`
-6. clear but multi-step, risky, or dependency-heavy execution -> `plan`
-7. clear, low-ambiguity direct execution -> `implement`
+4. old-path to new-path transition work where compatibility, cutover, rollback, or rollout is the main challenge -> `migration`
+5. approved or nearly approved direction needs a durable design artifact -> `spec-writing`
+6. behavior validation or regression checking with no primary implementation change -> `test`
+7. clear but multi-step, risky, or dependency-heavy execution -> `plan`
+8. clear, low-ambiguity direct execution -> `implement`
 
 Escalation rules:
 
@@ -84,6 +86,7 @@ Escalation rules:
 Pause and ask for approval when a gate applies:
 
 - after `brainstorming` when the work includes meaningful design or tradeoff decisions
+- during `migration` when cutover timing, compatibility promises, rollback limits, deletion timing, or irreversible transition decisions are approval-sensitive
 - after `plan` when the execution path is substantial, risky, or introduces meaningful sequencing or decomposition decisions
 - before destructive changes, broad refactors, commits, pushes, or other irreversible actions
 - before implementing a debug finding when the resulting fix materially changes code, config, or workflow and the user has not already asked to proceed
@@ -101,6 +104,7 @@ Use written artifacts when they add durable value:
 - write a plan to `docs/plans/` when the work is substantial
 
 Prefer `spec-writing` when the direction is mostly settled and the main missing artifact is a durable design in `docs/specs/`.
+Prefer `migration` before `spec-writing` when transition policy, compatibility boundary, cutover, rollback, or staged removal is the main challenge.
 
 A written plan in `docs/plans/` is required when any of the following are true:
 

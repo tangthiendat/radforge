@@ -10,10 +10,11 @@ Install Radforge directly from GitHub with a single command.
 
 ## Supported Providers
 
-Current installer support is for the CLI/provider user-level setup. Desktop apps and IDE extensions may also load these skills when they share the same provider skill system, but Radforge does not yet have dedicated desktop-app or IDE-extension installer targets.
+Current installer support is for the CLI/provider user-level setup. Desktop apps and IDE extensions may also load these skills when they share the same provider skill system.
 
 - Claude Code
 - Codex
+- Cursor
 - OpenCode
 
 ## Install
@@ -55,6 +56,7 @@ Provider values:
 
 - `claude-code`
 - `codex`
+- `cursor`
 - `opencode`
 
 #### Install specific providers
@@ -73,7 +75,9 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/
 
 ### Desktop App Or IDE Extension Users
 
-If your desktop app or IDE extension uses the same provider skill system, install with an explicit provider value such as `codex`, `claude-code`, or `opencode`.
+If your desktop app or IDE extension uses the same provider skill system, install with an explicit provider value such as `cursor`, `codex`, `claude-code`, or `opencode`.
+
+Cursor support uses Cursor's native user-level skill directory at `~/.cursor/skills`. Cursor also supports repo-local `AGENTS.md` and `.cursor/rules`, so Radforge's installed skills can coexist with project-local instructions cleanly.
 
 If the expected provider folders do not exist yet, the installer creates them.
 
@@ -127,6 +131,7 @@ Use the same provider values as install:
 
 - `claude-code`
 - `codex`
+- `cursor`
 - `opencode`
 
 ### Windows PowerShell
@@ -164,6 +169,7 @@ For non-trivial work, the routing shorthand is:
 - use `review` when the main job is assessing existing changes for bugs, regressions, missing validation, or rollout risk
 - start in `brainstorming` when direction, scope, or approval is still unresolved
 - use `spec-writing` when the direction is mostly chosen and the missing artifact is a durable design in `docs/specs/`
+- use `migration` when moving from an old path to a new one and compatibility, cutover, or rollback is the hard part
 - move to `plan` when the direction is already clear and the remaining job is execution structure
 - stay in `implement` only while one bounded checkpoint plus one local smoke-style check is enough to support the claim
 - hand off to `test` when the remaining need is broader proof or regression confidence
@@ -174,6 +180,7 @@ Repository-local instructions still take priority over user-level Radforge perso
 
 ### Workflow Skills
 
+- `migration`: manages old-path to new-path transitions with compatibility, cutover, rollback, and rollout thinking
 - `review`: inspects existing changes for bugs, regressions, missing validation, and rollout risk
 - `brainstorming`: clarifies direction, scope, and approval before execution
 - `spec-writing`: turns approved or nearly approved direction into a durable design artifact
