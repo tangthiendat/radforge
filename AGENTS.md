@@ -4,9 +4,6 @@
 
 This `AGENTS.md` is the project-specific authority for this repository.
 
-Shared global guidance lives in `global/AGENTS.md`.
-Do not modify `global/AGENTS.md` unless the user explicitly asks.
-
 ## Repository Layout
 
 - `skills/<skill>/SKILL.md`: main entry file for each project skill
@@ -16,7 +13,6 @@ Do not modify `global/AGENTS.md` unless the user explicitly asks.
 - `scripts/`: install and uninstall entrypoints
 - `docs/specs/`: approved design and framework specs
 - `docs/plans/`: written implementation plans for substantial work
-- `global/AGENTS.md`: shared global instructions, not this project's change target unless explicitly requested
 
 ## Framework Model
 
@@ -54,10 +50,10 @@ Bootstrap skill:
 
 ## Activation Model
 
-Current core release uses provider-global instructions plus bootstrap routing for installed use.
+Current core release uses bootstrap routing for installed use.
 
 - inside this repository, `AGENTS.md` is the active always-on contract
-- in installed provider environments, provider-global instructions establish the baseline and Radforge relies on provider skill discovery or explicit user invocation of `use-radforge` for workflow routing
+- in installed provider environments, Radforge relies on provider skill discovery or explicit user invocation of `use-radforge` for workflow routing
 - stronger always-on activation may be added later, but it is not part of the current core release
 
 ## Default Routing Rules

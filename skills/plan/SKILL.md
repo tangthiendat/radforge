@@ -5,7 +5,7 @@ maturity: core
 kind: workflow
 owner: radforge
 lastReviewed: "2026-05-18"
-compatibility: provider-global instructions, bootstrap routing, and repo-local workflow contracts
+compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
 # plan

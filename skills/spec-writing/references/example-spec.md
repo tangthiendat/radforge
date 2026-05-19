@@ -11,7 +11,7 @@ Use this as a shape reference when the template feels too abstract.
 ## Goals
 
 - align install behavior, activation wording, and provider metadata expectations
-- preserve safe overwrite and ignore behavior for provider instruction files
+- keep install behavior focused on skill distribution and bootstrap routing
 
 ## Non-Goals
 
@@ -21,18 +21,16 @@ Use this as a shape reference when the template feels too abstract.
 ## Constraints
 
 - existing PowerShell and POSIX shell installers must stay supported
-- repository-local instructions must continue to override provider-global instructions
+- repository-local instructions must continue to override user-level Radforge workflow defaults
 - the current shipped workflow should remain lightweight for small tasks
 
 ## Proposed Design
 
-- overview: keep provider-global instruction installation, keep bootstrap routing through `use-radforge`, and tighten repo docs plus manifest metadata around that model
+- overview: keep bootstrap routing through `use-radforge`, simplify install behavior around skill distribution only, and tighten repo docs plus manifest metadata around that model
 - key decisions:
-  - keep provider-global instructions as the installed baseline
   - preserve `use-radforge` as the workflow router for non-trivial work
   - document the current model explicitly before introducing larger packaging changes
 - affected files or surfaces:
-  - `global/AGENTS.md`
   - `AGENTS.md`
   - `README.md`
   - `providers/*/manifest.json`
@@ -40,8 +38,8 @@ Use this as a shape reference when the template feels too abstract.
 
 ## Alternatives
 
-- considered option: return to pure bootstrap-only discovery
-- why not chosen: it no longer matches the current installed behavior and would reintroduce activation drift
+- considered option: reintroduce provider-global instructions as the installed baseline
+- why not chosen: it adds install and uninstall complexity that is not needed for the current bootstrap-routing model
 
 ## Risks
 
@@ -54,7 +52,7 @@ Use this as a shape reference when the template feels too abstract.
 ## Approval Status
 
 - status: ready for approval
-- gate: confirm the current activation model should remain provider-global instructions plus bootstrap routing
+- gate: confirm the current activation model should remain bootstrap routing without provider-global instruction installation
 
 ## Next Handoff
 

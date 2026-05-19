@@ -5,7 +5,7 @@ maturity: core
 kind: design
 owner: radforge
 lastReviewed: "2026-05-19"
-compatibility: provider-global instructions, bootstrap routing, and repo-local workflow contracts
+compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
 # spec-writing

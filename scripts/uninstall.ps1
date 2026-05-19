@@ -178,12 +178,7 @@ foreach ($providerId in $selectedProviders) {
             "legacy_block"
         }
 
-        if ($instructionsMode -eq "file") {
-            if ($createdByInstaller) {
-                Remove-PathIfExists $providerState.instructions_file
-            }
-        }
-        else {
+        if ($instructionsMode -eq "legacy_block") {
             $updatedInstructions = Clear-ManagedBlock $providerState.instructions_file
 
             if ([string]::IsNullOrWhiteSpace($updatedInstructions)) {

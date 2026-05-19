@@ -42,30 +42,20 @@ The default install targets all supported providers.
 
 ### Install Script Options
 
-Use these options with the install script to control provider selection and provider-level global instruction handling.
+Use these options with the install script to control provider selection.
 
-When you pass options in PowerShell, use the `scriptblock` form shown below so flags such as `-Provider`, `-DryRun`, `-OverwriteInstructions`, and `-IgnoreInstructions` are applied to the installer script.
+When you pass options in PowerShell, use the `scriptblock` form shown below so flags such as `-Provider` and `-DryRun` are applied to the installer script.
 
 | Behavior | PowerShell | Shell |
 | --- | --- | --- |
 | Install specific providers | `-Provider codex,claude-code` | `--provider codex,claude-code` |
 | Preview changes without writing | `-DryRun` | `--dry-run` |
-| Overwrite existing provider instruction files | `-OverwriteInstructions` | `--overwrite-instructions` |
-| Skip provider instruction files entirely | `-IgnoreInstructions` | `--ignore-instructions` |
 
 Provider values:
 
 - `claude-code`
 - `codex`
 - `opencode`
-
-Instruction-file behavior:
-
-- by default, missing provider instruction files are installed from `global/AGENTS.md`
-- if a provider instruction file already exists, the installer asks whether to overwrite it
-- answer `No` at the prompt, or omit the overwrite flag in non-interactive installs, to keep the existing provider instruction file
-- use `-OverwriteInstructions` or `--overwrite-instructions` to replace existing provider instruction files for all selected providers in a non-interactive run
-- use `-IgnoreInstructions` or `--ignore-instructions` to leave provider instruction files completely unmanaged for that install run, even when the target file does not exist yet
 
 #### Install specific providers
 
@@ -165,7 +155,7 @@ The normal flow is:
 4. if it does not route automatically, ask the agent to use `use-radforge` first for non-trivial work
 5. `use-radforge` chooses one primary workflow skill for the task and hands off immediately
 
-Current core release intentionally uses provider-global instructions plus bootstrap routing through `use-radforge`.
+Current core release intentionally uses bootstrap routing through `use-radforge`.
 
 Small, clear, low-risk tasks can still run directly without forcing the full workflow.
 
@@ -205,16 +195,12 @@ Repository-local instructions still take priority over user-level Radforge perso
 For each selected provider, the installer:
 
 - copies every skill from `skills/` into the provider's user-level skills directory
-- installs provider-level shared instructions from `global/AGENTS.md`
 - installs `use-radforge` alongside the core workflow skills
 - records uninstall metadata in `~/.radforge/providers/<provider>.state`
 
 The installer is additive and conservative:
 
 - it removes only Radforge-owned installed skill directories during uninstall
-- it asks before replacing an existing provider-level instruction file, so you can overwrite it or ignore it
-- it can skip provider-level instruction-file installation entirely with `-IgnoreInstructions` or `--ignore-instructions`
-- it removes provider-level instruction files only when Radforge created them from a missing target
 - it can clean up legacy provider hint blocks from older installs when you reinstall
 - it does not replace repository-local instructions
 
@@ -224,9 +210,9 @@ Rerun install to refresh the installed skill copies.
 
 If you installed with an explicit provider value, especially for a desktop app or IDE extension that shares a provider path, rerun install with the same explicit provider value.
 
-Use the same install script options from `Install Script Options` when you want to target specific providers, preview the update, overwrite existing provider instruction files, or skip provider instruction files entirely.
+Use the same install script options from `Install Script Options` when you want to target specific providers or preview the update.
 
-If you are updating from an older version that used provider-global hints, rerun install once to remove the legacy hint blocks.
+If you are updating from an older version that used installer-managed provider hints, rerun install once to remove the legacy hint blocks.
 
 ### Windows PowerShell
 
