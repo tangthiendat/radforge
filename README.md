@@ -15,6 +15,7 @@ Current installer support is for the CLI/provider user-level setup. Desktop apps
 - Claude Code
 - Codex
 - Cursor
+- GitHub Copilot
 - OpenCode
 
 ## Install
@@ -49,6 +50,7 @@ Provider values:
 - `claude-code`
 - `codex`
 - `cursor`
+- `github-copilot`
 - `opencode`
 
 ### Install specific providers
@@ -72,13 +74,13 @@ Desktop apps and IDE extensions that share the same provider skill system should
 #### Windows PowerShell
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider github-copilot
 ```
 
 #### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex
+curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider github-copilot
 ```
 
 If the expected provider folders do not exist yet, the installer creates them.
@@ -122,6 +124,7 @@ Use the same provider values as install:
 - `claude-code`
 - `codex`
 - `cursor`
+- `github-copilot`
 - `opencode`
 
 ### Windows PowerShell
