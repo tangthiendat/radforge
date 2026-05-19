@@ -248,7 +248,7 @@ function Load-ProviderManifest {
     param([string]$ProviderId)
 
     $manifestPath = Join-Path (Join-Path $ProvidersRoot $ProviderId) "manifest.json"
-    (Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json -AsHashtable)
+    (Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json)
 }
 
 function Copy-SkillLibrary {
