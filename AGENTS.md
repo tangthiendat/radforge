@@ -53,10 +53,10 @@ Bootstrap skill:
 
 ## Activation Model
 
-Current core release uses a bootstrap-only activation model for installed use.
+Current core release uses provider-global instructions plus bootstrap routing for installed use.
 
 - inside this repository, `AGENTS.md` is the active always-on contract
-- in installed provider environments, Radforge currently relies on provider skill discovery or explicit user invocation of `use-radforge`
+- in installed provider environments, provider-global instructions establish the baseline and Radforge relies on provider skill discovery or explicit user invocation of `use-radforge` for workflow routing
 - stronger always-on activation may be added later, but it is not part of the current core release
 
 ## Default Routing Rules

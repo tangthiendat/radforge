@@ -5,7 +5,7 @@ maturity: core
 kind: quality
 owner: radforge
 lastReviewed: "2026-05-19"
-compatibility: bootstrap-only installed use and repo-local workflow contracts
+compatibility: provider-global instructions, bootstrap routing, and repo-local workflow contracts
 ---
 
 # review

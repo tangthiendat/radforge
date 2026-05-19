@@ -165,7 +165,7 @@ The normal flow is:
 4. if it does not route automatically, ask the agent to use `use-radforge` first for non-trivial work
 5. `use-radforge` chooses one primary workflow skill for the task and hands off immediately
 
-Current core release intentionally uses this bootstrap-only model.
+Current core release intentionally uses provider-global instructions plus bootstrap routing through `use-radforge`.
 
 Small, clear, low-risk tasks can still run directly without forcing the full workflow.
 
