@@ -33,6 +33,8 @@ fi
 
 STATE_ROOT="$HOME_ROOT/.radforge"
 PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
+SKILLS_SOURCE_ROOT=$(CDPATH= cd -- "$(dirname "$0")/../skills" 2>/dev/null && pwd || true)
+MANAGED_SKILL_MARKER_FILE=".radforge-skill"
 
 log() {
     if [ "$DRY_RUN" -eq 1 ]; then
@@ -57,6 +59,32 @@ remove_path_if_exists() {
     fi
 
     rm -rf "$1"
+}
+
+managed_skill_marker_path() {
+    printf '%s/%s\n' "$1" "$MANAGED_SKILL_MARKER_FILE"
+}
+
+is_managed_skill_dir() {
+    [ -f "$(managed_skill_marker_path "$1")" ]
+}
+
+is_legacy_managed_skill_dir() {
+    path=$1
+    installed_skill_dirs=${2:-}
+
+    [ -n "$SKILLS_SOURCE_ROOT" ] || return 1
+
+    case "|$installed_skill_dirs|" in
+        *"|$path|"*) ;;
+        *) return 1 ;;
+    esac
+
+    skill_name=$(basename "$path")
+    source_skill_dir="$SKILLS_SOURCE_ROOT/$skill_name"
+    [ -f "$path/SKILL.md" ] || return 1
+    [ -f "$source_skill_dir/SKILL.md" ] || return 1
+    cmp -s "$path/SKILL.md" "$source_skill_dir/SKILL.md"
 }
 
 write_file() {
@@ -187,7 +215,11 @@ for provider_id in $selected_providers; do
     IFS=$old_ifs
     for skill_dir in "$@"; do
         [ -n "$skill_dir" ] || continue
-        remove_path_if_exists "$skill_dir"
+        if is_managed_skill_dir "$skill_dir" || is_legacy_managed_skill_dir "$skill_dir" "$installed_skill_dirs"; then
+            remove_path_if_exists "$skill_dir"
+        elif [ -e "$skill_dir" ]; then
+            printf "Ignoring non-Radforge skill '%s'.\n" "$(basename "$skill_dir")" >&2
+        fi
     done
 
     remove_path_if_exists "$state_path"

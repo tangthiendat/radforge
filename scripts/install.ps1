@@ -20,6 +20,7 @@ $ProvidersRoot = if ($RepoRoot) { Join-Path $RepoRoot "providers" } else { $null
 $SkillsSourceRoot = if ($RepoRoot) { Join-Path $RepoRoot "skills" } else { $null }
 $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
+$ManagedSkillMarkerFileName = ".radforge-skill"
 
 function Invoke-BootstrapInstall {
     $archiveUrl = if ($env:RADFORGE_ARCHIVE_URL) {
@@ -142,6 +143,38 @@ function Remove-PathIfExists {
     Remove-Item -LiteralPath $Path -Recurse -Force
 }
 
+function Get-ManagedSkillMarkerPath {
+    param([string]$Path)
+
+    Join-Path $Path $ManagedSkillMarkerFileName
+}
+
+function Test-ManagedSkillDirectory {
+    param([string]$Path)
+
+    Test-Path -LiteralPath (Get-ManagedSkillMarkerPath $Path)
+}
+
+function Test-LegacyManagedSkillDirectory {
+    param(
+        [string]$Path,
+        [string]$SourceSkillDir,
+        [string[]]$LegacyInstalledSkillDirs
+    )
+
+    if (-not ($LegacyInstalledSkillDirs -contains $Path)) {
+        return $false
+    }
+
+    $existingSkillFile = Join-Path $Path "SKILL.md"
+    $sourceSkillFile = Join-Path $SourceSkillDir "SKILL.md"
+    if (-not (Test-Path -LiteralPath $existingSkillFile) -or -not (Test-Path -LiteralPath $sourceSkillFile)) {
+        return $false
+    }
+
+    [string](Read-TextFile $existingSkillFile) -eq [string](Read-TextFile $sourceSkillFile)
+}
+
 function Read-ProviderState {
     param([string]$StatePath)
 
@@ -252,7 +285,10 @@ function Load-ProviderManifest {
 }
 
 function Copy-SkillLibrary {
-    param([string]$DestinationRoot)
+    param(
+        [string]$DestinationRoot,
+        [string[]]$LegacyInstalledSkillDirs = @()
+    )
 
     Ensure-Directory $DestinationRoot
 
@@ -265,7 +301,13 @@ function Copy-SkillLibrary {
 
         $destination = Join-Path $DestinationRoot $skillDir.Name
         if (Test-Path -LiteralPath $destination) {
-            Remove-PathIfExists $destination
+            if ((Test-ManagedSkillDirectory $destination) -or (Test-LegacyManagedSkillDirectory -Path $destination -SourceSkillDir $skillDir.FullName -LegacyInstalledSkillDirs $LegacyInstalledSkillDirs)) {
+                Remove-PathIfExists $destination
+            }
+            else {
+                Write-Warning "Skipping existing non-Radforge skill '$($skillDir.Name)'."
+                continue
+            }
         }
 
         if ($DryRun) {
@@ -274,6 +316,8 @@ function Copy-SkillLibrary {
         else {
             Copy-Item -LiteralPath $skillDir.FullName -Destination $destination -Recurse -Force
         }
+
+        Write-TextFile -Path (Get-ManagedSkillMarkerPath $destination) -Content ("managed_by=radforge" + [Environment]::NewLine)
 
         $installedPaths.Add($destination)
     }
@@ -313,11 +357,19 @@ if ($selectedProviders.Count -eq 0) {
 
 foreach ($providerId in $selectedProviders) {
     $providerStatePath = Join-Path $ProviderStateRoot ($providerId + ".state")
+    $legacyInstalledSkillDirs = @()
+    if (Test-Path -LiteralPath $providerStatePath) {
+        $providerState = Read-ProviderState $providerStatePath
+        if ($providerState.ContainsKey("installed_skill_dirs")) {
+            $legacyInstalledSkillDirs = @([string]$providerState.installed_skill_dirs -split "\|" | Where-Object { $_ })
+        }
+    }
+
     Remove-LegacyHintFromState $providerStatePath
 
     $manifest = Load-ProviderManifest $providerId
     $skillsDir = Join-HomeRelativePath $manifest.skillsDir
-    $installedSkillDirs = Copy-SkillLibrary -DestinationRoot $skillsDir
+    $installedSkillDirs = Copy-SkillLibrary -DestinationRoot $skillsDir -LegacyInstalledSkillDirs $legacyInstalledSkillDirs
 
     Write-ProviderState -Metadata @{
         provider = $manifest.provider

@@ -10,7 +10,7 @@ Install Radforge directly from GitHub with a single command.
 
 ## Supported Providers
 
-Current installer support is for the CLI/provider user-level setup. Desktop apps and IDE extensions may also load these skills when they share the same provider skill system.
+Current installer support is for the provider user-level setup.
 
 - Claude Code
 - Codex
@@ -105,13 +105,9 @@ Provider values:
 - `github-copilot`
 - `opencode`
 
-### Desktop apps or IDE extensions
-
-Desktop apps and IDE extensions that share the same provider skill system should install with an explicit provider value.
-
-GitHub Copilot uses `~/.copilot/skills`.
-
 If the expected provider folders do not exist yet, the installer creates them.
+
+If a skill folder with the same name already exists and is not managed by Radforge, the installer leaves it alone and skips that skill.
 
 ### Preview without writing
 
@@ -127,9 +123,23 @@ If the expected provider folders do not exist yet, the installer creates them.
 curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex --dry-run
 ```
 
-## Uninstall
+### Verify after install
 
-If you installed for a desktop app or IDE extension through a shared provider path, uninstall with the same explicit provider value you used during install.
+After installing, open your coding tool and try this prompt:
+
+```text
+Tell me about Radforge.
+```
+
+If the installed skills are available, the agent should recognize Radforge and explain the workflow or available skills.
+
+If your provider does not surface the skills automatically, try this instead:
+
+```text
+Use use-radforge and tell me which workflow skills are available.
+```
+
+## Uninstall
 
 ### Uninstall all installed providers
 
@@ -169,33 +179,31 @@ curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/
 
 ## How It Works
 
-Radforge installs one main thing into your AI tool setup:
+Radforge installs a shared skill library into the user-level skills directory for each provider you select.
 
-- a shared skill library in the provider's user-level skills directory
+After install, the usual flow is:
 
-The normal flow is:
+1. Install Radforge for one or more supported providers.
+2. Start a task in your coding tool.
+3. If the provider exposes installed skills, the agent can discover `use-radforge`.
+4. If it does not route automatically, ask the agent to use `use-radforge` first for non-trivial work.
+5. `use-radforge` picks one primary workflow skill and hands off immediately.
 
-1. install Radforge for one or more supported providers
-2. start a task in your coding tool
-3. if the provider exposes installed skills, the agent can discover `use-radforge`
-4. if it does not route automatically, ask the agent to use `use-radforge` first for non-trivial work
-5. `use-radforge` chooses one primary workflow skill for the task and hands off immediately
+This release uses bootstrap routing through `use-radforge`.
 
-Current core release intentionally uses bootstrap routing through `use-radforge`.
+Small, clear, low-risk tasks can still be handled directly without using the full workflow.
 
-Small, clear, low-risk tasks can still run directly without forcing the full workflow.
+For non-trivial work, the routing guide is:
 
-For non-trivial work, the routing shorthand is:
-
-- use `review` when the main job is assessing existing changes for bugs, regressions, missing validation, or rollout risk
-- start in `brainstorming` when direction, scope, or approval is still unresolved
-- use `spec-writing` when the direction is mostly chosen and the missing artifact is a durable design in `docs/specs/`
+- use `review` when you need to assess existing changes for bugs, regressions, missing validation, or rollout risk
+- start in `brainstorming` when the direction, scope, or approval is still unclear
+- use `spec-writing` when the direction is mostly decided and you still need a durable design in `docs/specs/`
 - use `migration` when moving from an old path to a new one and compatibility, cutover, or rollback is the hard part
 - move to `plan` when the direction is already clear and the remaining job is execution structure
-- stay in `implement` only while one bounded checkpoint plus one local smoke-style check is enough to support the claim
-- hand off to `test` when the remaining need is broader proof or regression confidence
+- stay in `implement` when one bounded checkpoint plus one local smoke-style check is enough to support the claim
+- hand off to `test` when you need broader proof or more regression confidence
 
-Repository-local instructions still take priority over user-level Radforge personal defaults.
+Repository-local instructions still take priority over user-level Radforge defaults.
 
 ## What's Inside
 
@@ -228,6 +236,7 @@ For each selected provider, the installer:
 
 The installer is additive and conservative:
 
+- it only replaces skill directories that are already managed by Radforge
 - it removes only Radforge-owned installed skill directories during uninstall
 - it can clean up legacy provider hint blocks from older installs when you reinstall
 - it does not replace repository-local instructions
