@@ -1,4 +1,8 @@
-# Personal Skills Framework
+# Radforge
+
+Radforge is a workflow skills framework for coding agents with clear routing, durable artifacts, and multi-provider installation support.
+
+It packages a pragmatic workflow and skill library so supported agents can follow a consistent way of working.
 
 ## Scope
 
