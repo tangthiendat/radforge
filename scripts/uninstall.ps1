@@ -18,6 +18,8 @@ $StateRoot = Join-Path $HomeRoot ".radforge"
 $ProviderStateRoot = Join-Path $StateRoot "providers"
 $MarkerStart = "<!-- RADFORGE:BEGIN -->"
 $MarkerEnd = "<!-- RADFORGE:END -->"
+$ManagedSkillMarkerFileName = ".radforge-skill"
+$SkillsSourceRoot = if ($PSScriptRoot) { Join-Path (Split-Path -Parent $PSScriptRoot) "skills" } else { $null }
 
 function Write-Log {
     param([string]$Message)
@@ -57,6 +59,38 @@ function Remove-PathIfExists {
     }
 
     Remove-Item -LiteralPath $Path -Recurse -Force
+}
+
+function Get-ManagedSkillMarkerPath {
+    param([string]$Path)
+
+    Join-Path $Path $ManagedSkillMarkerFileName
+}
+
+function Test-ManagedSkillDirectory {
+    param([string]$Path)
+
+    Test-Path -LiteralPath (Get-ManagedSkillMarkerPath $Path)
+}
+
+function Test-LegacyManagedSkillDirectory {
+    param(
+        [string]$Path,
+        [string[]]$LegacyInstalledSkillDirs
+    )
+
+    if (-not $SkillsSourceRoot -or -not ($LegacyInstalledSkillDirs -contains $Path)) {
+        return $false
+    }
+
+    $sourceSkillDir = Join-Path $SkillsSourceRoot (Split-Path -Leaf $Path)
+    $existingSkillFile = Join-Path $Path "SKILL.md"
+    $sourceSkillFile = Join-Path $sourceSkillDir "SKILL.md"
+    if (-not (Test-Path -LiteralPath $existingSkillFile) -or -not (Test-Path -LiteralPath $sourceSkillFile)) {
+        return $false
+    }
+
+    [string](Read-TextFile $existingSkillFile) -eq [string](Read-TextFile $sourceSkillFile)
 }
 
 function Read-TextFile {
@@ -195,8 +229,14 @@ foreach ($providerId in $selectedProviders) {
         }
     }
 
-    foreach ($skillDir in ($providerState.installed_skill_dirs -split "\|" | Where-Object { $_ })) {
-        Remove-PathIfExists $skillDir
+    $installedSkillDirs = @($providerState.installed_skill_dirs -split "\|" | Where-Object { $_ })
+    foreach ($skillDir in $installedSkillDirs) {
+        if ((Test-ManagedSkillDirectory $skillDir) -or (Test-LegacyManagedSkillDirectory -Path $skillDir -LegacyInstalledSkillDirs $installedSkillDirs)) {
+            Remove-PathIfExists $skillDir
+        }
+        elseif (Test-Path -LiteralPath $skillDir) {
+            Write-Warning "Ignoring non-Radforge skill '$(Split-Path -Leaf $skillDir)'."
+        }
     }
 
     Remove-PathIfExists $providerStatePath

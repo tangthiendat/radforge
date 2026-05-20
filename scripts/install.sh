@@ -36,6 +36,7 @@ PROVIDERS_ROOT="$REPO_ROOT/providers"
 SKILLS_SOURCE_ROOT="$REPO_ROOT/skills"
 STATE_ROOT="$HOME_ROOT/.radforge"
 PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
+MANAGED_SKILL_MARKER_FILE=".radforge-skill"
 
 bootstrap_install() {
     archive_url="${RADFORGE_ARCHIVE_URL:-https://github.com/tangthiendat/radforge/archive/refs/heads/main.tar.gz}"
@@ -128,6 +129,29 @@ remove_path_if_exists() {
     rm -rf "$1"
 }
 
+managed_skill_marker_path() {
+    printf '%s/%s\n' "$1" "$MANAGED_SKILL_MARKER_FILE"
+}
+
+is_managed_skill_dir() {
+    [ -f "$(managed_skill_marker_path "$1")" ]
+}
+
+is_legacy_managed_skill_dir() {
+    path=$1
+    source_skill_dir=$2
+    legacy_installed_skill_dirs=${3:-}
+
+    case "|$legacy_installed_skill_dirs|" in
+        *"|$path|"*) ;;
+        *) return 1 ;;
+    esac
+
+    [ -f "$path/SKILL.md" ] || return 1
+    [ -f "$source_skill_dir/SKILL.md" ] || return 1
+    cmp -s "$path/SKILL.md" "$source_skill_dir/SKILL.md"
+}
+
 list_available_providers() {
     for dir in "$PROVIDERS_ROOT"/*; do
         [ -d "$dir" ] || continue
@@ -203,6 +227,7 @@ remove_legacy_hint_from_state() {
 
 copy_skill_library() {
     destination_root=$1
+    legacy_installed_skill_dirs=${2:-}
     ensure_dir "$destination_root"
 
     installed_paths=""
@@ -211,13 +236,22 @@ copy_skill_library() {
         [ -f "$skill_dir/SKILL.md" ] || continue
         skill_name=$(basename "$skill_dir")
         destination="$destination_root/$skill_name"
-        remove_path_if_exists "$destination"
+        if [ -e "$destination" ]; then
+            if is_managed_skill_dir "$destination" || is_legacy_managed_skill_dir "$destination" "$skill_dir" "$legacy_installed_skill_dirs"; then
+                remove_path_if_exists "$destination"
+            else
+                printf "Skipping existing non-Radforge skill '%s'.\n" "$skill_name" >&2
+                continue
+            fi
+        fi
 
         if [ "$DRY_RUN" -eq 1 ]; then
             log "Would copy skill '$skill_dir' to '$destination'."
         else
             cp -R "$skill_dir" "$destination"
         fi
+
+        printf 'managed_by=radforge\n' | write_file "$(managed_skill_marker_path "$destination")"
 
         if [ -z "$installed_paths" ]; then
             installed_paths=$destination
@@ -282,8 +316,9 @@ for provider_id in $selected_providers; do
     display_name=$(manifest_value displayName "$manifest_path")
     skills_relative=$(manifest_value skillsDir "$manifest_path")
     skills_dir=$(join_home_relative_path "$skills_relative")
+    legacy_installed_skill_dirs=$(state_value installed_skill_dirs "$state_path")
     remove_legacy_hint_from_state "$state_path"
-    installed_skill_dirs=$(copy_skill_library "$skills_dir")
+    installed_skill_dirs=$(copy_skill_library "$skills_dir" "$legacy_installed_skill_dirs")
     installed_at_utc=$(utc_now)
 
     write_provider_state \
