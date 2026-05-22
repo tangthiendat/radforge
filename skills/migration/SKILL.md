@@ -77,6 +77,7 @@ Rollback Path
 Validation Plan
 Open Questions
 Approval Status
+Artifact Location
 Next Handoff
 ```
 

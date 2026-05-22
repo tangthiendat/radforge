@@ -86,6 +86,7 @@ Target
 Tier
 Checks Run
 Result
+Closeout
 Skipped Validation
 Limits
 Next Handoff
@@ -99,7 +100,7 @@ Each check should include:
 
 The `Result` section should state whether the evidence is enough to support completion.
 
-If validation stops here for non-trivial work, include a closeout summary covering what changed, what was validated, what was skipped, and remaining risk.
+The `Closeout` section should cover what changed, what was validated, what was skipped, remaining risk, and completion state when validation stops here for non-trivial work.
 
 ## Handoff Rules
 
