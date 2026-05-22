@@ -23,6 +23,7 @@ Use this as a shape reference when the template feels too abstract.
 - must keep working: `old-sync` must still be recognized during the transition window
 - can change immediately: docs and new examples can point to `radforge sync`
 - can be removed later: legacy alias support after the transition window
+- support window or removal timing: remove the alias after one release if install and support docs show no remaining dependency
 
 ## Cutover Plan
 
@@ -48,6 +49,11 @@ Use this as a shape reference when the template feels too abstract.
 
 - status: needed
 - gate: user-visible command transition and later removal timing
+
+## Artifact Location
+
+- location: `docs/plans/<filename>.md`
+- why this location is appropriate: the target command is already known and the remaining value is preserving the transition sequence and validation steps
 
 ## Next Handoff
 

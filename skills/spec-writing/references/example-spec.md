@@ -54,6 +54,11 @@ Use this as a shape reference when the template feels too abstract.
 - status: ready for approval
 - gate: confirm the current activation model should remain bootstrap routing without provider-global instruction installation
 
+## Artifact Location
+
+- location: `docs/specs/<filename>.md`
+- why this location is appropriate: the design affects multiple workflow and installer boundaries and should remain reviewable after implementation starts
+
 ## Next Handoff
 
 - `plan`

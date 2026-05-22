@@ -80,6 +80,7 @@ Alternatives
 Risks
 Open Questions
 Approval Status
+Artifact Location
 Next Handoff
 ```
 
