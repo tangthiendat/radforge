@@ -193,6 +193,51 @@ This release uses bootstrap routing through `use-radforge`.
 
 Small, clear, low-risk tasks can still be handled directly without using the full workflow.
 
+The diagram below is a high-level routing sketch. Actual handoffs can skip, stop, or route differently based on approval state, validation needs, or repository-local workflow rules. Dashed arrows show common secondary handoffs rather than the default primary path.
+
+For standalone diagram docs, see [docs/radforge-high-level-orchestration.md](docs/radforge-high-level-orchestration.md) and [docs/radforge-full-orchestration.md](docs/radforge-full-orchestration.md).
+
+```mermaid
+flowchart TD
+    A([Start a task]) --> B{Is the task small and simple?}
+
+    B -- Yes --> C([Handle it directly])
+    B -- No --> D[Use use-radforge]
+
+    D --> E[Choose the right workflow skill]
+    E --> F{What kind of task is it?}
+
+    F -->|Existing change needs assessment| R[Use review]
+    F -->|Validation is the main job| T[Use test]
+    F -->|Clear direct change| I[Use implement]
+    F -->|Execution needs sequencing and checkpoints| P[Use plan]
+    F -->|Approved direction needs a durable design| S[Use spec-writing]
+    F -->|Direction is unclear or needs tradeoffs| BRAIN[Use brainstorming]
+    F -->|Old path to new path transition| M[Use migration]
+    F -->|Something is broken| DBUG[Use debug]
+
+    BRAIN -.-> M
+    BRAIN --> S
+    M --> S
+    S --> P
+    P --> I
+    DBUG --> I
+    DBUG -.-> T
+    I --> T
+
+    R -.-> T
+    R --> Z([Finish])
+    T --> Z
+
+    classDef start fill:#f5f0ff,stroke:#9b87f5,stroke-width:2px,color:#333;
+    classDef decision fill:#ede9fe,stroke:#9b87f5,stroke-width:2px,color:#333;
+    classDef action fill:#f3f0ff,stroke:#9b87f5,stroke-width:2px,color:#333;
+
+    class A,Z,C start;
+    class B,F decision;
+    class D,E,R,T,I,P,S,BRAIN,M,DBUG action;
+```
+
 For non-trivial work, the routing guide is:
 
 - use `review` when you need to assess existing changes for bugs, regressions, missing validation, or rollout risk
