@@ -193,6 +193,10 @@ This release uses bootstrap routing through `use-radforge`.
 
 Small, clear, low-risk tasks can still be handled directly without using the full workflow.
 
+The diagram below is a high-level routing sketch. Actual handoffs can skip, stop, or route differently based on approval state, validation needs, or repository-local workflow rules. Dashed arrows show common secondary handoffs rather than the default primary path.
+
+For standalone diagram docs, see [docs/radforge-high-level-orchestration.md](docs/radforge-high-level-orchestration.md) and [docs/radforge-full-orchestration.md](docs/radforge-full-orchestration.md).
+
 ```mermaid
 flowchart TD
     A([Start a task]) --> B{Is the task small and simple?}
@@ -212,13 +216,16 @@ flowchart TD
     F -->|Old path to new path transition| M[Use migration]
     F -->|Something is broken| DBUG[Use debug]
 
+    BRAIN -.-> M
     BRAIN --> S
     M --> S
     S --> P
     P --> I
     DBUG --> I
+    DBUG -.-> T
     I --> T
 
+    R -.-> T
     R --> Z([Finish])
     T --> Z
 

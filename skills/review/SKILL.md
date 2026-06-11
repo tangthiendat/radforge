@@ -36,7 +36,7 @@ Assess existing changes, artifacts, or workflows for bugs, regressions, missing 
 5. Prefer evidence-backed findings. If the signal is incomplete, record an open question or residual risk instead of overstating it.
 6. Group findings by severity and cite file references when possible.
 7. If there are no material findings, say so explicitly and note any remaining validation gaps or unreviewed surfaces.
-8. If the user wants follow-up beyond the review, hand off to `debug`, `implement`, or `plan` based on the finding type.
+8. If the user wants follow-up beyond the review, hand off to `debug`, `implement`, `test`, or `plan` based on the finding type.
 
 ## Guardrails
 
@@ -77,5 +77,6 @@ Include in the sections above:
 
 - `review` -> `debug`
 - `review` -> `implement`
+- `review` -> `test`
 - `review` -> `plan`
 - `review` -> stop

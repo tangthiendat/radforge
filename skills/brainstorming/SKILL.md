@@ -83,5 +83,6 @@ Include in the sections above:
 
 - `brainstorming` -> `plan`
 - `brainstorming` -> `spec-writing`
+- `brainstorming` -> `migration`
 - `brainstorming` -> `implement`
 - `brainstorming` -> stop

@@ -40,7 +40,8 @@ Find and verify the root cause of broken behavior.
 11. Broaden scope only if the component-level investigation does not explain the failure.
 12. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
 13. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved.
-14. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
+14. Hand off to `test` when the root issue is primarily a validation gap and the main remaining job is evidence gathering.
+15. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
 
 ## Guardrails
 
@@ -79,5 +80,6 @@ Include in the sections above:
 ## Handoff Rules
 
 - `debug` -> `implement`
+- `debug` -> `test`
 - `debug` -> `plan`
 - `debug` -> stop
