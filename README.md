@@ -20,73 +20,64 @@ Current installer support is for the provider user-level setup.
 
 ## Install
 
-Choose the provider you want and run its command.
+Choose the provider you want, set it in the command below, and run the verified release installer.
 
 The installer does not pick a default provider for you.
 
 ### Windows PowerShell
 
-#### Claude Code
-
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider claude-code
-```
+$RadforgeVersion = "v1.4.3"
+$RadforgeProvider = "codex"
+$RadforgeAsset = "install.ps1"
+$RadforgeBaseUrl = "https://github.com/tangthiendat/radforge/releases/download/$RadforgeVersion"
+$RadforgeTempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("radforge-install-" + [guid]::NewGuid())
 
-#### Codex
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex
-```
-
-#### Cursor
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider cursor
-```
-
-#### GitHub Copilot
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider github-copilot
-```
-
-#### OpenCode
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider opencode
+try {
+    New-Item -ItemType Directory -Path $RadforgeTempRoot | Out-Null
+    $RadforgeScript = Join-Path $RadforgeTempRoot $RadforgeAsset
+    $RadforgeChecksum = "$RadforgeScript.sha256"
+    Invoke-WebRequest "$RadforgeBaseUrl/$RadforgeAsset" -OutFile $RadforgeScript
+    Invoke-WebRequest "$RadforgeBaseUrl/$RadforgeAsset.sha256" -OutFile $RadforgeChecksum
+    $RadforgeExpectedHash = ((Get-Content -Raw $RadforgeChecksum).Trim() -split "\s+")[0]
+    $RadforgeActualHash = (Get-FileHash $RadforgeScript -Algorithm SHA256).Hash
+    if ($RadforgeActualHash -ne $RadforgeExpectedHash) { throw "Radforge installer checksum mismatch." }
+    & $RadforgeScript -Provider $RadforgeProvider -ReleaseVersion $RadforgeVersion
+}
+finally {
+    if (Test-Path $RadforgeTempRoot) { Remove-Item $RadforgeTempRoot -Recurse -Force }
+}
 ```
 
 ### macOS Or Linux
 
-#### Claude Code
-
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider claude-code
+set -eu
+
+radforge_version="v1.4.3"
+radforge_provider="codex"
+radforge_asset="install.sh"
+radforge_base_url="https://github.com/tangthiendat/radforge/releases/download/$radforge_version"
+radforge_temp_root=$(mktemp -d)
+trap 'rm -rf "$radforge_temp_root"' EXIT INT TERM
+
+curl -fsSLo "$radforge_temp_root/$radforge_asset" "$radforge_base_url/$radforge_asset"
+curl -fsSLo "$radforge_temp_root/$radforge_asset.sha256" "$radforge_base_url/$radforge_asset.sha256"
+(
+    cd "$radforge_temp_root"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum -c "$radforge_asset.sha256"
+    elif command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 -c "$radforge_asset.sha256"
+    else
+        printf 'sha256sum or shasum is required.\n' >&2
+        exit 1
+    fi
+)
+sh "$radforge_temp_root/$radforge_asset" --provider "$radforge_provider" --release-version "$radforge_version"
 ```
 
-#### Codex
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex
-```
-
-#### Cursor
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider cursor
-```
-
-#### GitHub Copilot
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider github-copilot
-```
-
-#### OpenCode
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider opencode
-```
+Provider values are `claude-code`, `codex`, `cursor`, `github-copilot`, and `opencode`.
 
 ### Install Script Options
 
@@ -96,6 +87,7 @@ Use these options when you want more than the single-provider commands above.
 | ------------------------------- | ----------------------------- | ------------------------------ |
 | Install multiple providers      | `-Provider codex,claude-code` | `--provider codex,claude-code` |
 | Preview changes without writing | `-Provider codex -DryRun`     | `--provider codex --dry-run`   |
+| Select a release explicitly     | `-ReleaseVersion v1.4.3`      | `--release-version v1.4.3`     |
 
 Provider values:
 
@@ -113,15 +105,11 @@ If a skill folder with the same name already exists and is not managed by Radfor
 
 ### Windows PowerShell
 
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex -DryRun
-```
+Use the verified PowerShell install block above and add `-DryRun` to its final command.
 
 ### macOS Or Linux
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex --dry-run
-```
+Use the verified shell install block above and add `--dry-run` to its final command.
 
 ### Verify after install
 
@@ -146,13 +134,52 @@ Use use-radforge and tell me which workflow skills are available.
 ### Windows PowerShell
 
 ```powershell
-irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.ps1" | iex
+$RadforgeVersion = "v1.4.3"
+$RadforgeAsset = "uninstall.ps1"
+$RadforgeBaseUrl = "https://github.com/tangthiendat/radforge/releases/download/$RadforgeVersion"
+$RadforgeTempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("radforge-uninstall-" + [guid]::NewGuid())
+
+try {
+    New-Item -ItemType Directory -Path $RadforgeTempRoot | Out-Null
+    $RadforgeScript = Join-Path $RadforgeTempRoot $RadforgeAsset
+    $RadforgeChecksum = "$RadforgeScript.sha256"
+    Invoke-WebRequest "$RadforgeBaseUrl/$RadforgeAsset" -OutFile $RadforgeScript
+    Invoke-WebRequest "$RadforgeBaseUrl/$RadforgeAsset.sha256" -OutFile $RadforgeChecksum
+    $RadforgeExpectedHash = ((Get-Content -Raw $RadforgeChecksum).Trim() -split "\s+")[0]
+    $RadforgeActualHash = (Get-FileHash $RadforgeScript -Algorithm SHA256).Hash
+    if ($RadforgeActualHash -ne $RadforgeExpectedHash) { throw "Radforge uninstaller checksum mismatch." }
+    & $RadforgeScript
+}
+finally {
+    if (Test-Path $RadforgeTempRoot) { Remove-Item $RadforgeTempRoot -Recurse -Force }
+}
 ```
 
 ### macOS Or Linux
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.sh | bash
+set -eu
+
+radforge_version="v1.4.3"
+radforge_asset="uninstall.sh"
+radforge_base_url="https://github.com/tangthiendat/radforge/releases/download/$radforge_version"
+radforge_temp_root=$(mktemp -d)
+trap 'rm -rf "$radforge_temp_root"' EXIT INT TERM
+
+curl -fsSLo "$radforge_temp_root/$radforge_asset" "$radforge_base_url/$radforge_asset"
+curl -fsSLo "$radforge_temp_root/$radforge_asset.sha256" "$radforge_base_url/$radforge_asset.sha256"
+(
+    cd "$radforge_temp_root"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum -c "$radforge_asset.sha256"
+    elif command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 -c "$radforge_asset.sha256"
+    else
+        printf 'sha256sum or shasum is required.\n' >&2
+        exit 1
+    fi
+)
+sh "$radforge_temp_root/$radforge_asset"
 ```
 
 ### Uninstall specific providers
@@ -167,15 +194,11 @@ Use the same provider values as install:
 
 ### Windows PowerShell
 
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.ps1"))) -Provider codex,claude-code
-```
+Use the verified PowerShell uninstall block above and pass `-Provider codex,claude-code` to its final command.
 
 ### macOS Or Linux
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/uninstall.sh | bash -s -- --provider codex,opencode
-```
+Use the verified shell uninstall block above and pass `--provider codex,opencode` to its final command.
 
 ## How It Works
 
@@ -296,15 +319,11 @@ If you are updating from an older version that used installer-managed provider h
 
 ### Windows PowerShell
 
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex,claude-code
-```
+Use the verified PowerShell install block and select the providers in its final command.
 
 ### macOS Or Linux
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
-```
+Use the verified shell install block and select the providers in its final command.
 
 If you want to preview an update first, use the dry-run commands from the install section.
 
