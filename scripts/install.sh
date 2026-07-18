@@ -3,6 +3,7 @@ set -eu
 
 PROVIDER_ARG="all"
 HOME_ROOT="${HOME:-}"
+RELEASE_VERSION="${RADFORGE_VERSION:-v1.4.3}"
 DRY_RUN=0
 
 while [ "$#" -gt 0 ]; do
@@ -13,6 +14,10 @@ while [ "$#" -gt 0 ]; do
             ;;
         --home-root)
             HOME_ROOT="$2"
+            shift 2
+            ;;
+        --release-version)
+            RELEASE_VERSION="$2"
             shift 2
             ;;
         --dry-run)
@@ -39,8 +44,11 @@ PROVIDER_STATE_ROOT="$STATE_ROOT/providers"
 MANAGED_SKILL_MARKER_FILE=".radforge-skill"
 
 bootstrap_install() {
-    archive_url="${RADFORGE_ARCHIVE_URL:-https://github.com/tangthiendat/radforge/archive/refs/heads/main.tar.gz}"
+    archive_url="${RADFORGE_ARCHIVE_URL:-https://github.com/tangthiendat/radforge/releases/download/$RELEASE_VERSION/radforge-$RELEASE_VERSION.tar.gz}"
+    archive_checksum_url="${RADFORGE_ARCHIVE_SHA256_URL:-$archive_url.sha256}"
     temp_root=$(mktemp -d 2>/dev/null || mktemp -d -t radforge)
+    archive_path="$temp_root/radforge.tar.gz"
+    archive_checksum_path="$temp_root/radforge.tar.gz.sha256"
 
     cleanup() {
         rm -rf "$temp_root"
@@ -48,7 +56,42 @@ bootstrap_install() {
 
     trap cleanup EXIT INT TERM
 
-    curl -fsSL "$archive_url" | tar -xz -C "$temp_root"
+    curl -fsSL "$archive_url" -o "$archive_path"
+
+    if [ -n "${RADFORGE_ARCHIVE_SHA256:-}" ]; then
+        expected_archive_hash=$RADFORGE_ARCHIVE_SHA256
+    else
+        curl -fsSL "$archive_checksum_url" -o "$archive_checksum_path"
+        expected_archive_hash=$(awk 'NR == 1 { print $1 }' "$archive_checksum_path")
+    fi
+
+    case "$expected_archive_hash" in
+        ''|*[!0-9A-Fa-f]*)
+            printf 'Invalid SHA-256 checksum for Radforge archive.\n' >&2
+            exit 1
+            ;;
+    esac
+
+    if [ "${#expected_archive_hash}" -ne 64 ]; then
+        printf 'Invalid SHA-256 checksum for Radforge archive.\n' >&2
+        exit 1
+    fi
+
+    if command -v sha256sum >/dev/null 2>&1; then
+        actual_archive_hash=$(sha256sum "$archive_path" | awk '{ print $1 }')
+    elif command -v shasum >/dev/null 2>&1; then
+        actual_archive_hash=$(shasum -a 256 "$archive_path" | awk '{ print $1 }')
+    else
+        printf 'Unable to verify Radforge archive: sha256sum or shasum is required.\n' >&2
+        exit 1
+    fi
+
+    if [ "$(printf '%s' "$actual_archive_hash" | tr 'A-F' 'a-f')" != "$(printf '%s' "$expected_archive_hash" | tr 'A-F' 'a-f')" ]; then
+        printf 'Radforge archive checksum mismatch.\n' >&2
+        exit 1
+    fi
+
+    tar -xzf "$archive_path" -C "$temp_root"
 
     extracted_root=""
     for candidate in "$temp_root"/*; do
@@ -69,9 +112,9 @@ bootstrap_install() {
     fi
 
     if [ "$DRY_RUN" -eq 1 ]; then
-        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --dry-run
+        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --release-version "$RELEASE_VERSION" --dry-run
     else
-        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT"
+        sh "$script_path" --provider "$PROVIDER_ARG" --home-root "$HOME_ROOT" --release-version "$RELEASE_VERSION"
     fi
 }
 
@@ -185,6 +228,7 @@ join_home_relative_path() {
 state_value() {
     key=$1
     file=$2
+    [ -f "$file" ] || return 0
     sed -n "s/^$key=//p" "$file" | head -n 1
 }
 
@@ -203,15 +247,15 @@ strip_legacy_managed_block() {
 
 remove_legacy_hint_from_state() {
     state_path=$1
-    [ -f "$state_path" ] || return
+    [ -f "$state_path" ] || return 0
 
     instructions_file=$(state_value instructions_file "$state_path")
-    [ -n "$instructions_file" ] || return
-    [ -f "$instructions_file" ] || return
+    [ -n "$instructions_file" ] || return 0
+    [ -f "$instructions_file" ] || return 0
 
     instructions_mode=$(state_value instructions_mode "$state_path")
     [ -n "$instructions_mode" ] || instructions_mode="legacy_block"
-    [ "$instructions_mode" = "legacy_block" ] || return
+    [ "$instructions_mode" = "legacy_block" ] || return 0
 
     instructions_file_created=$(state_value instructions_file_created "$state_path")
     stripped_file=$(strip_legacy_managed_block "$instructions_file")
