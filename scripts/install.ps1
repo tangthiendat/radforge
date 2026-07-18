@@ -1,7 +1,6 @@
 param(
     [string[]]$Provider = @("all"),
     [string]$HomeRoot = $(if ($env:USERPROFILE) { $env:USERPROFILE } elseif ($HOME) { $HOME } else { throw "Unable to resolve user home directory." }),
-    [string]$ReleaseVersion = $(if ($env:RADFORGE_VERSION) { $env:RADFORGE_VERSION } else { "v1.4.3" }),
     [switch]$DryRun
 )
 
@@ -28,41 +27,15 @@ function Invoke-BootstrapInstall {
         $env:RADFORGE_ARCHIVE_URL
     }
     else {
-        "https://github.com/tangthiendat/radforge/releases/download/$ReleaseVersion/radforge-$ReleaseVersion.zip"
-    }
-
-    $archiveChecksumUrl = if ($env:RADFORGE_ARCHIVE_SHA256_URL) {
-        $env:RADFORGE_ARCHIVE_SHA256_URL
-    }
-    else {
-        "$archiveUrl.sha256"
+        "https://github.com/tangthiendat/radforge/archive/refs/heads/main.zip"
     }
 
     $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("radforge-" + [guid]::NewGuid())
     $archivePath = Join-Path $tempRoot "radforge.zip"
-    $archiveChecksumPath = Join-Path $tempRoot "radforge.zip.sha256"
 
     try {
         New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
         Invoke-WebRequest $archiveUrl -OutFile $archivePath
-
-        $expectedArchiveHash = if ($env:RADFORGE_ARCHIVE_SHA256) {
-            $env:RADFORGE_ARCHIVE_SHA256.Trim().ToLowerInvariant()
-        }
-        else {
-            Invoke-WebRequest $archiveChecksumUrl -OutFile $archiveChecksumPath
-            ((Get-Content -LiteralPath $archiveChecksumPath -Raw).Trim() -split "\s+")[0].ToLowerInvariant()
-        }
-
-        if ($expectedArchiveHash -notmatch "^[0-9a-f]{64}$") {
-            throw "Invalid SHA-256 checksum for Radforge archive."
-        }
-
-        $actualArchiveHash = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant()
-        if ($actualArchiveHash -ne $expectedArchiveHash) {
-            throw "Radforge archive checksum mismatch. Expected '$expectedArchiveHash' but received '$actualArchiveHash'."
-        }
-
         Expand-Archive -LiteralPath $archivePath -DestinationPath $tempRoot
 
         $extractedRoot = Get-ChildItem -LiteralPath $tempRoot -Directory | Select-Object -First 1
@@ -75,7 +48,7 @@ function Invoke-BootstrapInstall {
             throw "Unable to locate installer inside extracted Radforge archive."
         }
 
-        & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -ReleaseVersion $ReleaseVersion -DryRun:$DryRun
+        & $scriptPath -Provider $Provider -HomeRoot $HomeRoot -DryRun:$DryRun
     }
     finally {
         if (Test-Path -LiteralPath $tempRoot) {
