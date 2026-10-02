@@ -34,7 +34,8 @@ flowchart TD
 
     R -.-> T
     R --> Z([Finish])
-    T --> Z
+    T -.->|Checkpoint passed; approved work remains| I
+    T -->|Requested scope complete| Z
 
     classDef start fill:#f5f0ff,stroke:#9b87f5,stroke-width:2px,color:#333;
     classDef decision fill:#ede9fe,stroke:#9b87f5,stroke-width:2px,color:#333;
@@ -49,4 +50,5 @@ Notes:
 
 - Solid arrows show the primary teaching path.
 - Dashed arrows show common secondary handoffs.
+- A passing checkpoint resumes remaining approved work; explicit validation-only or checkpoint-only requests stop at their requested boundary.
 - Repository-local workflow rules can still override this view.

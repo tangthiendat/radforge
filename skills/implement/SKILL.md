@@ -4,7 +4,7 @@ description: Use when the task is clear enough to execute. Make the smallest cor
 maturity: core
 kind: workflow
 owner: radforge
-lastReviewed: "2026-05-18"
+lastReviewed: "2026-10-02"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -27,7 +27,7 @@ Execute an approved change with minimal, correct edits while keeping scope and r
 
 ## Process
 
-1. Confirm the direction is clear enough to execute.
+1. Confirm the direction is clear enough to execute and recover the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization from any incoming handoff.
 2. Inspect the relevant files before editing.
 3. Lock the smallest execution boundary that can solve the problem before editing.
 4. Follow existing project patterns unless there is a concrete reason not to.
@@ -36,7 +36,7 @@ Execute an approved change with minimal, correct edits while keeping scope and r
 7. Make the smallest correct change for the checkpoint and preserve unrelated user changes.
 8. After each checkpoint, compare the current scope against the approved direction. If new files, dependencies, or behavior surfaces appear, stop widening silently and hand off as needed.
 9. Run the smallest meaningful validation when it is obvious and cheap.
-10. `implement` may stop with inline validation only when the work stayed inside one checkpoint, one coherent boundary, and Tier 1 `smoke` evidence is enough to support the claim.
+10. After a checkpoint passes inline validation, continue the next approved task when no broader validation is needed first. `implement` may stop as complete with inline validation only when the entire authorized request fits one checkpoint and one coherent boundary, its acceptance criteria are satisfied, and Tier 1 `smoke` evidence is sufficient. Honor an explicit checkpoint-only request and report remaining work.
 11. Hand off to `test` when Tier 2 or Tier 3 evidence is needed, when regression confidence matters, or when the change affects install, update, uninstall, config, or shared workflow semantics.
 12. Check adjacent owned artifacts when the change affects workflow or shared behavior: docs, uninstall or rollback paths, state or output shape, and nearby instructions that define the same surface.
 13. Record the rollback or escape note when the change affects config, install behavior, or workflow semantics and the fallback is not obvious.
@@ -51,6 +51,7 @@ Execute an approved change with minimal, correct edits while keeping scope and r
 - do not add compatibility layers unless there is a concrete need
 - do not close from `implement` when the claim needs more than Tier 1 `smoke` evidence or meaningful regression confidence
 - do not claim success before fresh validation evidence exists
+- do not equate a passing checkpoint with completion of the original request or ask for approval again to continue unchanged, already authorized work
 - do not stop after a non-trivial checkpoint without naming the boundary reached, validation state, and rollback or escape path when relevant
 - do not stop after non-trivial work without an explicit closeout summary
 
@@ -71,6 +72,7 @@ Next Handoff
 Include in the sections above:
 
 - whether the next checkpoint remains inside the approved boundary
+- the original goal and acceptance criteria, plan/task position or `none`, remaining approved work, user constraints, and existing authorization for the next skill
 - whether validation was run, skipped, or delegated to `test`
 - blockers, open questions, or scope expansion noticed during execution
 

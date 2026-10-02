@@ -35,6 +35,7 @@ Use one active primary skill at a time.
 - a skill may hand off to exactly one next primary skill
 - a skill may stop when the task is complete or the workflow should pause
 - do not blend several workflow skills at once unless the user explicitly asks for a narrower custom process
+- preserve the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization across handoffs
 
 ## Workflow Skills
 
@@ -163,6 +164,8 @@ Before claiming non-trivial work is complete, always state:
 - whether the work is complete, complete with remaining risk, or paused
 
 This closeout rule is global and is not a separate workflow skill.
+
+A validated checkpoint is not whole-task completion. Continue remaining approved work; claim completion only when the original authorized scope and acceptance criteria are satisfied. Honor explicit requests to stop at a narrower boundary and report unfinished work.
 
 ## Workflow Flexibility
 

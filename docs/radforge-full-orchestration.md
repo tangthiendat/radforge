@@ -60,13 +60,14 @@ flowchart TD
     PLAN_NEXT -->|Plan-only stop| DONE
 
     IMPL --> IMPL_CHECK{What happened during execution?}
-    IMPL_CHECK -->|One checkpoint + Tier 1 smoke is enough| DONE
+    IMPL_CHECK -->|One checkpoint satisfies request + Tier 1 smoke| DONE
+    IMPL_CHECK -->|Checkpoint passed; next approved task needs no broader proof first| IMPL
     IMPL_CHECK -->|Needs broader proof / regression confidence| TEST
     IMPL_CHECK -->|Ambiguity appeared| BRAIN
     IMPL_CHECK -->|Scope grew / dependency-heavy| PLAN
     IMPL_CHECK -->|Behavior is broken| DEBUG
 
-    DEBUG --> DEBUG_APPROVAL{Root cause clear and<br/>fix materially changes code/config/workflow?}
+    DEBUG --> DEBUG_APPROVAL{Root cause clear and<br/>fix exceeds existing authorization?}
     DEBUG_APPROVAL -- Yes --> USER_APPROVAL5([Pause for approval])
     DEBUG_APPROVAL -- No --> DEBUG_NEXT{Fix path}
     USER_APPROVAL5 --> DEBUG_NEXT
@@ -83,9 +84,12 @@ flowchart TD
     REVIEW_NEXT -->|Broader execution restructuring| PLAN
 
     TEST --> TEST_NEXT{Validation result}
-    TEST_NEXT -->|Evidence sufficient| DONE
+    TEST_NEXT -->|Checkpoint passed; approved work remains| IMPL
+    TEST_NEXT -->|Requested scope and acceptance evidence satisfied| DONE
+    TEST_NEXT -->|Acceptance evidence incomplete; checks available| TEST
     TEST_NEXT -->|Validation failed / issue reproduced| DEBUG
     TEST_NEXT -->|Validation-only stop with limits noted| DONE
+    TEST_NEXT -->|Environment blocks required evidence; pause with limits| PAUSED([Paused])
 
     classDef startNode fill:#f5f0ff,stroke:#8b6cf0,stroke-width:2px,color:#222;
     classDef decisionNode fill:#ede9fe,stroke:#8b6cf0,stroke-width:2px,color:#222;
@@ -97,6 +101,7 @@ flowchart TD
     class ROUTE,B,BRAIN_APPROVAL,MIG_APPROVAL,SPEC_APPROVAL,PLAN_APPROVAL,IMPL_CHECK,DEBUG_APPROVAL,REVIEW_NEXT,TEST_NEXT,BRAIN_NEXT,MIG_NEXT,SPEC_NEXT,PLAN_NEXT,DEBUG_NEXT decisionNode;
     class UR,DEBUG,REVIEW,BRAIN,MIG,SPEC,TEST,PLAN,IMPL skillNode;
     class USER_APPROVAL,USER_APPROVAL2,USER_APPROVAL3,USER_APPROVAL4,USER_APPROVAL5 pauseNode;
+    class PAUSED pauseNode;
     class DONE finishNode;
 ```
 
@@ -105,4 +110,6 @@ Notes:
 - This is the fuller orchestration view, not the simplified README teaching diagram.
 - `use-radforge` selects one primary next skill.
 - Approval pauses are conditional gates, not mandatory on every path.
+- Handoffs preserve the original task context and existing authorization. Checkpoint validation resumes approved work; only satisfied requested scope supports completion. Explicit checkpoint-only requests stop with remaining work reported.
+- Debugging checks mutation scope before reproduction or experiments, prefers read-only checks and isolation, and restores only agent-owned experimental changes before the next hypothesis or handoff unless retention is authorized. Unresolved restoration stops further mutation and is reported.
 - Repository-local rules can override the default Radforge flow.
