@@ -227,7 +227,8 @@ flowchart TD
 
     R -.-> T
     R --> Z([Finish])
-    T --> Z
+    T -.->|Checkpoint passed; approved work remains| I
+    T -->|Requested scope complete| Z
 
     classDef start fill:#f5f0ff,stroke:#9b87f5,stroke-width:2px,color:#333;
     classDef decision fill:#ede9fe,stroke:#9b87f5,stroke-width:2px,color:#333;
@@ -247,6 +248,8 @@ For non-trivial work, the routing guide is:
 - move to `plan` when the direction is already clear and the remaining job is execution structure
 - stay in `implement` when one bounded checkpoint plus one local smoke-style check is enough to support the claim
 - hand off to `test` when you need broader proof or more regression confidence
+
+Preserve the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization across handoffs. A passing checkpoint returns from `test` to `implement` when approved tasks remain. Finish only when the requested scope is satisfied; explicit validation-only or checkpoint-only requests stop at their requested boundary with remaining work reported.
 
 Repository-local instructions still take priority over user-level Radforge defaults.
 

@@ -4,7 +4,7 @@ description: Use when there is meaningful behavior or regression risk to validat
 maturity: core
 kind: workflow
 owner: radforge
-lastReviewed: "2026-05-18"
+lastReviewed: "2026-10-02"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -50,17 +50,25 @@ Escalate only when narrower evidence is not enough.
 
 ## Process
 
-1. Define the exact behavior, risk, or claim the validation is meant to cover.
+1. Recover the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization. Define whether the current validation covers a checkpoint, the whole request, or an explicitly validation-only request.
 2. Choose a validation tier and state why it matches the current risk and changed boundary.
 3. Start from `templates/validation-report-template.md` for any non-trivial validation summary.
 4. Run the smallest meaningful checks inside the chosen tier first.
 5. For install, update, uninstall, config, or workflow changes, the default minimum evidence is a dry-run or rehearsal when available, readback of the changed file or installed artifact when relevant, verification of state or output shape when relevant, and uninstall or rollback impact when that surface changed.
 6. Broaden validation only when the earlier evidence is weak, a higher-risk boundary is involved, or a previous check failed to prove the claim.
 7. Capture the command, check, or manual step used as evidence, along with the expected signal and observed result.
-8. State whether the gathered evidence is sufficient to support completion, or whether more validation or a handoff is still needed.
+8. State whether the evidence validates the checkpoint or satisfies the original request's acceptance criteria, and choose the continuation below. Carry the updated task context into the next handoff.
 9. If validation fails, do not guess; hand off to `debug`.
 10. If validation is limited by the environment, say exactly what could not be checked.
 11. If stopping after non-trivial validation work, report what changed, what was validated, what was skipped, and any remaining risk.
+
+## Continuation After Validation
+
+- If a checkpoint passes and approved implementation tasks remain, hand off to `implement` with the next task and preserved constraints and authorization. Continue unchanged, already authorized work without asking for approval again.
+- If implementation is finished but acceptance evidence remains incomplete, stay in `test` and gather the missing evidence. If the environment prevents it, report the limit and pause without claiming whole-task completion.
+- If validation fails, hand off to `debug` with the failure evidence and original task context.
+- Stop as complete only when the original authorized scope and acceptance criteria are satisfied.
+- Honor explicit validation-only or checkpoint-only requests: stop at that requested boundary, report remaining product work and evidence limits, and do not automatically start implementation. A complete validation report does not imply the product is complete or passing.
 
 ## Guardrails
 
@@ -69,6 +77,7 @@ Escalate only when narrower evidence is not enough.
 - do not describe tests as passing unless the command or check actually succeeded
 - do not choose a broad validation tier without naming the risk that justified it
 - record limits when full validation is not available
+- do not turn a passing checkpoint into whole-task completion while approved work or required acceptance evidence remains
 - do not stop after non-trivial validation without an explicit closeout summary
 
 ## Supporting Files
@@ -98,11 +107,14 @@ Each check should include:
 - expected signal
 - observed result
 
-The `Result` section should state whether the evidence is enough to support completion.
+The `Target` section should preserve the original goal and acceptance criteria, validation scope, plan/task position or `none`, remaining work, user constraints, and existing authorization.
+
+The `Result` section should distinguish checkpoint evidence from evidence sufficient for the original request.
 
 The `Closeout` section should cover what changed, what was validated, what was skipped, remaining risk, and completion state when validation stops here for non-trivial work.
 
 ## Handoff Rules
 
 - `test` -> `debug`
+- `test` -> `implement`
 - `test` -> stop

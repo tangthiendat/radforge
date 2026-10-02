@@ -37,4 +37,4 @@ If a field is not needed, write `none` with a brief reason.
 
 ## Next Handoff
 
-- `debug`, `implement`, `plan`, or `stop`
+- `debug`, `implement`, `test`, `plan`, or `stop`

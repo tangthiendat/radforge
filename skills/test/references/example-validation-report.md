@@ -4,6 +4,11 @@ Use this as a filled example when the template alone is too abstract.
 
 ## Target
 
+- original goal and acceptance criteria: validate the PowerShell install/uninstall path in an isolated temp home and report runtime evidence and limits
+- validation scope: validation-only request
+- plan/task position: none; standalone validation
+- remaining work: POSIX shell runtime evidence remains outside this validation request
+- constraints and authorization: validate PowerShell only; no implementation work authorized
 - behavior or claim: local PowerShell installer can complete a temp-home install without touching real user config
 - risk covered: installer writes to the wrong place or misses skill copies
 - changed boundary: install flow and provider state handling
@@ -31,7 +36,7 @@ Use this as a filled example when the template alone is too abstract.
 ## Result
 
 - status: pass
-- evidence sufficiency: enough to support completion of the PowerShell validation claim
+- evidence sufficiency: enough for the original PowerShell validation request; does not establish POSIX shell behavior
 - summary: the PowerShell install and uninstall path worked end-to-end against an isolated temp home
 
 ## Closeout
@@ -53,3 +58,4 @@ Use this as a filled example when the template alone is too abstract.
 ## Next Handoff
 
 - `stop`
+- continuation: stop at the requested validation-only boundary; report the remaining shell evidence gap without starting implementation

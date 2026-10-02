@@ -18,6 +18,7 @@ Stop from `implement` with Tier 1 only when:
 
 - one checkpoint and one coherent boundary were changed
 - one high-signal check is enough to support the claim
+- the original authorized scope and acceptance criteria are satisfied, or the user explicitly requested a checkpoint-only stop with remaining work reported
 - the work did not change install, update, uninstall, config, or shared workflow semantics
 
 Typical evidence:
@@ -87,5 +88,12 @@ Move up one tier when:
 
 Before stopping, ask:
 
-- is the evidence enough to support completion?
+- does the evidence validate only the current checkpoint or the original request's acceptance criteria?
+- does approved work remain that should return to `implement`?
 - if not, what narrower next check or handoff is still needed?
+
+## Checkpoint Continuation Example
+
+An approved plan contains installer changes, uninstall changes, and documentation updates. Installer checkpoint checks pass while the other tasks remain. Report the installer checkpoint as validated, preserve the plan position, remaining tasks, user constraints, and authorization, and hand off to `implement` for the next approved task. Stop as complete only after the full requested scope and acceptance evidence are satisfied.
+
+If the user asked only to validate the installer checkpoint, stop after that validation report and name the remaining product work. Do not use the continuation path to authorize unrelated implementation.

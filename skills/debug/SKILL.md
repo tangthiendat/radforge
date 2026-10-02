@@ -4,7 +4,7 @@ description: Use when something is broken, failing, regressing, or behaving unex
 maturity: core
 kind: workflow
 owner: radforge
-lastReviewed: "2026-05-18"
+lastReviewed: "2026-10-02"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -27,21 +27,23 @@ Find and verify the root cause of broken behavior.
 
 ## Process
 
-1. Reproduce the issue or failure.
-2. Record the reproduction exactly: trigger, actual result, expected result, whether the issue is consistent or intermittent, and the smallest known failing boundary.
-3. Define the smallest failing scope first.
-4. If multiple causes are plausible, rank the leading hypotheses by likelihood and testability.
-5. Test one concrete hypothesis at a time.
-6. For each loop, state the suspected cause, choose the smallest check that would confirm it, run the reproduction or validation again, and keep or discard the hypothesis from the evidence.
-7. Change the smallest thing needed to test that hypothesis.
-8. Re-run the reproduction or validation step.
-9. Classify the failure when the evidence is strong enough: local defect, missing validation, dependency or configuration issue, environment or tooling issue, or architecture interaction.
-10. Classify the fix path when the cause is clear enough: local fix now, validation gap first, dependency or config repair, environment follow-up, or broader architecture plan.
-11. Broaden scope only if the component-level investigation does not explain the failure.
-12. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
-13. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved.
-14. Hand off to `test` when the root issue is primarily a validation gap and the main remaining job is evidence gathering.
-15. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
+1. Recover the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization. Establish diagnosis-only, no-edit, or fix-authorized scope before reproduction or any experiment.
+2. Reproduce the issue or failure within that scope.
+3. Record the reproduction exactly: trigger, actual result, expected result, whether the issue is consistent or intermittent, and the smallest known failing boundary.
+4. Define the smallest failing scope first.
+5. If multiple causes are plausible, rank the leading hypotheses by likelihood and testability.
+6. Test one concrete hypothesis at a time: state the suspected cause and choose the smallest check that would confirm it.
+7. Prefer read-only checks. Before any mutation, confirm that the experiment fits the user's scope and existing authorization. Explicit no-edit requests prohibit mutation. A routine reversible experiment within authorized scope needs no repeated approval; use a read-only alternative or obtain approval before an experiment outside that scope.
+8. When mutation is authorized, prefer an isolated fixture, temporary override, or disposable copy. Record the relevant pre-experiment state and the agent's exact changes, then change the smallest thing needed to test the hypothesis.
+9. Re-run the reproduction or validation step and keep or discard the hypothesis from the evidence.
+10. Before the next hypothesis or handoff, restore only the agent's experimental changes and confirm restoration. Retain a change only when retaining or implementing it is already authorized; diagnosis-only work must not leave a fix behind. If overlapping user edits or state changes prevent safe restoration, stop further mutation, preserve the user's work, and report the unresolved experiment state.
+11. Classify the failure when the evidence is strong enough: local defect, missing validation, dependency or configuration issue, environment or tooling issue, or architecture interaction.
+12. Classify the fix path when the cause is clear enough: local fix now, validation gap first, dependency or config repair, environment follow-up, or broader architecture plan.
+13. Broaden scope only if the component-level investigation does not explain the failure.
+14. Pause for approval when the cause is clear and the fix would materially change code, config, or workflow beyond the original ask.
+15. Hand off to `implement` for the actual fix when the cause is clear and implementation is approved, preserving original task context and any authorized retained changes.
+16. Hand off to `test` when the root issue is primarily a validation gap and the main remaining job is evidence gathering.
+17. Hand off to `plan` if the fix path becomes substantial or dependency-heavy.
 
 ## Guardrails
 
@@ -50,6 +52,9 @@ Find and verify the root cause of broken behavior.
 - do not stack multiple speculative fixes at once
 - do not move to a new hypothesis before concluding the current one from the evidence
 - respect diagnosis-first requests and stop after identification when the user does not want the fix yet
+- do not treat an experimental mutation as exempt from the user's scope or approval limits
+- do not use broad resets or cleanup to remove experiments; preserve pre-existing and concurrent user changes
+- do not silently retain experimental changes or conceal incomplete restoration
 - do not claim a fix before the failure has been rechecked
 
 ## Supporting Files
@@ -76,6 +81,8 @@ Include in the sections above:
 - root-cause finding, best-supported hypothesis, or ranked leading hypotheses
 - failure classification and fix classification when known
 - approval status or diagnosis-only status
+- experiment scope, exact agent-owned changes or `none`, restoration evidence, and any authorized retained or unresolved changes
+- original task context and remaining approved work for the next skill
 
 ## Handoff Rules
 
