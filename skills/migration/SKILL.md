@@ -4,7 +4,7 @@ description: Use when the main job is moving from an old path to a new one with 
 maturity: core
 kind: operational
 owner: radforge
-lastReviewed: "2026-05-19"
+lastReviewed: "2026-11-27"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -29,6 +29,10 @@ Plan and structure migrations where the hard part is the transition boundary bet
 - the task is already clear enough for direct `implement` and has no real compatibility or cutover concern
 - the main issue is active broken behavior that still needs `debug`
 
+## Shared Contract
+
+Load the `use-radforge` skill's `references/workflow-contract.md` once per task, before other steps. Repository-local rules win on conflict. If the file is missing, say so and keep the approval, evidence, and closeout gates anyway.
+
 ## Process
 
 1. Define the migration goal in current-state to target-state terms.
@@ -44,8 +48,8 @@ Plan and structure migrations where the hard part is the transition boundary bet
 
 ## Migration Finalization Rule
 
-- Use `spec-writing` when migration policy, compatibility promises, rollout behavior, or cutover reasoning should be preserved as a durable design artifact in `docs/specs/`.
-- Use `plan` when the migration path is already decided but execution, sequencing, or cutover steps should be preserved as a durable plan in `docs/plans/`.
+- Use `spec-writing` when migration policy, compatibility promises, rollout behavior, or cutover reasoning should be preserved as a durable design artifact in the spec folder.
+- Use `plan` when the migration path is already decided but execution, sequencing, or cutover steps should be preserved as a durable plan in the plan folder.
 - Chat-only migration output is acceptable only when the transition is small, simple, low-risk, and not worth a durable artifact.
 
 ## Guardrails
@@ -54,7 +58,6 @@ Plan and structure migrations where the hard part is the transition boundary bet
 - do not delete the old path without naming the cutover and rollback implications
 - do not assume rollback exists when the change is destructive or one-way
 - do not hide compatibility assumptions or support windows
-- do not hand off without approval when the migration is approval-sensitive
 - do not stop after non-trivial migration work without naming approval status and next handoff
 
 ## Supporting Files
@@ -84,7 +87,7 @@ Next Handoff
 Include in the sections above:
 
 - what is changing now versus later
-- whether the migration artifact is intentionally chat-only or should become `docs/specs/` or `docs/plans/`
+- whether the migration artifact is intentionally chat-only or should become a spec or a plan
 - whether the migration is reversible, partially reversible, or one-way
 - what evidence will show the transition is safe enough to proceed
 - whether the next best handoff is `spec-writing`, `plan`, `implement`, or `test`

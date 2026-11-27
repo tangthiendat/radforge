@@ -43,7 +43,7 @@ flowchart TD
     MIG_NEXT -->|Small low-risk migration stop| DONE
 
     SPEC --> SPEC_APPROVAL{Approval-sensitive<br/>design or migration policy?}
-    SPEC_APPROVAL -- Yes --> USER_APPROVAL3([Pause for approval])
+    SPEC_APPROVAL -- Yes --> USER_APPROVAL3([Save and read back spec,<br/>then pause for approval])
     SPEC_APPROVAL -- No --> SPEC_NEXT{Next need}
     USER_APPROVAL3 --> SPEC_NEXT
     SPEC_NEXT -->|Execution planning| PLAN
@@ -85,7 +85,10 @@ flowchart TD
 
     TEST --> TEST_NEXT{Validation result}
     TEST_NEXT -->|Checkpoint passed; approved work remains| IMPL
-    TEST_NEXT -->|Requested scope and acceptance evidence satisfied| DONE
+    TEST_NEXT -->|Scope and acceptance evidence satisfied; small or low-risk| DONE
+    TEST_NEXT -->|Scope and acceptance evidence satisfied; substantial or risky| REVIEW_OPTIONAL{Optional review:<br/>agent or user decides}
+    REVIEW_OPTIONAL -- Run review --> REVIEW
+    REVIEW_OPTIONAL -- Skip: user declines or agent judges unneeded --> DONE
     TEST_NEXT -->|Acceptance evidence incomplete; checks available| TEST
     TEST_NEXT -->|Validation failed / issue reproduced| DEBUG
     TEST_NEXT -->|Validation-only stop with limits noted| DONE
@@ -98,7 +101,7 @@ flowchart TD
     classDef finishNode fill:#eefcf3,stroke:#22a06b,stroke-width:2px,color:#222;
 
     class A,DIRECT,SKIP startNode;
-    class ROUTE,B,BRAIN_APPROVAL,MIG_APPROVAL,SPEC_APPROVAL,PLAN_APPROVAL,IMPL_CHECK,DEBUG_APPROVAL,REVIEW_NEXT,TEST_NEXT,BRAIN_NEXT,MIG_NEXT,SPEC_NEXT,PLAN_NEXT,DEBUG_NEXT decisionNode;
+    class ROUTE,B,BRAIN_APPROVAL,MIG_APPROVAL,SPEC_APPROVAL,PLAN_APPROVAL,IMPL_CHECK,DEBUG_APPROVAL,REVIEW_NEXT,REVIEW_OPTIONAL,TEST_NEXT,BRAIN_NEXT,MIG_NEXT,SPEC_NEXT,PLAN_NEXT,DEBUG_NEXT decisionNode;
     class UR,DEBUG,REVIEW,BRAIN,MIG,SPEC,TEST,PLAN,IMPL skillNode;
     class USER_APPROVAL,USER_APPROVAL2,USER_APPROVAL3,USER_APPROVAL4,USER_APPROVAL5 pauseNode;
     class PAUSED pauseNode;

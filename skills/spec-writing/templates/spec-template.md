@@ -49,7 +49,7 @@ If a field is not needed, write `none` with a brief reason.
 
 ## Artifact Location
 
-- location: <`docs/specs/<filename>.md` or `chat-only`>
+- location: <spec folder path, such as `docs/radforge/specs/<filename>.md`, or `chat-only`>
 - why this location is appropriate: <durable artifact needed or why the scope is too small/simple>
 
 ## Next Handoff

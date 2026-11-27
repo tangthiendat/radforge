@@ -4,7 +4,7 @@ description: Use when something is broken, failing, regressing, or behaving unex
 maturity: core
 kind: workflow
 owner: radforge
-lastReviewed: "2026-10-02"
+lastReviewed: "2026-11-27"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -25,9 +25,13 @@ Find and verify the root cause of broken behavior.
 - the task is mainly design or scoping work and needs `brainstorming`
 - the work is a clean structural improvement and should start in `implement`, using `plan` first if the cleanup is large or risky
 
+## Shared Contract
+
+Load the `use-radforge` skill's `references/workflow-contract.md` once per task, before other steps. Repository-local rules win on conflict. If the file is missing, say so and keep the approval, evidence, and closeout gates anyway.
+
 ## Process
 
-1. Recover the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization. Establish diagnosis-only, no-edit, or fix-authorized scope before reproduction or any experiment.
+1. Recover the handoff context, as described in the shared contract. Establish diagnosis-only, no-edit, or fix-authorized scope before reproduction or any experiment.
 2. Reproduce the issue or failure within that scope.
 3. Record the reproduction exactly: trigger, actual result, expected result, whether the issue is consistent or intermittent, and the smallest known failing boundary.
 4. Define the smallest failing scope first.
