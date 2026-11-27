@@ -1,5 +1,0 @@
-{
-  "provider": "github-copilot",
-  "displayName": "GitHub Copilot",
-  "skillsDir": ".copilot/skills"
-}

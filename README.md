@@ -6,124 +6,63 @@ It packages a pragmatic workflow and skill library so supported agents can follo
 
 ## Quickstart
 
-Install Radforge directly from GitHub with a single command.
+Install every Radforge skill for Claude Code with one command (requires Node.js 22.20 or later):
+
+```sh
+npx skills add tangthiendat/radforge -g --skill '*' -a claude-code -y
+```
 
 ## Supported Providers
 
-Current installer support is for the provider user-level setup.
+Radforge is plain `SKILL.md` folders, so it works with any agent that supports the [Agent Skills](https://agentskills.io) format, whatever model that agent runs.
 
-- Claude Code
-- Codex
-- Cursor
-- GitHub Copilot
-- OpenCode
+The skills CLI installs to about 75 agents, including Claude Code, Codex, Cursor, GitHub Copilot, OpenCode, Gemini CLI, Windsurf, Roo Code, Kiro, Goose, Amp, Junie, and Qwen Code. See the [full agent list](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
 
-## Install
+## Install With The Skills CLI
 
-Choose the provider you want and run its command.
+The [skills CLI](https://github.com/vercel-labs/skills) installs, updates, and removes Radforge in one command each. These commands were last verified with skills CLI 1.9.0; other versions may behave differently.
 
-The installer does not pick a default provider for you.
-
-### Windows PowerShell
-
-#### Claude Code
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider claude-code
-```
-
-#### Codex
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex
-```
-
-#### Cursor
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider cursor
-```
-
-#### GitHub Copilot
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider github-copilot
-```
-
-#### OpenCode
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider opencode
-```
-
-### macOS Or Linux
-
-#### Claude Code
+Pass one `-a` per agent you use:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider claude-code
+npx skills add tangthiendat/radforge -g --skill '*' -a claude-code -a codex -a cursor -a github-copilot -a opencode -y
 ```
 
-#### Codex
+| Agent          | `-a` value       |
+| -------------- | ---------------- |
+| Claude Code    | `claude-code`    |
+| Codex          | `codex`          |
+| Cursor         | `cursor`         |
+| GitHub Copilot | `github-copilot` |
+| OpenCode       | `opencode`       |
+
+For any other agent, use its `--agent` id from the [CLI agent list](https://github.com/vercel-labs/skills/blob/main/docs/agents.md), for example `-a gemini-cli -a windsurf`. Without `-a`, the CLI uses the agents it detects on your machine, but with `-y` it installs to every supported agent when it detects none. Naming your agents with `-a` avoids that.
+
+Keep these flags:
+
+- `-g` installs for your user. Without it, skills go into the current project.
+- `--skill '*'` installs every Radforge skill. The workflow skills share files inside `use-radforge`, so do not install only some of them.
+- Name agents with `-a`. Do not use `--all`: it installs to every agent the CLI supports, not only yours.
+
+Where the files go:
+
+- Codex, Cursor, GitHub Copilot, OpenCode, and other agents that read the shared folder use `~/.agents/skills/`
+- Claude Code uses `~/.claude/skills/`: a real copy when installed alone, or a symlink to the shared copy when installed together with those agents
+
+Update or remove:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex
+npx skills update -g -y
+npx skills remove -g -y brainstorming debug implement migration plan review spec-writing test use-radforge
 ```
 
-#### Cursor
+The CLI sends anonymous usage data. Set `DISABLE_TELEMETRY=1` to turn it off.
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider cursor
-```
+Then [verify the install](#verify-the-install).
 
-#### GitHub Copilot
+Used the old install scripts? See [Upgrading From The Install Scripts](#upgrading-from-the-install-scripts).
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider github-copilot
-```
-
-#### OpenCode
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider opencode
-```
-
-### Install Script Options
-
-Use these options when you want more than the single-provider commands above.
-
-| Behavior                        | PowerShell                    | Shell                          |
-| ------------------------------- | ----------------------------- | ------------------------------ |
-| Install multiple providers      | `-Provider codex,claude-code` | `--provider codex,claude-code` |
-| Preview changes without writing | `-Provider codex -DryRun`     | `--provider codex --dry-run`   |
-
-Provider values:
-
-- `claude-code`
-- `codex`
-- `cursor`
-- `github-copilot`
-- `opencode`
-
-If the expected provider folders do not exist yet, the installer creates them.
-
-If a skill folder with the same name already exists and is not managed by Radforge, the installer leaves it alone and skips that skill.
-
-### Preview without writing
-
-### Windows PowerShell
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex -DryRun
-```
-
-### macOS Or Linux
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex --dry-run
-```
-
-### Verify after install
+## Verify The Install
 
 After installing, open your coding tool and try this prompt:
 
@@ -139,7 +78,14 @@ If your provider does not surface the skills automatically, try this instead:
 Use use-radforge and tell me which workflow skills are available.
 ```
 
-## Uninstall
+## Upgrading From The Install Scripts
+
+Earlier releases installed with `install.sh` and `install.ps1`. Those scripts are gone. The uninstall scripts remain so you can remove an old install.
+
+1. Run one of the uninstall commands below.
+2. Install again with the [skills CLI](#install-with-the-skills-cli).
+
+Do not keep both: they write to different folders, so an agent could load each skill twice. These commands only remove script installs. To remove a CLI install, use `npx skills remove`.
 
 ### Uninstall all installed providers
 
@@ -229,6 +175,7 @@ flowchart TD
     R --> Z([Finish])
     T -.->|Checkpoint passed; approved work remains| I
     T -->|Requested scope complete| Z
+    T -.->|Optional, agent or user decides: substantial or risky work| R
 
     classDef start fill:#f5f0ff,stroke:#9b87f5,stroke-width:2px,color:#333;
     classDef decision fill:#ede9fe,stroke:#9b87f5,stroke-width:2px,color:#333;
@@ -243,15 +190,38 @@ For non-trivial work, the routing guide is:
 
 - use `review` when you need to assess existing changes for bugs, regressions, missing validation, or rollout risk
 - start in `brainstorming` when the direction, scope, or approval is still unclear
-- use `spec-writing` when the direction is mostly decided and you still need a durable design in `docs/specs/`
+- use `spec-writing` when the direction is mostly decided and you still need a durable design in the spec folder (`docs/radforge/specs/` by default)
 - use `migration` when moving from an old path to a new one and compatibility, cutover, or rollback is the hard part
 - move to `plan` when the direction is already clear and the remaining job is execution structure
 - stay in `implement` when one bounded checkpoint plus one local smoke-style check is enough to support the claim
 - hand off to `test` when you need broader proof or more regression confidence
+- after substantial or risky work passes validation, `review` is an optional last step: the agent may run or offer it, and you can ask for it or skip it
 
 Preserve the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization across handoffs. A passing checkpoint returns from `test` to `implement` when approved tasks remain. Finish only when the requested scope is satisfied; explicit validation-only or checkpoint-only requests stop at their requested boundary with remaining work reported.
 
 Repository-local instructions still take priority over user-level Radforge defaults.
+
+## Example Session
+
+An illustrative run, not a recorded transcript. You ask your agent: "Add rate limiting to the login endpoint."
+
+1. `use-radforge` loads the shared contract and routes the task. It is clear but touches several files and carries risk, so it picks `plan`:
+
+   ```text
+   Decision: use Radforge (non-trivial, several files)
+   Routing Basis: default precedence, clear but risky execution
+   Selected Skill: plan
+   Override: none
+   Next Handoff: plan
+   ```
+
+2. `plan` writes ordered tasks to `docs/radforge/plans/` (limiter middleware, configuration, tests) and asks you to approve the sequencing and risk. You approve.
+3. `implement` works through the tasks one checkpoint at a time, running one quick check each. It does not ask for approval again, because your approval already covers the plan.
+4. `test` runs the broader checks (the unit tests and a repeated-login check) and records the commands, expected results, and what it observed.
+5. Because the work was risky and is now fully validated, the agent may run `review` or offer it. You can say "skip" and the work ends there.
+6. The agent closes out with what changed, what was validated, what was skipped, any remaining risk, and whether the work is complete.
+
+A small task, such as fixing a typo, skips all of this and is handled directly.
 
 ## What's Inside
 
@@ -276,43 +246,20 @@ Repository-local instructions still take priority over user-level Radforge defau
 
 ## What Gets Installed
 
-For each selected provider, the installer:
+The skills CLI copies every skill from `skills/` into the shared `~/.agents/skills/` folder for agents that read it, and into an agent's own folder for agents that do not, such as Claude Code. When both kinds are installed together, the agent's own folder links to the shared copy.
 
-- copies every skill from `skills/` into the provider's user-level skills directory
-- installs `use-radforge` alongside the core workflow skills
-- records uninstall metadata in `~/.radforge/providers/<provider>.state`
-
-The installer is additive and conservative:
-
-- it only replaces skill directories that are already managed by Radforge
-- it removes only Radforge-owned installed skill directories during uninstall
-- it can clean up legacy provider hint blocks from older installs when you reinstall
+- `use-radforge` is installed alongside the core workflow skills
+- the CLI records installs in its own lock file, which `npx skills update` and `npx skills remove` use
 - it does not replace repository-local instructions
 
 ## Updating Radforge
 
-Rerun install with the same explicit provider values to refresh the installed skill copies.
-
-Use the same install script options from `Install Script Options` when you want to target specific providers or preview the update.
-
-If you are updating from an older version that used installer-managed provider hints, rerun install once to remove the legacy hint blocks.
-
-### Windows PowerShell
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.ps1"))) -Provider codex,claude-code
-```
-
-### macOS Or Linux
-
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tangthiendat/radforge/main/scripts/install.sh | bash -s -- --provider codex,opencode
+npx skills update -g -y
 ```
-
-If you want to preview an update first, use the dry-run commands from the install section.
 
 ## Notes
 
-- install requires an explicit provider selection; the installer does not choose providers automatically
-- uninstall uses the stored provider state files in `~/.radforge/providers/` to remove only Radforge-managed assets
+- the uninstall scripts use the stored provider state files in `~/.radforge/providers/` to remove only Radforge-managed assets from old script installs
+- specs and plans go to a path you name, otherwise to your repository's existing spec or plan folder, otherwise to `docs/radforge/specs/` or `docs/radforge/plans/`
 - actual skill auto-invocation still depends on the provider surfacing installed skills to the model for that session

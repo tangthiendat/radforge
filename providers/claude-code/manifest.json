@@ -1,5 +1,0 @@
-{
-  "provider": "claude-code",
-  "displayName": "Claude Code",
-  "skillsDir": ".claude/skills"
-}
