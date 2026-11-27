@@ -4,7 +4,7 @@ description: Use when there is meaningful behavior or regression risk to validat
 maturity: core
 kind: workflow
 owner: radforge
-lastReviewed: "2026-10-02"
+lastReviewed: "2026-11-27"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -48,9 +48,13 @@ Escalate only when narrower evidence is not enough.
 - install, update, uninstall, config, or shared workflow semantics changed
 - completion would otherwise depend on broader proof than one local smoke check
 
+## Shared Contract
+
+Load the `use-radforge` skill's `references/workflow-contract.md` once per task, before other steps. Repository-local rules win on conflict. If the file is missing, say so and keep the approval, evidence, and closeout gates anyway.
+
 ## Process
 
-1. Recover the original goal, acceptance criteria, plan/task position, remaining work, user constraints, and existing authorization. Define whether the current validation covers a checkpoint, the whole request, or an explicitly validation-only request.
+1. Recover the handoff context, as described in the shared contract. Define whether the current validation covers a checkpoint, the whole request, or an explicitly validation-only request.
 2. Choose a validation tier and state why it matches the current risk and changed boundary.
 3. Start from `templates/validation-report-template.md` for any non-trivial validation summary.
 4. Run the smallest meaningful checks inside the chosen tier first.
@@ -60,7 +64,6 @@ Escalate only when narrower evidence is not enough.
 8. State whether the evidence validates the checkpoint or satisfies the original request's acceptance criteria, and choose the continuation below. Carry the updated task context into the next handoff.
 9. If validation fails, do not guess; hand off to `debug`.
 10. If validation is limited by the environment, say exactly what could not be checked.
-11. If stopping after non-trivial validation work, report what changed, what was validated, what was skipped, and any remaining risk.
 
 ## Continuation After Validation
 
@@ -68,17 +71,15 @@ Escalate only when narrower evidence is not enough.
 - If implementation is finished but acceptance evidence remains incomplete, stay in `test` and gather the missing evidence. If the environment prevents it, report the limit and pause without claiming whole-task completion.
 - If validation fails, hand off to `debug` with the failure evidence and original task context.
 - Stop as complete only when the original authorized scope and acceptance criteria are satisfied.
+- When the whole authorized scope is satisfied and the work was substantial or risky (a multi-task plan, Tier 3 validation, or a change to shared workflow, install, or config behavior), `review` is an optional last step. The agent decides whether to run it or to offer it in one line, and the user can ask for it or skip it at any time. A user's decline or stop request always wins. `review` only reads and reports, so running it needs no extra approval. Do not wait on it before calling the work complete. Do not run or offer it after validation-only or checkpoint-only requests, after small Tier 1 changes, or when `review` already ran for this task.
 - Honor explicit validation-only or checkpoint-only requests: stop at that requested boundary, report remaining product work and evidence limits, and do not automatically start implementation. A complete validation report does not imply the product is complete or passing.
 
 ## Guardrails
 
-- do not skip meaningful validation without saying why
 - do not broaden validation just for ceremony when narrower checks already provide enough signal
 - do not describe tests as passing unless the command or check actually succeeded
 - do not choose a broad validation tier without naming the risk that justified it
-- record limits when full validation is not available
-- do not turn a passing checkpoint into whole-task completion while approved work or required acceptance evidence remains
-- do not stop after non-trivial validation without an explicit closeout summary
+- do not make `review` mandatory; the agent or the user may skip it, and a user's decline always wins
 
 ## Supporting Files
 
@@ -117,4 +118,5 @@ The `Closeout` section should cover what changed, what was validated, what was s
 
 - `test` -> `debug`
 - `test` -> `implement`
+- `test` -> `review` (optional; the agent or the user decides)
 - `test` -> stop

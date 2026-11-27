@@ -94,6 +94,6 @@ Before stopping, ask:
 
 ## Checkpoint Continuation Example
 
-An approved plan contains installer changes, uninstall changes, and documentation updates. Installer checkpoint checks pass while the other tasks remain. Report the installer checkpoint as validated, preserve the plan position, remaining tasks, user constraints, and authorization, and hand off to `implement` for the next approved task. Stop as complete only after the full requested scope and acceptance evidence are satisfied.
+An approved plan contains cleanup-script changes, README updates, and example updates. Cleanup-script checkpoint checks pass while the other tasks remain. Report the installer checkpoint as validated, preserve the plan position, remaining tasks, user constraints, and authorization, and hand off to `implement` for the next approved task. Stop as complete only after the full requested scope and acceptance evidence are satisfied.
 
-If the user asked only to validate the installer checkpoint, stop after that validation report and name the remaining product work. Do not use the continuation path to authorize unrelated implementation.
+If the user asked only to validate the cleanup-script checkpoint, stop after that validation report and name the remaining product work. Do not use the continuation path to authorize unrelated implementation.

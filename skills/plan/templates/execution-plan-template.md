@@ -107,7 +107,7 @@ Risk:
 ## Finalization Decision
 
 - Plan artifact required: yes or no
-- Final path: <docs/plans/... or "chat only">
+- Final path: <path in the plan folder, such as docs/radforge/plans/..., or "chat only">
 - Placeholder check complete: yes or no
 
 ## Next Handoff

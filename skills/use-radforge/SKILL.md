@@ -1,10 +1,10 @@
 ---
 name: use-radforge
-description: Use when this personal Radforge workflow is installed and the current task may need structured routing. Respect repo-local rules, decide whether the framework applies, and hand off to the single right core skill.
+description: Use when the Radforge workflow is installed and the current task may need structured routing. Respect repo-local rules, decide whether the framework applies, and hand off to the single right core skill.
 maturity: core
 kind: bootstrap
 owner: radforge
-lastReviewed: "2026-05-18"
+lastReviewed: "2026-11-27"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -12,7 +12,7 @@ compatibility: bootstrap routing and repo-local workflow contracts
 
 ## Purpose
 
-Act as the default entrypoint for this personal Radforge framework on non-trivial work.
+Act as the default entrypoint for the Radforge framework on non-trivial work.
 
 This skill should make a fast routing decision, choose one primary next skill, and get out of the way.
 
@@ -32,12 +32,16 @@ It must still work when installed outside a repository that has no stronger loca
 - the user explicitly does not want Radforge workflow for the task
 - the task is small, clear, and low risk enough to handle directly
 
+## Shared Contract
+
+Load the `use-radforge` skill's `references/workflow-contract.md` once per task, before other steps. Repository-local rules win on conflict. If the file is missing, say so and keep the approval, evidence, and closeout gates anyway.
+
 ## Process
 
 1. Read repo-local instructions and nearby guidance first.
 2. Read the closest scoped rule files when they narrow the local workflow for the area you are about to touch.
 3. If repository-local workflow fully overrides Radforge, stop and follow the repository.
-4. Decide whether the task is trivial enough to handle directly or whether this personal Radforge workflow should activate.
+4. Decide whether the task is trivial enough to handle directly or whether the Radforge workflow should activate.
 5. Explain Radforge in one short pass only if the user appears unfamiliar with it.
 6. If Radforge should not be used, say so briefly and stop.
 7. Apply repository-local routing precedence when it is explicitly defined; otherwise use the default Radforge routing precedence below.
@@ -61,7 +65,7 @@ It must still work when installed outside a repository that has no stronger loca
 - choose `review` when the main job is assessing an existing diff, artifact, or workflow for bugs, regressions, missing validation, or rollout risk
 - choose `brainstorming` when the direction is still unclear, approval depends on a design choice, or multiple reasonable approaches remain
 - choose `migration` when moving from an old path to a new one is the primary job and compatibility, cutover, rollback, or rollout concerns are more important than the code edit itself
-- choose `spec-writing` when the direction is mostly settled and the missing artifact is a durable design in `docs/specs/` before execution planning starts
+- choose `spec-writing` when the direction is mostly settled and the missing artifact is a durable design in the spec folder before execution planning starts
 - choose `implement` when the task is clear and bounded, execution is still direct, and no major sequencing or dependency management is needed
 - stay with `implement` when one checkpoint inside one coherent boundary plus one Tier 1-style smoke check is enough to support the claim
 - choose `plan` only after the direction is approved or already clear, and the remaining job is execution structure, sequencing, file mapping, validation ordering, or resumable handoff preparation
@@ -72,22 +76,7 @@ It must still work when installed outside a repository that has no stronger loca
 
 ## Routing Examples
 
-- direct: add one obvious sentence to an existing doc with no workflow implications
-- `review`: inspect an existing change set for bugs, regressions, rollout risk, and missing validation before merge or release
-- `review` borderline: the code already changed, and the user wants findings and confidence assessment rather than more implementation
-- `brainstorming`: the request has two reasonable workflow designs and the approval boundary depends on which one is chosen
-- `brainstorming` borderline: the work will likely need a plan later, but the design direction or scope split is still unresolved
-- `spec-writing`: the direction is approved, but a substantial design still needs to be written to `docs/specs/` before planning or implementation
-- `spec-writing` borderline: the work is no longer ambiguous enough for `brainstorming`, but planning would be premature because the design choices still need a durable artifact
-- `migration`: replace an old config or command path with a new one where the transition window, rollback, and removal timing need explicit handling
-- `migration` borderline: the target design is already known, but jumping straight to `plan` would skip the compatibility boundary and cutover decision
-- `implement`: tighten one existing skill file with a bounded wording change and one local readback check
-- `implement` borderline: update one installer message and confirm it with one dry-run or readback inside the same checkpoint
-- `test`: implementation already happened and the remaining job is proving install behavior or regression coverage
-- `test` borderline: the code change is done, but completion depends on broader install/update/uninstall proof or changed-area regression confidence
-- `debug`: a repro, failing test, or broken command exists and diagnosis must come before edits
-- `plan`: restructure a shared installer flow, split a cross-repo workflow, or prepare a multi-phase handoff artifact
-- `plan` borderline: the direction is already approved, but execution still needs ordered tasks, checkpoint boundaries, and validation sequencing before implementation should start
+Read `references/routing-examples.md` when a task sits between two skills and a worked example would settle the choice.
 
 ## Activation Rule
 
@@ -97,7 +86,7 @@ It must still work when installed outside a repository that has no stronger loca
 
 ## Guardrails
 
-- do not replace repo-local instructions with personal Radforge defaults
+- do not replace repo-local instructions with Radforge defaults
 - do not force the full workflow into small tasks that do not need it
 - prefer repository-local routing only when it is explicit; otherwise use the default Radforge routing precedence above
 - stay short; this skill should route rather than become the whole workflow
@@ -122,7 +111,7 @@ Include in the sections above:
 - whether Radforge is appropriate for the current task
 - one-pass explanation only if needed
 - whether repository-local routing or default Radforge routing was used
-- any repo-local rule that overrides the personal default
+- any repo-local rule that overrides the Radforge default
 - the single selected next skill or explicit decision to skip Radforge
 
 ## Handoff Rules

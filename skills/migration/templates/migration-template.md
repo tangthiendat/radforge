@@ -51,7 +51,7 @@ If a field is not needed, write `none` with a brief reason.
 
 ## Artifact Location
 
-- location: <docs/specs/<filename>.md | docs/plans/<filename>.md | chat-only>
+- location: <spec folder path | plan folder path | chat-only>
 - why this location is appropriate: <reason>
 
 ## Next Handoff

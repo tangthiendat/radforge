@@ -36,6 +36,7 @@ flowchart TD
     R --> Z([Finish])
     T -.->|Checkpoint passed; approved work remains| I
     T -->|Requested scope complete| Z
+    T -.->|Optional, agent or user decides: substantial or risky work| R
 
     classDef start fill:#f5f0ff,stroke:#9b87f5,stroke-width:2px,color:#333;
     classDef decision fill:#ede9fe,stroke:#9b87f5,stroke-width:2px,color:#333;

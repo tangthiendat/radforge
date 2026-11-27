@@ -4,7 +4,7 @@ description: Use when a task is unclear, under-specified, or has multiple reason
 maturity: core
 kind: workflow
 owner: radforge
-lastReviewed: "2026-05-18"
+lastReviewed: "2026-11-27"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -27,6 +27,10 @@ Clarify unclear work before execution starts.
 - the main issue is a failure that needs reproduction and root-cause work first
 - the user explicitly wants implementation-only and the reduced process is safe
 
+## Shared Contract
+
+Load the `use-radforge` skill's `references/workflow-contract.md` once per task, before other steps. Repository-local rules win on conflict. If the file is missing, say so and keep the approval, evidence, and closeout gates anyway.
+
 ## Process
 
 1. Read the related `docs/` material and repository guidance first.
@@ -37,7 +41,7 @@ Clarify unclear work before execution starts.
 6. Recommend one direction and explain why it is the best fit.
 7. If the work is too large for one coherent effort, decompose it only enough to choose a direction or split the problem into approved workstreams.
 8. Pause for approval when the work includes meaningful design or tradeoff decisions.
-9. Hand off to `spec-writing` when the direction is mostly settled but the missing artifact is a durable design in `docs/specs/`.
+9. Hand off to `spec-writing` when the direction is mostly settled but the missing artifact is a durable design in the spec folder.
 10. Hand off to `plan` only when the approved direction is substantial, risky, or dependency-heavy and the main remaining need is execution structure.
 11. Hand off to `implement` when the direction is clear and the remaining work is direct.
 

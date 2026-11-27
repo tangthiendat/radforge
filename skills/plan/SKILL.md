@@ -1,10 +1,10 @@
 ---
 name: plan
-description: Use when work is multi-step, risky, or dependency-heavy. Turn an approved direction into an ordered execution plan and finalize substantial plans into docs/plans/.
+description: Use when work is multi-step, risky, or dependency-heavy. Turn an approved direction into an ordered execution plan and finalize substantial plans into the repository's plan folder.
 maturity: core
 kind: workflow
 owner: radforge
-lastReviewed: "2026-05-18"
+lastReviewed: "2026-11-27"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -27,6 +27,10 @@ Turn an approved direction into an execution plan that another competent agent o
 - the work is still ambiguous and needs `brainstorming`
 - the main issue is a failing or unexplained behavior that still needs `debug`
 
+## Shared Contract
+
+Load the `use-radforge` skill's `references/workflow-contract.md` once per task, before other steps. Repository-local rules win on conflict. If the file is missing, say so and keep the approval, evidence, and closeout gates anyway.
+
 ## Process
 
 1. Read the relevant `docs/` material and repository guidance first.
@@ -40,28 +44,34 @@ Turn an approved direction into an execution plan that another competent agent o
 9. Keep the plan one level above implementation detail. If it turns into edit-by-edit narration, shrink the task or hand off to `implement`.
 10. Call out risks, sequencing constraints, and approval points instead of hiding them in prose.
 11. Use the template headings exactly and replace every placeholder with real content. If a field is not needed, write `none` with a brief reason.
-12. Decide whether the plan must be finalized into `docs/plans/`.
+12. Decide whether the plan must be finalized into the plan folder.
 13. If a written plan is required, write and finalize it before handoff.
 14. Pause for approval before execution when the plan introduces meaningful scope, risk, sequencing, or decomposition decisions.
 
 ## Plan Finalization Rule
 
-Write the plan to `docs/plans/` when any of the following are true:
+Write the plan as a file when any of the following are true:
 
 - the work is multi-phase
 - the work is risky or high-impact
 - the work spans multiple files or components with dependencies
 - the work is likely to be resumed later
 - the plan is intended as a handoff artifact
-- the user explicitly asks for a written plan
+- the user explicitly asks for a written plan or names a path for it
 
 Use a chat-only plan only when the work is short, low-risk, and unlikely to need reuse.
+
+Choose the location in this order:
+
+1. the path the user names, used as given
+2. the repository's existing plan folder
+3. `docs/radforge/plans/`
 
 ## Finalization Subphase
 
 When a written plan is required:
 
-1. choose a focused filename under `docs/plans/`
+1. use the filename the user gave, or choose a focused filename under the chosen location
 2. use the canonical template headings in execution order
 3. include the file map near the top
 4. include validation steps for each meaningful phase
@@ -75,7 +85,6 @@ When a written plan is required:
 - keep tasks small enough to execute and verify independently
 - keep tasks resumable enough that the next checkpoint is obvious to a new reader
 - do not hide unresolved assumptions that materially affect execution
-- prefer the smallest implementation that satisfies the goal
 - do not defer key sequencing decisions to “implementation will decide later”
 - do not let `brainstorming` and `plan` blur together; approach choice belongs upstream, execution structure belongs here
 

@@ -1,63 +1,62 @@
 # Example Spec
 
-Use this as a shape reference when the template feels too abstract.
+Use this as a shape reference when the template feels too abstract. The scenario is invented for illustration.
 
 ## Problem
 
-- problem statement: provider installation behavior and workflow activation rules are drifting between scripts, README, and framework guidance
-- affected surface: installer scripts, provider manifests, and workflow documentation
-- why a spec is needed now: the changes affect multiple boundaries and need a durable design before further implementation and cleanup
+- problem statement: install locations and upgrade guidance differ between a legacy script installer, a third-party skills CLI, and the README, so users can end up with duplicate or missing skills
+- affected surface: README install and upgrade guidance, the uninstall scripts, and the repository layout notes in `AGENTS.md`
+- why a spec is needed now: the change affects how every user installs and upgrades and needs a durable design before documentation and scripts are edited
 
 ## Goals
 
-- align install behavior, activation wording, and provider metadata expectations
-- keep install behavior focused on skill distribution and bootstrap routing
+- one supported install path for all agents
+- a clear upgrade path for users of the legacy installer
 
 ## Non-Goals
 
-- adding new provider adapters in this pass
-- redesigning the full skills packaging model
+- building a custom installer or CLI
+- adding per-agent metadata to this repository
 
 ## Constraints
 
-- existing PowerShell and POSIX shell installers must stay supported
+- the install tool needs a modern Node.js runtime
+- uninstall scripts must keep working for installs made by earlier releases
 - repository-local instructions must continue to override user-level Radforge workflow defaults
-- the current shipped workflow should remain lightweight for small tasks
 
 ## Proposed Design
 
-- overview: keep bootstrap routing through `use-radforge`, simplify install behavior around skill distribution only, and tighten repo docs plus manifest metadata around that model
+- overview: install through the skills CLI only, keep the uninstall scripts for one release window, and document the upgrade as "uninstall, then install"
 - key decisions:
-  - preserve `use-radforge` as the workflow router for non-trivial work
-  - document the current model explicitly before introducing larger packaging changes
+  - drop the legacy install scripts and provider metadata rather than maintaining two install paths
+  - keep uninstall scripts so old installs can be removed
 - affected files or surfaces:
-  - `AGENTS.md`
   - `README.md`
-  - `providers/*/manifest.json`
-  - `scripts/install.*`
+  - `AGENTS.md`
+  - `scripts/uninstall.*`
 
 ## Alternatives
 
-- considered option: reintroduce provider-global instructions as the installed baseline
-- why not chosen: it adds install and uninstall complexity that is not needed for the current bootstrap-routing model
+- considered option: keep the legacy installer as a fallback for users without Node.js
+- why not chosen: it doubles maintenance, and its per-agent install paths can drift from where the CLI installs
 
 ## Risks
 
-- wording-only alignment can still leave metadata or packaging gaps if follow-up work is not planned
+- users without Node.js lose their install path
 
 ## Open Questions
 
-- should future manifests grow `pack`, capability, or provider-constraint metadata?
+- when should the uninstall scripts themselves be removed?
 
 ## Approval Status
 
 - status: ready for approval
-- gate: confirm the current activation model should remain bootstrap routing without provider-global instruction installation
+- gate: confirm that dropping the no-Node.js install path is acceptable
 
 ## Artifact Location
 
-- location: `docs/specs/<filename>.md`
-- why this location is appropriate: the design affects multiple workflow and installer boundaries and should remain reviewable after implementation starts
+- location: `docs/radforge/specs/<filename>.md`
+- why this location is appropriate: the design changes the install path for every user and should remain reviewable after implementation starts
 
 ## Next Handoff
 

@@ -13,8 +13,7 @@ This `AGENTS.md` is the project-specific authority for this repository.
 - `skills/<skill>/SKILL.md`: main entry file for each project skill
 - `skills/<skill>/templates/`: optional executable scaffolds for structured skills
 - `skills/<skill>/references/`: optional supporting material for deeper guidance
-- `providers/<provider>/manifest.json`: provider adapter metadata
-- `scripts/`: install and uninstall entrypoints
+- `scripts/`: uninstall entrypoints for old script installs; installation is done with `npx skills add`
 - `docs/specs/`: approved design and framework specs
 - `docs/plans/`: written implementation plans for substantial work
 
@@ -52,7 +51,7 @@ Core workflow skills:
 
 Bootstrap skill:
 
-- `use-radforge`: decide whether this personal Radforge workflow should activate and route into the single right workflow skill
+- `use-radforge`: decide whether the Radforge workflow should activate and route into the single right workflow skill
 
 ## Activation Model
 
@@ -84,6 +83,7 @@ Escalation rules:
 - if ambiguity appears during execution, return to `brainstorming`
 - if scope grows beyond a few obvious steps, hand off to `plan`
 - if validation fails or the behavior is broken, hand off to `debug`
+- after substantial or risky work is fully validated, `review` is an optional last step that the agent or the user may choose; the user may skip it
 - if the repository clearly requires another workflow, follow the repository
 
 ## Approval Gates
@@ -102,6 +102,8 @@ Do not skip approval for irreversible or unusually high-risk actions.
 ## Artifact Rules
 
 Read local `docs/`, project instructions, and repository guidance files before editing when they are relevant.
+
+`docs/plans/`, `docs/specs/`, and `docs/reviews/` are intentionally gitignored local artifacts; they persist on disk for resuming work but are not committed.
 
 Use written artifacts when they add durable value:
 
@@ -150,6 +152,7 @@ Every non-trivial workflow result should report the relevant subset of:
 - prefer the smallest correct change over broader redesign
 - preserve unrelated user changes
 - do not add compatibility layers unless there is a concrete need
+- do not expose or commit secrets, credentials, tokens, or private environment files
 - keep skills focused on one coherent job
 - prefer standard markdown and simple scripts over unnecessary complexity
 
@@ -180,6 +183,8 @@ A validated checkpoint is not whole-task completion. Continue remaining approved
 - keep this project `AGENTS.md` concise and authoritative
 - keep each `SKILL.md` focused on one coherent procedure
 - keep shared policy in `AGENTS.md` rather than repeating it in every skill
+- keep `skills/use-radforge/references/workflow-contract.md`, the installed copy of the shared policy, in sync whenever the shared policy in this file changes
+- run `python3 scripts/check.py` after editing skills, templates, diagrams, or shared policy
 - use frontmatter consistently for shipped skills with at least `name`, `description`, `maturity`, `kind`, `owner`, `lastReviewed`, and any meaningful compatibility note
 - prefer templates or compact references when a skill needs stronger determinism than prose alone
 - keep `brainstorming` focused on direction selection; ordered tasks, file maps, and validation sequencing belong in `plan`
@@ -191,7 +196,7 @@ A validated checkpoint is not whole-task completion. Continue remaining approved
 Current release note:
 
 - keep the live core suite under the flat `skills/` layout for install compatibility
-- reserve deeper grouping such as `skills/core`, `skills/quality`, or `skills/platform` for a later structural migration that updates installers, docs, and provider packaging together
+- reserve deeper grouping such as `skills/core`, `skills/quality`, or `skills/platform` for a later structural migration that updates docs and the skills CLI discovery layout together
 
 ## Source Selection Policy
 

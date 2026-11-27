@@ -1,93 +1,66 @@
 # Example Execution Plan
 
-Use this as a shape reference when the template feels too abstract.
+Use this as a shape reference when the template feels too abstract. The scenario is invented for illustration.
 
 ## Goal
 
-- outcome: tighten installer cleanup behavior without changing supported providers
-- success signal: reinstall removes legacy hint blocks and new install keeps only skill copies
+- outcome: let users move from an old script install to the skills CLI without ending up with duplicate skills
+- success signal: after following the README steps in an isolated home folder, the old state folder is gone and each skill exists once
 
 ## Scope
 
 In:
 
-- installer cleanup logic
-- provider state handling
-- README wording for migration behavior
+- README upgrade steps
+- proving the upgrade path against a hand-built old-style install
 
 Out:
 
-- new providers
-- desktop plugin support
+- changes to the uninstall scripts' code
+- new agents or new install options
 
 Assumptions:
 
-- existing provider state files may still contain legacy instruction metadata
+- old installs left a state file under `~/.radforge/providers/` and skill folders marked as Radforge-managed
 
 ## File Map
 
 Create:
 
-- none because the work only changes existing installer and docs files
+- none because the work only changes an existing doc
 
 Modify:
 
-- `scripts/install.ps1`
-- `scripts/install.sh`
 - `README.md`
 
 Validate:
 
-- `pwsh -NoProfile -File "scripts/install.ps1" -DryRun`
+- `sh scripts/uninstall.sh --home-root <temp-home>`
+- `HOME=<temp-home> npx skills add <repo-root> -g --skill '*' -a claude-code -y`
 
 Defer:
 
-- `scripts/uninstall.sh` deeper runtime validation until shell execution is available
+- `scripts/uninstall.ps1` runtime validation until PowerShell is available
 
 ## Tasks
 
-### Task 1: Remove legacy hint during reinstall
+### Task 1: Write the upgrade steps
 
 Outcome:
-Reinstall strips the old managed hint block before writing refreshed provider state.
-
-Files:
-
-- `scripts/install.ps1`
-- `scripts/install.sh`
-
-Validation:
-Run local dry-run and confirm legacy-cleanup path can execute without error.
-
-Expected signal:
-Dry-run reaches the legacy-cleanup path and completes provider-state writing without errors.
-
-If it fails:
-Inspect state parsing and legacy managed-block removal before widening scope.
-
-Checkpoint:
-pause if provider state format needs a breaking change
-
-Risk:
-medium because migration code touches existing installs
-
-### Task 2: Sync migration wording
-
-Outcome:
-README accurately says reinstall can clean legacy hint blocks from older installs.
+README tells script users to uninstall first, then install with the skills CLI, and explains why both must not stay installed.
 
 Files:
 
 - `README.md`
 
 Validation:
-Read back changed section for wording drift or stale claims.
+Read back the changed section and compare each command with the commands used in Task 2.
 
 Expected signal:
-README matches the current migration behavior without describing removed installer behavior.
+Every command in the README appears in the validation checks, with the same flags.
 
 If it fails:
-Inspect the install, uninstall, and update sections for duplicated or conflicting wording.
+Fix the README wording to match the command that works, not the other way round.
 
 Checkpoint:
 none
@@ -95,28 +68,52 @@ none
 Risk:
 low
 
+### Task 2: Prove the upgrade path in an isolated home
+
+Outcome:
+Evidence that uninstall followed by a CLI install leaves one copy of each skill.
+
+Files:
+
+- none; this task only runs commands
+
+Validation:
+Create a temp home with a state file and a marked skill folder, run the uninstall script against it, then run the CLI install with `HOME` pointed at the same temp home. A dry-run preview is not evidence for this task; run the real commands against the temp home only.
+
+Expected signal:
+After uninstall, no `.radforge` folder and no marked skill folders remain. After the CLI install, each skill appears once.
+
+If it fails:
+Inspect which folders the uninstall script read from the state file before changing any README text.
+
+Checkpoint:
+pause if the uninstall script needs a code change; that is outside this plan's scope
+
+Risk:
+medium because the commands touch install locations, though only inside the temp home
+
 ## Validation Strategy
 
 - ordered checks from narrowest to broadest:
 
-  - run: `pwsh -NoProfile -File "scripts/install.ps1" -DryRun`
-  - expected: legacy-cleanup path and provider-state write path complete without error
-  - if it fails: inspect state parsing and legacy cleanup before checking docs
+  - run: read back the README section and compare its commands with the Task 2 commands
+  - expected: the commands and flags match exactly
+  - if it fails: correct the README before running anything
 
-  - run: read back changed `README.md` and script sections
-  - expected: wording and migration behavior stay aligned with the edited code
-  - if it fails: inspect duplicated or stale wording before widening validation
+  - run: the uninstall and CLI install commands from Task 2 in the temp home
+  - expected: one copy of each skill and no leftover state folder
+  - if it fails: inspect the state file contents and the marker files first
 
-- lowest useful validation first: yes, because the local dry-run covers the risky migration path before broader shell validation
+- lowest useful validation first: yes, because the readback is cheap and catches wrong commands before they are run
 
 ## Risks And Approval Points
 
-- migration logic must not remove unrelated provider content
+- the commands must never run against the real home folder; every command sets the temp home explicitly
 
 ## Finalization Decision
 
-- Plan artifact required: no
-- Final path: chat only
+- Plan artifact required: yes, because the work spans documentation and runtime validation and may be resumed
+- Final path: `docs/radforge/plans/<date>-script-to-cli-upgrade.md`
 - Placeholder check complete: yes
 
 ## Next Handoff

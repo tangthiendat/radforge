@@ -13,7 +13,7 @@ Prefer `spec-writing` after `brainstorming` when:
 
 Do not use it when the main remaining need is task sequencing; that is `plan`.
 
-Default to a durable spec in `docs/specs/`.
+Default to a durable spec in the repository's spec folder (`docs/radforge/specs/` when it has none).
 Use chat-only output only when the scope is small, simple, and not worth a spec file.
 
 ## Problem Framing Pattern

@@ -37,7 +37,7 @@ Use this as a shape reference when the template feels too abstract.
 
 ## Validation Plan
 
-- run: installer dry-run plus readback of command references in docs and scripts
+- run: readback of command references in docs and scripts, plus one command run in an isolated home folder
 - expected: only the new command is documented as primary and legacy support remains where promised
 - if it fails: inspect compatibility references and the temporary alias path first
 
@@ -52,7 +52,7 @@ Use this as a shape reference when the template feels too abstract.
 
 ## Artifact Location
 
-- location: `docs/plans/<filename>.md`
+- location: `docs/radforge/plans/<filename>.md`
 - why this location is appropriate: the target command is already known and the remaining value is preserving the transition sequence and validation steps
 
 ## Next Handoff

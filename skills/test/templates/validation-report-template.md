@@ -60,3 +60,4 @@ If a field is not needed, write `none` with a brief reason.
 
 - next skill: <`implement`, `debug`, or `stop`; stay in `test` if more evidence is needed>
 - continuation: <next approved task with preserved task context, missing evidence, or reason for stopping>
+- optional review: <run or offered, with the reason the work is substantial or risky | skipped or not applicable, with the reason>

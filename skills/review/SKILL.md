@@ -4,7 +4,7 @@ description: Use when existing changes, artifacts, or workflows need bug, regres
 maturity: core
 kind: quality
 owner: radforge
-lastReviewed: "2026-05-19"
+lastReviewed: "2026-11-27"
 compatibility: bootstrap routing and repo-local workflow contracts
 ---
 
@@ -20,12 +20,17 @@ Assess existing changes, artifacts, or workflows for bugs, regressions, missing 
 - a diff, change set, or artifact exists and needs risk assessment
 - release or merge readiness needs a findings-first check
 - the main job is finding problems rather than making changes
+- substantial or risky work has just passed `test` and the agent or the user chose the optional review step; reuse the validation evidence from `test` instead of re-running it
 
 ## When Not To Use
 
 - there is no meaningful review surface yet
 - the main task is to implement or validate behavior
 - the issue is an active failure that still needs reproduction or diagnosis in `debug`
+
+## Shared Contract
+
+Load the `use-radforge` skill's `references/workflow-contract.md` once per task, before other steps. Repository-local rules win on conflict. If the file is missing, say so and keep the approval, evidence, and closeout gates anyway.
 
 ## Process
 
